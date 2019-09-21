@@ -1,0 +1,32 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="static\style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.0/angular.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
+
+    <script src="static\node_modules\api-check\dist\api-check.js"></script>
+    <script src="static\node_modules\angular\angular.min.js"></script>
+    <script src="static\node_modules\angular-formly\dist\formly.min.js"></script>
+    <script src="static\node_modules\angular-formly-templates-bootstrap\dist\angular-formly-templates-bootstrap.js"></script>
+
+    <script src="static\shippingApp.js"></script>
+    <script src="static\shippingCardsController.js"></script>
+</head>
+<body ng-app="shippingApp">
+<img src="/static/sleepdepot.jpg" class="fixed"><br><br><br><br><br>
+<div ng-controller="shippingCardsController as scc" class="cardsContainer">
+    <div ng-repeat="card in scc.cards" class="card">
+        {{ card.orderNumber }}
+    </div>
+    <div class="footer">
+    <i class="material-icons" style="font-size: 128px" ng-click="scc.addShippingCard()">
+    add_circle
+    </i>
+    </div>
+</div>
+
+
+</body>
+</html>
