@@ -16,7 +16,6 @@
 }
 
 .cardsContainer {
-    margin-top: 128px;
 }
 
 .card {
@@ -26,6 +25,7 @@
   height:175px;
   margin:15px;
   padding-top:5%;
+  margin-top:7%;
   text-align:center;
   border: 1px solid grey;
   background-color: #c2d6d6;
