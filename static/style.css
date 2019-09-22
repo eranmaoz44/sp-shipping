@@ -16,6 +16,7 @@
 }
 
 .cardsContainer {
+    margin-top: 6%;
 }
 
 .card {
@@ -25,7 +26,6 @@
   height:175px;
   margin:15px;
   padding-top:5%;
-  margin-top:7%;
   text-align:center;
   border: 1px solid grey;
   background-color: #c2d6d6;
@@ -41,6 +41,19 @@
   transition: 0.5s ease all;
   -webkit-transition: 0.5s ease all;
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.material-icons {
+    -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+
+   /*
+     Introduced in IE 10.
+     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+   */
+   -ms-user-select: none;
+   user-select: none;
 }
 
 .material-icons:hover {
