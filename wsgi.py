@@ -35,5 +35,18 @@ def set_shipping():
     return Response(status=200)
 
 
+@application.route('/api/image', methods=['post'])
+def post_image():
+    file = request.files['file']
+    fileName = file.filename
+
+    # to store it on server use getvalue() and write it to the file object
+    filedata = file.getvalue()
+
+    print(fileName)
+    print(filedata)
+    return Response(status=200, response="great")
+
+
 if __name__ == '__main__':
     application.run(host='0.0.0.0')

@@ -6,10 +6,12 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet">
 
-    <script src="static\node_modules\api-check\dist\api-check.js"></script>
     <script src="static\node_modules\angular\angular.min.js"></script>
-    <script src="static\node_modules\angular-formly\dist\formly.min.js"></script>
-    <script src="static\node_modules\angular-formly-templates-bootstrap\dist\angular-formly-templates-bootstrap.js"></script>
+    <script src="static\node_modules\ng-file-upload\dist\ng-file-upload-shim.js"></script> <!-- for no html5 browsers support -->
+    <script src="static\node_modules\ng-file-upload\dist\ng-file-upload.js"></script>
+    <script src="static\node_modules\ng-file-upload\dist\ng-file-upload-shim.min.js"></script> <!-- for no html5 browsers support -->
+    <script src="static\node_modules\ng-file-upload\dist\ng-file-upload.min.js"></script>
+
 
     <script src="static\shippingApp.js"></script>
     <script src="static\shippingCardsController.js"></script>
@@ -19,12 +21,27 @@
 <div ng-controller="shippingCardsController as scc" class="cardsContainer">
     <div ng-repeat="card in scc.cards" class="card">
         Order Number: <input type="text" ng-model="card.orderNumber" ng-change="scc.updateShippingCard(card)">
+          <h4>Upload on file select</h4>
+          <button type="file" ngf-select="uploadFiles($file, $invalidFiles)"
+                  accept="image/*" ngf-max-height="1000" ngf-max-size="1MB">
+              Select File</button>
+          <br><br>
+          File:
+          <div style="font:smaller">{{f.name}} {{errFile.name}} {{errFile.$error}} {{errFile.$errorParam}}
+              <span class="progress" ng-show="f.progress >= 0">
+                  <div style="width:{{f.progress}}%"
+                       ng-bind="f.progress + '%'"></div>
+              </span>
+          </div>
+          {{errorMsg}}
+        <img ng-src="{{imageSrc}}" />
     </div>
     <div class="footer">
     <i class="material-icons" style="font-size: 128px" ng-click="scc.addShippingCard()">
     add_circle
     </i>
     </div>
+
 </div>
 
 
