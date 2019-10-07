@@ -10,17 +10,21 @@
   color: #fff;
 }
 
+.fixedContainer {
+    height:22%
+}
+
 .footer {
     position:fixed;bottom:0px;width:100%;
     text-align:center;
 }
 
-.cardsContainer {
-    margin-top: 6%;
-}
 
 .card {
-  display:inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
   float:left;
   width:300px;
   height:175px;
@@ -91,4 +95,16 @@ form .progress {
     font-size: smaller;
     background: orange;
     width: 0;
+}
+
+.orderImage {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px;
+  width: 150px;
+  length: 256px;
+}
+
+.cardsContainer {
+
 }

@@ -2,7 +2,7 @@
 
 	'use strict';
 
-	angular.module('shippingApp', ['ngFileUpload'])
+	angular.module('shippingApp', ['ngFileUpload', 'ngMaterial', 'ngMessages'])
 
 
 })(window);

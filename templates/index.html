@@ -1,40 +1,42 @@
 <html>
 <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="static\style.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.0/angular.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet">
+    <link rel="stylesheet" href="static\node_modules\angular-material\angular-material.css">
+
+
+
 
     <script src="static\node_modules\angular\angular.min.js"></script>
     <script src="static\node_modules\ng-file-upload\dist\ng-file-upload-shim.js"></script> <!-- for no html5 browsers support -->
     <script src="static\node_modules\ng-file-upload\dist\ng-file-upload.js"></script>
     <script src="static\node_modules\ng-file-upload\dist\ng-file-upload-shim.min.js"></script> <!-- for no html5 browsers support -->
     <script src="static\node_modules\ng-file-upload\dist\ng-file-upload.min.js"></script>
+    <script src="static\node_modules\angular-aria\angular-aria.js"></script>
+    <script src="static\node_modules\angular-animate\angular-animate.js"></script>
+    <script src="static\node_modules\angular-messages\angular-messages.js"></script>
+    <script src="static\node_modules\angular-material\angular-material.js"></script>
 
 
     <script src="static\shippingApp.js"></script>
+    <script src="static\awsFileService.js"></script>
     <script src="static\shippingCardsController.js"></script>
 </head>
 <body ng-app="shippingApp">
-<img src="/static/sleepdepot.jpg" class="fixed"><br><br><br><br><br>
+<div class="fixedContainer">
+    <img src="/static/sleepdepot.jpg" class="fixed">
+</div>0
+
 <div ng-controller="shippingCardsController as scc" class="cardsContainer">
-    <div ng-repeat="card in scc.cards" class="card">
+    <div ng-repeat="card in scc.shippingCards" class="card">
         Order Number: <input type="text" ng-model="card.orderNumber" ng-change="scc.updateShippingCard(card)">
-          <h4>Upload on file select</h4>
-          <button type="file" ngf-select="uploadFiles($file, $invalidFiles)"
-                  accept="image/*" ngf-max-height="1000" ngf-max-size="1MB">
               Select File</button>
-          <br><br>
-          File:
-          <div style="font:smaller">{{f.name}} {{errFile.name}} {{errFile.$error}} {{errFile.$errorParam}}
-              <span class="progress" ng-show="f.progress >= 0">
-                  <div style="width:{{f.progress}}%"
-                       ng-bind="f.progress + '%'"></div>
-              </span>
-          </div>
-          {{errorMsg}}
-        <img ng-src="{{imageSrc}}" />
+        <img ng-src="{{card.orderImageUrl}}" ngf-select="scc.uploadFileToAws(card.id,$file)"
+                  accept="image/*"  ngf-max-size="10MB" class="orderImage"/>
+        <i class="material-icons" ng-click="scc.showShippingDialog($event, card.id)">
+            zoom_out_map
+        </i>
     </div>
     <div class="footer">
     <i class="material-icons" style="font-size: 128px" ng-click="scc.addShippingCard()">
