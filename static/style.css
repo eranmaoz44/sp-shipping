@@ -106,5 +106,14 @@ form .progress {
 }
 
 .cardsContainer {
+    display: flex;
+    flex-wrap: wrap;
+}
 
+.orderNumber{
+    font-size: 22px;
+}
+
+.cardButton{
+    font-size: 22px;
 }

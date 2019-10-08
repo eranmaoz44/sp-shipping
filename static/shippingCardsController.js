@@ -161,3 +161,6 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
 angular
     .module('shippingApp')
     .controller('shippingCardsController', shippingCardsController, ['$http', '$scope', 'awsFileService', '$mdDialog'])
+    .config(function($mdThemingProvider) {
+      $mdThemingProvider.theme('light-blue').backgroundPalette('light-blue');
+    });
