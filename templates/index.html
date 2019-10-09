@@ -17,13 +17,13 @@
     <link href="static\node_modules\bootstrap\dist\css\bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="static\album.css" rel="stylesheet">
+    <link href="static\style.css" rel="stylesheet">
 
 
     <script src="static\node_modules\ng-file-upload\dist\ng-file-upload.js"></script>
     <script src="static\node_modules\ng-file-upload\dist\ng-file-upload-shim.min.js"></script>
     <script src="static\node_modules\ng-file-upload\dist\ng-file-upload.min.js"></script>
-        <script src="static\node_modules\angular-aria\angular-aria.js"></script>
+    <script src="static\node_modules\angular-aria\angular-aria.js"></script>
     <script src="static\node_modules\angular-animate\angular-animate.js"></script>
     <script src="static\node_modules\angular-messages\angular-messages.js"></script>
     <script src="static\node_modules\angular-material\angular-material.js"></script>
@@ -35,24 +35,21 @@
 
 </head>
 
-<body>
+<body ng-app="shippingApp">
 
 <header>
     <div class="collapse bg-dark" id="navbarHeader">
         <div class="container">
             <div class="row">
                 <div class="col-sm-8 col-md-7 py-4">
-                    <h4 class="text-white">About</h4>
-                    <p class="text-muted">Add some information about the album below, the author, or any other
-                        background context. Make it a few sentences long so folks can pick up some informative tidbits.
-                        Then, link them off to some social networking sites or contact information.</p>
+                    <h4 class="text-white">תיאום הובלות</h4>
+                    <p class="text-muted">תוכנה זו נועדה לשם סידור תהליך תיאום ההובלות, גם מבחינת יצירת סדר וגם מבחינת מקבול תיאום ההובלה הן מול הלקוח והן מול המוביל תוך חסכון ביצירת קשר טלפוני</p>
                 </div>
                 <div class="col-sm-4 offset-md-1 py-4">
-                    <h4 class="text-white">Contact</h4>
+                    <h4 class="text-white">צור קשר</h4>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">Follow on Twitter</a></li>
-                        <li><a href="#" class="text-white">Like on Facebook</a></li>
-                        <li><a href="#" class="text-white">Email me</a></li>
+                        <li><a href="#" class="text-white">ערן מעוז</a></li>
+                        <li><a href="#" class="text-white">e.magnex@gmail.com</a></li>
                     </ul>
                 </div>
             </div>
@@ -76,13 +73,12 @@
     </div>
 </header>
 
-<main role="main" ng-app="shippingApp">
+<main role="main">
 
     <section class="jumbotron text-center">
         <div class="container">
-            <h1 class="jumbotron-heading">Album example</h1>
-            <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator,
-                etc. Make it short and sweet, but not too short so folks don't simply skip over it entirely.</p>
+            <h1 class="jumbotron-heading">תיאום הובלות סליפ דיפו</h1>
+            <p class="lead text-muted">סדר, מקבול, חסכון</p>
             <p>
                 <a href="#" class="btn btn-primary my-2">Main call to action</a>
                 <a href="#" class="btn btn-secondary my-2">Secondary action</a>
@@ -97,35 +93,68 @@
                 <div class="col-md-4" ng-repeat="card in scc.shippingCards">
                     <div class="card mb-4 shadow-sm">
                         <img class="card-img-top"
-                            ng-src="{{card.tempOrderImageUrl}}"
+                             ng-src="{{card.tempOrderImageUrl}}"
                              alt="Card image cap">
                         <div class="card-body">
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                                additional content. This content is a little bit longer.</p>
+                            <input class="form-control form-control-lg" type="text" placeholder="מספר הזמנה"
+                                   ng-model="card.orderNumber"
+                                   ng-change="scc.updateShippingCard(card)">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            ngf-select="scc.uploadFileToAws(card.id,$file)"
+                                            accept="image/*" ngf-max-size="10MB" class="orderImage">שנה תמונה
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal"
+                                            data-target="#exampleModalCenter">עוד פרטים
+                                    </button>
                                 </div>
                                 <small class="text-muted">9 mins</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+                         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">{{card.orderNumber}}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <img ng-src="{{card.tempOrderImageUrl}}" class="img-fluid" alt="Responsive image">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">סגור</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="fixed-bottom text-center">
+            <img src="/static/open-iconic/svg/plus.svg" alt="icon name" class="plusIcon btn btn-outline-primary btn-rounded waves-effect">
+<!--            <i class="material-icons" style="font-size: 128px" ng-click="scc.addShippingCard()">-->
+<!--                add_circle-->
+<!--            </i>-->
+        </div>
+        <!-- Modal -->
+
     </div>
 
 </main>
 
 <footer class="text-muted">
     <div class="container">
+
         <p class="float-right">
-            <a href="#">Back to top</a>
+            <a href="#">שלום</a>
         </p>
-        <p>Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-        <p>New to Bootstrap? <a href="../../">Visit the homepage</a> or read our <a href="../../getting-started/">getting
-            started guide</a>.</p>
+        <p>sp-shipping is &copy; Eran Maoz, Use it to your advantage!</p>
+        <p>תוכנה זו נודעה לייצר המלצות בלבד ואינה מחייבת</p>
     </div>
 </footer>
 
@@ -137,6 +166,7 @@
         crossorigin="anonymous"></script>
 <script>
     window.jQuery || document.write('<script src="static\node_modules\jquery-slim\dist\jquery-slim.min.js"><\/script>')
+
 </script>
 <script src="static\node_modules\popper.js\dist\popper.min.js"></script>
 <script src="static\node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
