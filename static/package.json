@@ -271,6 +271,7 @@
       "resolved": "https://registry.npmjs.org/hoek/-/hoek-4.2.1.tgz",
       "version": "4.2.1"
     },
+    "holderjs": "^2.9.6",
     "htmlparser2": {
       "integrity": "sha1-G9+HrMoPP55T+k/M6w9LTLsAszg=",
       "requires": {
@@ -315,6 +316,7 @@
       "version": "0.1.2"
     },
     "jquery": "^3.4.1",
+    "jquery-slim": "^3.0.0",
     "jsbn": {
       "integrity": "sha1-peZUwuWi3rXyAdls77yoDA7y9RM=",
       "resolved": "https://registry.npmjs.org/jsbn/-/jsbn-0.1.1.tgz",
@@ -375,6 +377,7 @@
       "resolved": "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz",
       "version": "2.1.0"
     },
+    "popper.js": "^1.15.0",
     "process-nextick-args": {
       "integrity": "sha1-o31zL0JxtKsa0HDTVQjoKQeI/6o=",
       "resolved": "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-2.0.0.tgz",
