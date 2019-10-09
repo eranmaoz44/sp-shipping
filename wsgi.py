@@ -6,6 +6,8 @@ from flask import Flask, Response, request
 from flask_cors import CORS
 
 from AwsConnector import AwsConnector
+from DBConnecter import DBConnecter
+from Shipping import Shipping
 
 application = Flask(__name__)
 cors = CORS(application, resources={r"/api/*": {"origins": "*"}})
@@ -19,24 +21,26 @@ def index():
 
 @application.route('/api/shipping', methods=['GET'])
 def get_shipping():
-    res = [
-        {
-            'id': '1234567891011123',
-            'orderNumber': '11111',
-            'orderImageUrl': "https://cdn.onlinewebfonts.com/svg/img_234957.png"
-        },
-        {
-            'id': 'abcdefghijklmnop',
-            'orderNumber': '22222',
-            'orderImageUrl': "https://cdn.onlinewebfonts.com/svg/img_234957.png"
-        }
-    ]
-    return Response(status=200, response=json.dumps(res))
+    # res = [
+    #     {
+    #         'id': '1234567891011123',
+    #         'orderNumber': '11111',
+    #         'orderImageAwsPath': "orderImages/default.png"
+    #     },
+    #     {
+    #         'id': 'abcdefghijklmnop',
+    #         'orderNumber': '22222',
+    #         'orderImageAwsPath': "orderImages/default.png"
+    #     }
+    # ]
+    res = Shipping.get_shippings()
+    return Response(status=200, response=json.dumps([x.to_json() for x in res]))
 
 
 @application.route('/api/shipping', methods=['POST'])
 def set_shipping():
-    print(request.get_json())
+    shipping = Shipping.fromJson(request.get_json())
+    shipping.insert_or_update()
     return Response(status=200)
 
 
@@ -60,3 +64,11 @@ def get_aws_presign_get():
 
 if __name__ == '__main__':
     application.run(host='0.0.0.0')
+    #DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar);")
+    # shipping = Shipping.fromJson({
+    #         'id': 'abcdefghijklmnop',
+    #          'orderNumber': '22222',
+    #          'orderImageAwsPath': "orderImages/default.png"
+    #      })
+    #shipping.insert_or_update()
+    # print(DBConnecter.execute_read_query("select * from shipping;"))

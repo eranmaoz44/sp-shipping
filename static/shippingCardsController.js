@@ -20,8 +20,10 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
         var cardToAdd = {
                 'id' : self.makeID(self.idLength),
                 'orderNumber' : '',
-                'orderImageUrl' : "https://cdn.onlinewebfonts.com/svg/img_234957.png"
+                'orderImageAwsPath' : "orderImages/default.png"
         }
+
+        self.updateCardTempOrderImageUrl(cardToAdd)
 
         self.updateShippingCard(cardToAdd)
 
@@ -30,6 +32,12 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
         )
 
 
+    }
+
+    self.updateCardsTempOrderImages = function(cards){
+        cards.forEach(function(card) {
+          self.updateCardTempOrderImageUrl(card)
+        });
     }
 
     self.getShippingCards = function(){
@@ -45,6 +53,7 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
         $http.get('/api/shipping', config).then(
             function (response) {
                 self.shippingCards = response.data
+                self.updateCardsTempOrderImages(self.shippingCards)
             }, function (error) {
                 $scope.ResponseDetails = "Data: " + error.data +
                     "<hr />status: " + error.status +
@@ -86,23 +95,30 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
         if(file == null){
             console.log('File not selected, exiting upload to aws function')
             return
-        }
-        awsFileService.postFile(file).then(function(value){
-            awsFileService.getPresignedFileUrl(file.name).then(function(value){
-                var currentCard = self.shippingCards[self.findIndex(shippingID)]
-                $scope.$apply(function () {
-                    currentCard.orderImageUrl = value;
-                });
-            }).catch(
-                (reason) => {
-                    console.log(`Failed to get file url because: {reason}`)
-                }
-            )
+         }
+        var destination_file_name = `orderImages/${shippingID}`
+        awsFileService.postFile(file, destination_file_name).then(function(value){
+            var currentCard = self.shippingCards[self.findIndex(shippingID)]
+            currentCard.orderImageAwsPath = destination_file_name
+            self.updateShippingCard(currentCard)
+            self.updateCardTempOrderImageUrl(currentCard)
         }).catch(
         // Log the rejection reason
        (reason) => {
             console.log(`Failed to upload file to aws because: ${reason}`);
         })
+    }
+
+    self.updateCardTempOrderImageUrl = function(card){
+        awsFileService.getPresignedFileUrl(card.orderImageAwsPath).then(function(value){
+            $scope.$apply(function () {
+                card['tempOrderImageUrl'] = value
+             });
+            }).catch(
+                (reason) => {
+                    console.log(`Failed to get file url because: ${reason}`)
+                }
+        )
     }
 
     function DialogController($scope, $mdDialog, shippingID) {
@@ -119,12 +135,22 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
           $mdDialog.hide(answer);
         };
 
-        dialogController.setOrderImageUrl = function(){
+        dialogController.setOrderImageAwsPath = function(){
             var currentCard = self.shippingCards[self.findIndex(shippingID)]
-            $scope.orderImageUrl = currentCard.orderImageUrl
+//            self.updateCardTempOrderImageUrl(currentCard)
+//            $scope.orderImageTempUrl = currentCard.tempOrderImageUrl
+            awsFileService.getPresignedFileUrl(currentCard.orderImageAwsPath).then(function(value){
+            $scope.$apply(function () {
+                $scope.orderImageTempUrl = value
+             });
+            }).catch(
+                (reason) => {
+                    console.log(`Failed to get file url because: ${reason}`)
+                }
+            )
         }
 
-        dialogController.setOrderImageUrl()
+        dialogController.setOrderImageAwsPath()
 
     }
 
