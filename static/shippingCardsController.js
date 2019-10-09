@@ -142,6 +142,7 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
             awsFileService.getPresignedFileUrl(currentCard.orderImageAwsPath).then(function(value){
             $scope.$apply(function () {
                 $scope.orderImageTempUrl = value
+                currentCard.orderImageTempUrl = value
              });
             }).catch(
                 (reason) => {
