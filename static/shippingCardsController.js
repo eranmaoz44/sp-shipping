@@ -91,6 +91,34 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
            );
     };
 
+    self.deleteShippingCard = function(card){
+
+        var config = {
+            headers : {
+                    'Content-Type': 'application/json;charset=utf-8;'
+            },
+            params : {
+                shippingCard: card
+            }
+        }
+
+
+        $http.delete('/api/shipping', config)
+            .then(
+                function (response) {
+                    $scope.PostDataResponse = response.data;
+                    index_to_delete = self.findIndex(card.id)
+                    self.shippingCards.splice(index_to_delete, 1)
+                 },
+                function (error) {
+                    $scope.ResponseDetails = "Data: " + error.data +
+                        "<hr />status: " + error.status +
+                        "<hr />headers: " + error.headers +
+                        "<hr />config: " + error.config;
+                 }
+           );
+    };
+
     self.uploadFileToAws = function(shippingID, file){
         if(file == null){
             console.log('File not selected, exiting upload to aws function')

@@ -103,10 +103,13 @@
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-sm btn-outline-secondary"
                                             ngf-select="scc.uploadFileToAws(card.id,$file)"
-                                            accept="image/*" ngf-max-size="10MB" class="orderImage">שנה תמונה
+                                            accept="image/*" ngf-max-size="10MB" class="orderImage">בחר תמונה
                                     </button>
                                     <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal"
-                                            data-target="#exampleModalCenter">עוד פרטים
+                                            data-target="#exampleModalCenter">הרחב
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            ng-click="scc.deleteShippingCard(card)">מחק
                                     </button>
                                 </div>
                                 <small class="text-muted">9 mins</small>
@@ -136,7 +139,8 @@
             </div>
         </div>
         <div class="fixed-bottom text-center">
-            <img src="/static/open-iconic/svg/plus.svg" alt="icon name" class="plusIcon btn btn-outline-primary btn-rounded waves-effect">
+            <img src="/static/open-iconic/svg/plus.svg"
+                 alt="icon name" class="plusIcon btn btn-outline-primary btn-rounded waves-effect" ng-click="scc.addShippingCard()">
 <!--            <i class="material-icons" style="font-size: 128px" ng-click="scc.addShippingCard()">-->
 <!--                add_circle-->
 <!--            </i>-->

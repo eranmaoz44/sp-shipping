@@ -44,6 +44,13 @@ def set_shipping():
     return Response(status=200)
 
 
+@application.route('/api/shipping', methods=['DELETE'])
+def delete_shipping():
+    shipping = Shipping.fromJsonString(request.args.get('shippingCard'))
+    shipping.delete()
+    return Response(status=200)
+
+
 @application.route('/api/aws/presign_post', methods=['GET'])
 def get_aws_presign_post():
     file_name = request.args.get('file_name')

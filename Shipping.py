@@ -1,3 +1,5 @@
+import json
+
 from DBConnecter import DBConnecter
 
 
@@ -18,6 +20,10 @@ class Shipping(object):
         """creat `cls` from lat,long in degrees """
         return cls(shipping_tuple[0], shipping_tuple[1], shipping_tuple[2])
 
+    @classmethod
+    def fromJsonString(cls, shipping_json_str):
+        return Shipping.fromJson(json.loads(shipping_json_str))
+
     def to_json(self):
         return {
             "id": self.id,
@@ -35,6 +41,10 @@ class Shipping(object):
             query_to_execute = "UPDATE shipping SET id = %s, order_number = %s, order_image_aws_path = %s WHERE id=%s";
             shipping_params = shipping_params + (self.id,)
         DBConnecter.execute_write_query(query_to_execute, shipping_params)
+
+    def delete(self):
+        delete_query = "DELETE FROM shipping WHERE id = %s;"
+        DBConnecter.execute_write_query(delete_query, (self.id,))
 
 
     @staticmethod
