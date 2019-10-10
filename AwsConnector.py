@@ -111,5 +111,4 @@ class AwsConnector(object):
             return None
 
         # The response contains the presigned URL
-        print(response)
         return response
