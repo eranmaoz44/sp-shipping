@@ -6,6 +6,8 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
 
     self.shippingCards = []
 
+    self.defaultImageAwsPath = "orderImages/default.png"
+
     self.findIndex = function(cards, card_to_find){
        var res = -1
        cards.forEach(function (card, index) {
@@ -20,7 +22,7 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
         var cardToAdd = {
                 'id' : self.makeID(self.idLength),
                 'orderNumber' : '',
-                'orderImageAwsPath' : "orderImages/default.png"
+                'orderImageAwsPath' : self.defaultImageAwsPath
         }
 
         self.updateCardTempOrderImageUrl(cardToAdd)
@@ -142,6 +144,10 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
                 function (response) {
                     $scope.PostDataResponse = response.data;
                     self.deleteFromArray(self.shippingCards, card)
+                    if(card.orderImageAwsPath != self.defaultImageAwsPath){
+                        awsFileService.deleteFile(card.orderImageAwsPath)
+                    }
+
                  },
                 function (error) {
                     $scope.ResponseDetails = "Data: " + error.data +
@@ -159,9 +165,13 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
          }
         var destination_file_name = `orderImages/${card.id}/${file.name}`
         awsFileService.postFile(file, destination_file_name).then(function(value){
+            var oldOrderImageAwsPath = card.orderImageAwsPath
             card.orderImageAwsPath = destination_file_name
             self.updateShippingCard(card)
             self.updateCardTempOrderImageUrl(card)
+            if(oldOrderImageAwsPath != card.orderImageAwsPath && oldOrderImageAwsPath != self.defaultImageAwsPath){
+                awsFileService.deleteFile(oldOrderImageAwsPath)
+            }
         }).catch(
         // Log the rejection reason
        (reason) => {

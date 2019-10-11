@@ -31,6 +31,17 @@ class AwsConnector(object):
         })
 
     @staticmethod
+    def delete_file(file_name):
+        s3_bucket = os.environ.get('S3_BUCKET')
+
+        s3_client = boto3.resource("s3").Bucket(s3_bucket)
+
+        response = s3_client.Object(file_name).delete()
+
+        return response['ResponseMetadata']
+
+
+    @staticmethod
     def upload_file(filename, filedata):
         s3_bucket = os.environ.get('S3_BUCKET')
 

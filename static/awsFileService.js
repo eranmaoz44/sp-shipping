@@ -31,7 +31,7 @@ function awsFileService($http) {
                     );
                 },
                 function (error) {
-                    reject(`Failed to create presign post of file $destination_file_name`)
+                    reject(`Failed to create presign post of file ${destination_file_name} because of ${error.status}`)
                 }
            );
     }
@@ -65,8 +65,8 @@ function awsFileService($http) {
                     console.log(`successfully posted file ${destination_file_name} to aws`)
                     resolve(true)
                 },
-                function (data, status, header, config) {
-                    reject(`Failed to post request containing presign of file ${destination_file_name} to aws`)
+                function (error) {
+                    reject(`Failed to post request containing presign of file ${destination_file_name} to aws because of ${error.status}`)
                 }
            );
     }
@@ -90,7 +90,34 @@ function awsFileService($http) {
                     resolve(response.data)
                 },
                 function (error) {
-                    reject(`Failed to create presigned url of file ${file_name}`)
+                    reject(`Failed to create presigned url of file ${file_name} because of ${error.status}`)
+                }
+           );
+    }
+
+    self.getPresignedFileUrlPromise = function(file_name){
+        return new Promise(function(resolve, reject){
+            self.getPresignedFileUrl(file_name, resolve, reject)
+        })
+    }
+
+    self.deleteFile = function(file_name){
+        var config = {
+            headers : {
+                      'Content-Type': 'application/json;charset=utf-8;'
+            },
+            params : {
+                'file_name': file_name
+            }
+        }
+
+        $http.delete('/api/aws/delete', config)
+           .then(
+                function(response){
+                    console.log(`successfully deleted file ${file_name} from aws`)
+                },
+                function (error) {
+                    console.log(`Failed to deleteFile ${file_name} from aws because of ${error.status}`)
                 }
            );
     }
@@ -101,11 +128,8 @@ function awsFileService($http) {
                 self.postFile(file, file_name,resolve, reject)
             })
         },
-        getPresignedFileUrl: function(file_name){
-            return new Promise(function(resolve, reject){
-                self.getPresignedFileUrl(file_name, resolve, reject)
-            })
-        }
+        getPresignedFileUrl: self.getPresignedFileUrlPromise,
+        deleteFile: self.deleteFile
     }
 
 

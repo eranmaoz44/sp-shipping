@@ -68,6 +68,14 @@ def get_aws_presign_get():
 
     return Response(status=200, response=res)
 
+@application.route('/api/aws/delete', methods=['DELETE'])
+def aws_delete_file():
+    file_name = request.args['file_name']
+
+    res = AwsConnector.delete_file(file_name)
+
+    return Response(status=200, response=res)
+
 
 if __name__ == '__main__':
     application.run(host='0.0.0.0')
