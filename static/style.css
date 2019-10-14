@@ -42,4 +42,17 @@ footer p {
   padding: 16px;
   cursor: pointer;
   margin: 16px;
+  user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}
+
+.sp-ship-icon{
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border-color: white;
+    margin: 4px;
 }
