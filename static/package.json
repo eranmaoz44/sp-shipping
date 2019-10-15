@@ -143,6 +143,7 @@
       "resolved": "https://registry.npmjs.org/dashdash/-/dashdash-1.14.1.tgz",
       "version": "1.14.1"
     },
+    "dateformat": "^3.0.3",
     "delayed-stream": {
       "integrity": "sha1-3zrhmayt+31ECqrgsp4icrJOxhk=",
       "resolved": "https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz",

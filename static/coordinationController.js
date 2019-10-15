@@ -43,7 +43,7 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
         var nextAvailabilityIndex = self.availabilities.length
         nextAvailability = {
             id: commonUtilsService.makeID(self.idLength),
-            date: new Date(),
+            date: dateFormat(new Date(), self.dateFormat),
             from_hour: self.defaultHourValue,
             to_hour: self.defaultHourValue,
         }
@@ -56,6 +56,7 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
                 daysOfWeekHighlighted: "6,0",
                 autoclose: true,
                 todayHighlight: true,
+                format: self.dateFormat,
                 language: 'he'
             });
             dateElement.datepicker("setDate",nextAvailability.date);
@@ -64,7 +65,7 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
                 .on('changeDate', function(e) {
                     currentID = e.currentTarget.id.replace('datePicker', '')
                     currentAvailability = commonUtilsService.findByID(self.availabilities, currentID)
-                    currentAvailability.date = e.date
+                    currentAvailability.date = dateFormat(e.date, self.dateFormat),
                     self.updateAvailability(currentAvailability)
                 });
         }, 0);
