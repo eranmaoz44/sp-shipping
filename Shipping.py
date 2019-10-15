@@ -32,8 +32,7 @@ class Shipping(object):
         }
 
     def insert_or_update(self):
-        find_query = "SELECT * FROM shipping WHERE id = %s;"
-        exists = len(DBConnecter.execute_read_query(find_query, (self.id,))) > 0
+        exists = Shipping.get_shipping(self.id) is not None
         shipping_params = (self.id, self.order_number, self.order_image_aws_path)
         if not exists:
             query_to_execute = "INSERT INTO shipping (id, order_number, order_image_aws_path) VALUES (%s, %s, %s);"
@@ -54,5 +53,14 @@ class Shipping(object):
         shippings = [Shipping.fromTuple(x) for x in res]
 
         return shippings
+
+    @staticmethod
+    def get_shipping(shippingID):
+        query = "SELECT * FROM shipping WHERE id = %s;"
+        query_res = DBConnecter.execute_read_query(query, (shippingID,))
+        shipping = None
+        if len(query_res) > 0:
+            shipping = Shipping.fromTuple(query_res[0])
+        return shipping
 
 

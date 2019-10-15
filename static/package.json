@@ -80,6 +80,7 @@
       "version": "4.3.1"
     },
     "bootstrap": "^4.3.1",
+    "bootstrap-datepicker": "^1.9.0",
     "caseless": {
       "integrity": "sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=",
       "resolved": "https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz",

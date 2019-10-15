@@ -18,23 +18,23 @@ def index():
     print(os.getcwd())
     return flask.send_file('templates/index.html', mimetype='text.html')
 
+@application.route('/coordination')
+def render_coordination_template():
+    print(os.getcwd())
+    return flask.send_file('templates/coordination.html', mimetype='text.html')
+
 
 @application.route('/api/shipping', methods=['GET'])
 def get_shipping():
-    # res = [
-    #     {
-    #         'id': '1234567891011123',
-    #         'orderNumber': '11111',
-    #         'orderImageAwsPath': "orderImages/default.png"
-    #     },
-    #     {
-    #         'id': 'abcdefghijklmnop',
-    #         'orderNumber': '22222',
-    #         'orderImageAwsPath': "orderImages/default.png"
-    #     }
-    # ]
-    res = Shipping.get_shippings()
-    return Response(status=200, response=json.dumps([x.to_json() for x in res]))
+    shippingID = request.args.get('shippingID')
+    if shippingID is None:
+        all_shippings = Shipping.get_shippings()
+        res = json.dumps([x.to_json() for x in all_shippings])
+    else:
+        shipping = Shipping.get_shipping(shippingID)
+        res = json.dumps(shipping.to_json())
+    print(res)
+    return Response(status=200, response=res)
 
 
 @application.route('/api/shipping', methods=['POST'])

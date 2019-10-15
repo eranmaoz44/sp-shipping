@@ -1,4 +1,4 @@
-function shippingCardsController($http, $scope, awsFileService,$mdDialog){
+function shippingCardsController($http, $scope, $location,$window, awsFileService,shippingCardService, commonUtilsService){
 
     var self = this
 
@@ -8,24 +8,15 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
 
     self.defaultImageAwsPath = "orderImages/default.png"
 
-    self.findIndex = function(cards, card_to_find){
-       var res = -1
-       cards.forEach(function (card, index) {
-            if(card.id == card_to_find.id)
-            res = index
-       });
-
-       return res
-    }
 
     self.addShippingCard = function(){
         var cardToAdd = {
-                'id' : self.makeID(self.idLength),
+                'id' : commonUtilsService.makeID(self.idLength),
                 'orderNumber' : '',
                 'orderImageAwsPath' : self.defaultImageAwsPath
         }
 
-        self.updateCardTempOrderImageUrl(cardToAdd)
+        shippingCardService.updateCardTempOrderImageUrl($scope, cardToAdd)
 
         self.updateShippingCard(cardToAdd)
 
@@ -38,7 +29,7 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
 
     self.updateCardsTempOrderImages = function(cards){
         cards.forEach(function(card) {
-          self.updateCardTempOrderImageUrl(card)
+          shippingCardService.updateCardTempOrderImageUrl($scope, card)
         });
     }
 
@@ -58,7 +49,7 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
                 var newAndOldCards = response.data
                 var cardsToUpdateTempImageUrl = []
                 newAndOldCards.forEach(function(newOrOldCard){
-                    var indexInOldCards = self.findIndex(oldCards, newOrOldCard)
+                    var indexInOldCards = commonUtilsService.findIndex(oldCards, newOrOldCard)
                     if(indexInOldCards > -1){
                        var oldCard = oldCards[indexInOldCards]
                        oldCard.id = newOrOldCard.id
@@ -75,9 +66,9 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
                 });
 
                 oldCards.forEach(function(card){
-                    var indexInNewAndOld = self.findIndex(newAndOldCards, card)
+                    var indexInNewAndOld = commonUtilsService.findIndex(newAndOldCards, card)
                     if (indexInNewAndOld == -1){
-                        self.deleteFromArray(oldCards, card)
+                        commonUtilsService.deleteFromArray(oldCards, card)
                     }
                 });
 
@@ -122,11 +113,6 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
            );
     };
 
-    self.deleteFromArray = function(cards, card_to_delete){
-        index_to_delete = self.findIndex(cards, card_to_delete)
-        cards.splice(index_to_delete, 1)
-    }
-
     self.deleteShippingCard = function(card){
 
         var config = {
@@ -143,7 +129,7 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
             .then(
                 function (response) {
                     $scope.PostDataResponse = response.data;
-                    self.deleteFromArray(self.shippingCards, card)
+                    commonUtilsService.deleteFromArray(self.shippingCards, card)
                     if(card.orderImageAwsPath != self.defaultImageAwsPath){
                         awsFileService.deleteFile(card.orderImageAwsPath)
                     }
@@ -168,7 +154,7 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
             var oldOrderImageAwsPath = card.orderImageAwsPath
             card.orderImageAwsPath = destination_file_name
             self.updateShippingCard(card)
-            self.updateCardTempOrderImageUrl(card)
+            shippingCardService.updateCardTempOrderImageUrl($scope, card)
             if(oldOrderImageAwsPath != card.orderImageAwsPath && oldOrderImageAwsPath != self.defaultImageAwsPath){
                 awsFileService.deleteFile(oldOrderImageAwsPath)
             }
@@ -179,27 +165,14 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
         })
     }
 
-    self.updateCardTempOrderImageUrl = function(card){
-        awsFileService.getPresignedFileUrl(card.orderImageAwsPath).then(function(value){
-            $scope.$apply(function () {
-                card['tempOrderImageUrl'] = value
-             });
-            }).catch(
-                (reason) => {
-                    console.log(`Failed to get file url because: ${reason}`)
-                }
-        )
+    self.getCoordinationLink = function(shippingID){
+        var baseUrl = $location.$$absUrl.replace($location.$$url, '/')
+        return baseUrl + 'coordination?shippingID=' + shippingID
     }
 
-    self.makeID = function makeID(length) {
-       var result           = '';
-       var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-       var charactersLength = characters.length;
-       for ( var i = 0; i < length; i++ ) {
-          result += characters.charAt(Math.floor(Math.random() * charactersLength));
-       }
-       return result;
-     }
+    self.navigateToCoordination = function(shippingID){
+        $window.location.href = self.getCoordinationLink(shippingID);
+    }
 
      self.getShippingCards()
              setInterval(function(){
@@ -209,7 +182,4 @@ function shippingCardsController($http, $scope, awsFileService,$mdDialog){
 
 angular
     .module('shippingApp')
-    .controller('shippingCardsController', shippingCardsController, ['$http', '$scope', 'awsFileService', '$mdDialog'])
-    .config(function($mdThemingProvider) {
-      $mdThemingProvider.theme('light-blue').backgroundPalette('light-blue');
-    });
+    .controller('shippingCardsController', shippingCardsController, ['$http', '$scope', '$location','$window', 'awsFileService', 'shippingCardService', 'commonUtilsService'])

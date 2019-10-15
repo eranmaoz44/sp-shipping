@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../../../favicon.ico">
+
+    <title>תיאום משלוחים סליפ דיפו</title>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
+    <script src="\static\node_modules\angular\angular.min.js"></script>
+    <script src="\static\node_modules\ng-file-upload\dist\ng-file-upload-shim.js"></script>
+    <!-- Bootstrap core CSS -->
+    <link href="\static\node_modules\bootstrap\dist\css\bootstrap.min.css" rel="stylesheet">
+    <link href="\static\open-iconic\font\css\open-iconic-bootstrap.css" rel="stylesheet">
+    <link href="\static\node_modules\bootstrap-datepicker\dist\css\bootstrap-datepicker.standalone.css"
+          rel="stylesheet">
+
+
+    <!-- Custom styles for this template -->
+    <link href="\static\style.css" rel="stylesheet">
+
+
+    <script src="\static\node_modules\ng-file-upload\dist\ng-file-upload.js"></script>
+    <script src="\static\node_modules\ng-file-upload\dist\ng-file-upload-shim.min.js"></script>
+    <script src="\static\node_modules\ng-file-upload\dist\ng-file-upload.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script>
+        window.jQuery || document.write('<script src="\static\node_modules\jquery-slim\dist\jquery-slim.min.js"><\/script>')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+    <script src="\static\node_modules\bootstrap-datepicker\dist\js\bootstrap-datepicker.min.js"></script>
+    <script src="\static\node_modules\bootstrap-datepicker\js\locales\bootstrap-datepicker.he.js"
+            charset="UTF-8"></script>
+
+    <script src="\static\shippingApp.js"></script>
+    <script src="\static\awsFileService.js"></script>
+    <script src="\static\shippingCardService.js"></script>
+    <script src="\static\mobileHoverFixDirective.js"></script>
+    <script src="\static\commonUtilsService.js"></script>
+    <script src="\static\coordinationController.js"></script>
+
+
+</head>
+
+<body ng-app="shippingApp">
+
+<header>
+    <div class="collapse bg-dark" id="navbarHeader">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8 col-md-7 py-4">
+                    <h4 class="text-white">תיאום הובלות</h4>
+                    <p class="text-muted">תוכנה זו נועדה לשם סידור תהליך תיאום ההובלות, גם מבחינת יצירת סדר וגם מבחינת
+                        מקבול תיאום ההובלה הן מול הלקוח והן מול המוביל תוך חסכון ביצירת קשר טלפוני</p>
+                </div>
+                <div class="col-sm-4 offset-md-1 py-4">
+                    <h4 class="text-white">צור קשר</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">ערן מעוז</a></li>
+                        <li><a href="#" class="text-white">e.magnex@gmail.com</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container d-flex justify-content-between">
+            <a href="#" class="navbar-brand d-flex align-items-center">
+                <img src="/static/open-iconic/svg/location.svg" class="sp-ship-icon">
+                <strong>סליפ דיפו</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader"
+                    aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<main role="main">
+
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">תיאום הובלות סליפ דיפו</h1>
+            <p class="lead text-muted">סדר, מקבול, חסכון</p>
+        </div>
+    </section>
+
+    <div ng-controller="coordinationController as cc">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col font-weight-bold d-inline p-2 bg-primary text-white coordinatorOrderText text-right">
+                    מס הזמנה: {{cc.card.orderNumber}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col shadow-lg p-3 mb-5 bg-white rounded">
+                    <img ng-src="{{cc.card.tempOrderImageUrl}}"
+                         class="img-fluid coordinator-image border border-primary rounded" alt="Responsive image">
+                </div>
+            </div>
+            <div class="input-group row flex flex-row input-group-lg availabilities"
+                 ng-repeat="availability in cc.availabilities">
+                <div class="col-sm-4 d-flex flex-row">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text xlargeFont">תאריך</span>
+                    </div>
+                    <input data-date-format="dd/mm/yyyy DD" class="form-control xlargeFont"
+                           id="datePicker{{availability.id}}"
+                           ng-model="availability.date" ng-change="cc.updateAvailability(availability)">
+
+                </div>
+                <div class="col-sm-3 d-flex flex-row">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text xlargeFont">מ-</span>
+                    </div>
+                    <select class="custom-select xlargeFont" ng-model="availability.from_hour"
+                            ng-change="cc.updateAvailability(availability)">
+                        <option selected>{{cc.defaultHourValue}}</option>
+                        <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-3 d-flex flex-row">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text xlargeFont">עד</span>
+                    </div>
+                    <select class="custom-select xlargeFont" ng-model="availability.to_hour"
+                            ng-change="cc.updateAvailability(availability)">
+                        <option selected>{{cc.defaultHourValue}}</option>
+                        <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
+                        </option>
+                    </select>
+                </div>
+
+                <img src="/static/open-iconic/svg/trash.svg"
+                     alt="icon name"
+                     class="deleteIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
+                     ng-click="cc.removeAvailability(availability)" mobile-hover-fix-directive>
+
+            </div>
+            <img src="/static/open-iconic/svg/plus.svg"
+                 alt="icon name" class="plusIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
+                 ng-click="cc.addAvailability()" mobile-hover-fix-directive>
+        </div>
+
+    </div>
+
+
+</main>
+
+<footer class="text-muted">
+    <div class="container">
+
+        <p class="float-right">
+            <a href="#">שלום</a>
+        </p>
+        <p>sp-shipping is &copy; Eran Maoz, Use it to your advantage!</p>
+        <p>תוכנה זו נודעה לייצר המלצות בלבד ואינה מחייבת</p>
+    </div>
+</footer>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+
+
+<script src="\static\node_modules\popper.js\dist\popper.min.js"></script>
+<script src="\static\node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
+<script src="\static\node_modules\holderjs\holder.min.js"></script>
+</body>
+</html>
+
+

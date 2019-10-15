@@ -2,7 +2,13 @@
 
 	'use strict';
 
-	angular.module('shippingApp', ['ngFileUpload', 'ngMaterial', 'ngMessages'])
+	angular.module('shippingApp', ['ngFileUpload'])
+		.config(['$locationProvider', function($locationProvider){
+            $locationProvider.html5Mode({
+              enabled: true,
+              requireBase: false
+              })
+            }])
 
 
 })(window);

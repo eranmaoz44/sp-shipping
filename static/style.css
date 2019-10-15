@@ -1,3 +1,7 @@
+html{
+    direction: rtl;
+}
+
 :root {
   --jumbotron-padding-y: 3rem;
 }
@@ -42,11 +46,26 @@ footer p {
   padding: 16px;
   cursor: pointer;
   margin: 16px;
-  user-select: none;
-    -moz-user-select: none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -o-user-select: none;
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  user-select: none;          /* Likely future */
+  -webkit-tap-highlight-color: transparent;
+
+}
+
+.deleteIcon {
+  width: 40px;
+  height: 40px;
+  padding: 4px;
+  cursor: pointer;
+  margin: 0px;
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  user-select: none;          /* Likely future */
+  -webkit-tap-highlight-color: transparent;
+
 }
 
 .sp-ship-icon{
@@ -56,3 +75,35 @@ footer p {
     border-color: white;
     margin: 4px;
 }
+
+.coordinator-image{
+    height: 300px;
+}
+
+.coordinatorOrderText{
+    font-size: x-large;
+}
+
+.datepicker {
+    font-size: 0.875em;
+}
+/* solution 2: the original datepicker use 20px so replace with the following:*/
+
+.datepicker td, .datepicker th {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.mobileHoverFix:hover,
+.mobileHoverFix.hover{
+    background-position: 0 0px;
+}
+
+.availabilities{
+    margin-bottom: 10px;
+}
+
+.xlargeFont{
+    font-size: x-large;
+}
+
