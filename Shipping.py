@@ -2,13 +2,11 @@ import json
 
 from DBConnecter import DBConnecter
 
-
 class Shipping(object):
     def __init__(self, id, order_number, order_image_aws_path):
         self.id = id
         self.order_number = order_number
         self.order_image_aws_path = order_image_aws_path
-
 
     @classmethod
     def fromJson(cls, shipping_json):
@@ -32,7 +30,7 @@ class Shipping(object):
         }
 
     def insert_or_update(self):
-        exists = Shipping.get_shipping(self.id) is not None
+        exists = self.get_shipping() is not None
         shipping_params = (self.id, self.order_number, self.order_image_aws_path)
         if not exists:
             query_to_execute = "INSERT INTO shipping (id, order_number, order_image_aws_path) VALUES (%s, %s, %s);"
@@ -45,7 +43,6 @@ class Shipping(object):
         delete_query = "DELETE FROM shipping WHERE id = %s;"
         DBConnecter.execute_write_query(delete_query, (self.id,))
 
-
     @staticmethod
     def get_shippings():
         query = "SELECT * FROM shipping;"
@@ -54,13 +51,15 @@ class Shipping(object):
 
         return shippings
 
+    def get_shipping(self):
+        return Shipping.get_shipping_with_id(self.id)
+
     @staticmethod
-    def get_shipping(shippingID):
+    def get_shipping_with_id(shippingID):
         query = "SELECT * FROM shipping WHERE id = %s;"
         query_res = DBConnecter.execute_read_query(query, (shippingID,))
         shipping = None
         if len(query_res) > 0:
             shipping = Shipping.fromTuple(query_res[0])
         return shipping
-
 

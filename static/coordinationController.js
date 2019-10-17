@@ -43,6 +43,7 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
         var nextAvailabilityIndex = self.availabilities.length
         nextAvailability = {
             id: commonUtilsService.makeID(self.idLength),
+            shipping_id: self.getShippingID(),
             date: dateFormat(new Date(), self.dateFormat),
             from_hour: self.defaultHourValue,
             to_hour: self.defaultHourValue,
