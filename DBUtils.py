@@ -19,7 +19,9 @@ class DBUtils(object):
             set_clause = ', '.join(['{0} = %s'.format(arg_name) for arg_name in arg_names])
             where_clause = '{0} = %s'.format(arg_names[0])
             query_to_execute = "UPDATE {0} SET {1} WHERE {2};".format(table, set_clause, where_clause)
-            shipping_params = query_params + (arg_values[0],)
+            query_params = query_params + (arg_values[0],)
+        print(query_to_execute)
+        print(query_params)
         DBConnecter.execute_write_query(query_to_execute, query_params)
 
     @staticmethod
