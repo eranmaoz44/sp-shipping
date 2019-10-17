@@ -53,8 +53,8 @@ def delete_shipping():
     return Response(status=200)
 
 
-@application.route('/api/coordination', methods=['POST'])
-def set_coordination():
+@application.route('/api/availability', methods=['POST'])
+def set_availability():
     availability = Availability.fromJson(request.get_json())
     availability.insert_or_update()
     return Response(status=200)

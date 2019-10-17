@@ -1,39 +1,58 @@
-from DBConnecter import DBConnecter
+import json
+
+from DBUtils import DBUtils
 
 
 class Availability(object):
-    def __init__(self, id, date, from_hour, to_hour):
+    TABLE = "availabilities"
+
+    def __init__(self, id, shipping_id, date, from_hour, to_hour):
         self.id = id
+        self.shipping_id = shipping_id
         self.date = date
         self.from_hour = from_hour
         self.to_hour = to_hour
+        self.table = Availability.TABLE
 
     @classmethod
-    def from_json(cls, availability_json):
-        return cls(availability_json['id'], availability_json['date'], availability_json['from_hour'],
-                   availability_json['to_hour'])
+    def fromJson(cls, availability_json):
+        """creat `cls` from lat,long in degrees """
+        return cls(availability_json['id'], availability_json['shipping_id'], availability_json['date'],
+                   availability_json['from_hour'], availability_json['to_hour'])
 
     @classmethod
-    def from_tuple(cls, availability_tuple):
-        return cls(availability_tuple[0], availability_tuple[1], availability_tuple[2], availability_tuple[3])
+    def fromTuple(cls, availability_tuple):
+        """creat `cls` from lat,long in degrees """
+        return cls(availability_tuple[0], availability_tuple[1], availability_tuple[2], availability_tuple[3],
+                   availability_tuple[4])
 
+    @classmethod
+    def fromJsonString(cls, availability_json_str):
+        return Availability.fromJson(json.loads(availability_json_str))
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "shipping_id": self.shipping_id,
+            "date": self.date,
+            "from_hour": self.from_hour,
+            "to_hour": self.to_hour
+        }
 
     def insert_or_update(self):
-        exists = self.get_availability() is not None
-        if exists:
-            query = ""
-        else:
-            query = ""
-        params = ""
-        DBConnecter.execute_write_query(query, params)
+        DBUtils.insert_or_update_row(self.table, ['id', 'shipping_id', 'date', 'from_hour', 'to_hour'],
+                                     [self.id, self.shipping_id, self.date, self.from_hour, self.to_hour])
 
-    def get_availability(self):
-        query = ""
-        params = ""
-        query_res = DBConnecter.execute_read_query(query, params)
-        res = None
-        if len(query_res) > 0:
-            res = Availability.fromTuple(query_res[0])
-        return res
+    def delete(self):
+        DBUtils.delete_row(self.table, 'id', self.id)
 
+    @staticmethod
+    def get_shippings():
+        return DBUtils.get_all_elements(Availability.TABLE, Availability)
 
+    def get_shipping(self):
+        return DBUtils.get_element(self.table, 'id', self.id, Availability)
+
+    @staticmethod
+    def get_shipping_with_id(availability_id):
+        return DBUtils.get_element(Availability.TABLE, 'id', availability_id, Availability)

@@ -50,6 +50,8 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
         }
         self.availabilities.push(nextAvailability)
 
+        self.updateAvailability(nextAvailability)
+
         $timeout(function(){
             var dateElement = $(`#datePicker${nextAvailability.id}`)
             dateElement.datepicker({
@@ -82,8 +84,29 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
     }
 
     self.updateAvailability = function(availability){
-        console.log($scope.card)
-        console.log(availability)
+
+        var config = {
+            headers : {
+                    'Content-Type': 'application/json;charset=utf-8;'
+            },
+            params : {
+            }
+        }
+
+        data = availability
+
+        $http.post('/api/availability', data, config)
+            .then(
+                function (response) {
+                    $scope.PostDataResponse = response.data;
+                 },
+                function (error) {
+                    $scope.ResponseDetails = "Data: " + error.data +
+                        "<hr />status: " + error.status +
+                        "<hr />headers: " + error.headers +
+                        "<hr />config: " + error.config;
+                 }
+           );
     }
 
     self.getShippingCard(self.getShippingID())
