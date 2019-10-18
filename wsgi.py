@@ -30,10 +30,10 @@ def render_coordination_template():
 def get_shipping():
     shippingID = request.args.get('shippingID')
     if shippingID is None:
-        all_shippings = Shipping.get_shippings()
+        all_shippings = Shipping.get_all_elements()
         res = json.dumps([x.to_dict() for x in all_shippings])
     else:
-        shipping = Shipping.get_shipping_with_id(shippingID)
+        shipping = Shipping.get_element_with_id(shippingID)
         res = shipping.to_json_str()
     print(res)
     return Response(status=200, response=res)

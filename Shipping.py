@@ -28,9 +28,9 @@ class Shipping(DBElementWithID):
         return cls(tuple_values[0], tuple_values[1], tuple_values[2])
 
     @staticmethod
-    def get_shippings():
+    def get_all_elements():
         return DBElementWithID.get_all_elements(Shipping.TABLE, Shipping)
 
     @staticmethod
-    def get_shipping_with_id(shipping_id):
-        return DBElementWithID.get_element_with_id(Shipping.TABLE, Shipping.COLUMN_NAMES[0], shipping_id, Shipping)
+    def get_element_with_id(id_value):
+        return DBElementWithID.get_element_with_id(Shipping.TABLE, Shipping.COLUMN_NAMES[0], id_value, Shipping)

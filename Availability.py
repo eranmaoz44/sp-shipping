@@ -1,58 +1,36 @@
 import json
 
-from DBUtils import DBUtils
+from DBElementWithID import DBElementWithID
 
 
-class Availability(object):
+class Availability(DBElementWithID):
     TABLE = "availabilities"
+    COLUMN_NAMES = ['id', 'shipping_id', 'date', 'from_hour', 'to_hour']
 
     def __init__(self, id, shipping_id, date, from_hour, to_hour):
-        self.id = id
-        self.shipping_id = shipping_id
-        self.date = date
-        self.from_hour = from_hour
-        self.to_hour = to_hour
-        self.table = Availability.TABLE
+        tuple_key_value_list = [(Availability.COLUMN_NAMES[0], id), (Availability.COLUMN_NAMES[1], shipping_id),
+                                (Availability.COLUMN_NAMES[2], date), (Availability.COLUMN_NAMES[3], from_hour),
+                                (Availability.COLUMN_NAMES[4], to_hour)]
+
+        super(Availability, self).__init__(Availability.COLUMN_NAMES.TABLE, tuple_key_value_list)
 
     @classmethod
-    def fromJson(cls, availability_json):
-        """creat `cls` from lat,long in degrees """
-        return cls(availability_json['id'], availability_json['shipping_id'], availability_json['date'],
-                   availability_json['from_hour'], availability_json['to_hour'])
+    def from_dict(cls, dict_obj):
+        values = list(dict_obj.values())
+        return cls(values[0], values[1], values[2], values[3], values[4])
 
     @classmethod
-    def fromTuple(cls, availability_tuple):
-        """creat `cls` from lat,long in degrees """
-        return cls(availability_tuple[0], availability_tuple[1], availability_tuple[2], availability_tuple[3],
-                   availability_tuple[4])
+    def from_json_str(cls, json_str):
+        return cls.from_dict(json.loads(json_str))
 
     @classmethod
-    def fromJsonString(cls, availability_json_str):
-        return Availability.fromJson(json.loads(availability_json_str))
-
-    def to_json(self):
-        return {
-            "id": self.id,
-            "shipping_id": self.shipping_id,
-            "date": self.date,
-            "from_hour": self.from_hour,
-            "to_hour": self.to_hour
-        }
-
-    def insert_or_update(self):
-        DBUtils.insert_or_update_row(self.table, ['id', 'shipping_id', 'date', 'from_hour', 'to_hour'],
-                                     [self.id, self.shipping_id, self.date, self.from_hour, self.to_hour])
-
-    def delete(self):
-        DBUtils.delete_row(self.table, 'id', self.id)
+    def from_tuple(cls, tuple_values):
+        return cls(tuple_values[0], tuple_values[1], tuple_values[2])
 
     @staticmethod
-    def get_availabilities():
-        return DBUtils.get_all_elements(Availability.TABLE, Availability)
-
-    def get_availability(self):
-        return DBUtils.get_element(self.table, 'id', self.id, Availability)
+    def get_all_elements():
+        return DBElementWithID.get_all_elements(Availability.TABLE, Availability)
 
     @staticmethod
-    def get_availability_with_id(availability_id):
-        return DBUtils.get_element(Availability.TABLE, 'id', availability_id, Availability)
+    def get_element_with_id(id_value):
+        return DBElementWithID.get_element_with_id(Availability.TABLE, Availability.COLUMN_NAMES[0], id_value, Availability)
