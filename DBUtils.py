@@ -33,7 +33,7 @@ class DBUtils(object):
     def get_all_elements(table, element_class):
         query = "SELECT * FROM {0};".format(table)
         res = DBConnecter.execute_read_query(query)
-        elements = [element_class.fromTuple(x) for x in res]
+        elements = [element_class.from_tuple(x) for x in res]
 
         return elements
 
@@ -49,4 +49,4 @@ class DBUtils(object):
     @staticmethod
     def get_element(table, arg_id_name, arg_id_value, element_class):
         element_row = DBUtils.get_element_row(table, arg_id_name, arg_id_value)
-        return element_class.fromTuple(element_row) if element_row is not None else element_row
+        return element_class.from_tuple(element_row) if element_row is not None else element_row

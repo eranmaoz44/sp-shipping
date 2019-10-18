@@ -97,6 +97,8 @@ class AwsConnector(object):
     @staticmethod
     def create_presigned_url_file_download(file_name):
         s3_bucket = os.environ.get('S3_BUCKET')
+        print(s3_bucket)
+        print(file_name)
         return AwsConnector.create_presigned_url(s3_bucket, file_name)
 
 

@@ -47,12 +47,12 @@ class Availability(object):
         DBUtils.delete_row(self.table, 'id', self.id)
 
     @staticmethod
-    def get_shippings():
+    def get_availabilities():
         return DBUtils.get_all_elements(Availability.TABLE, Availability)
 
-    def get_shipping(self):
+    def get_availability(self):
         return DBUtils.get_element(self.table, 'id', self.id, Availability)
 
     @staticmethod
-    def get_shipping_with_id(availability_id):
+    def get_availability_with_id(availability_id):
         return DBUtils.get_element(Availability.TABLE, 'id', availability_id, Availability)

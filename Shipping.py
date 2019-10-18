@@ -1,52 +1,36 @@
 import json
 
-from DBUtils import DBUtils
+from DBElementWithID import DBElementWithID
 
 
-class Shipping(object):
+class Shipping(DBElementWithID):
     TABLE = "shipping"
+    COLUMN_NAMES = ['id', 'order_number', 'order_image_aws_path']
 
     def __init__(self, id, order_number, order_image_aws_path):
-        self.id = id
-        self.order_number = order_number
-        self.order_image_aws_path = order_image_aws_path
-        self.table = Shipping.TABLE
+        tuple_key_value_list = [(Shipping.COLUMN_NAMES[0], id), (Shipping.COLUMN_NAMES[1], order_number),
+                                (Shipping.COLUMN_NAMES[2], order_image_aws_path)]
+
+        super(Shipping, self).__init__(Shipping.TABLE, tuple_key_value_list)
 
     @classmethod
-    def fromJson(cls, shipping_json):
-        """creat `cls` from lat,long in degrees """
-        return cls(shipping_json['id'], shipping_json['orderNumber'], shipping_json['orderImageAwsPath'])
+    def from_dict(cls, dict_obj):
+        values = list(dict_obj.values())
+        return cls(values[0], values[1], values[2])
 
     @classmethod
-    def fromTuple(cls, shipping_tuple):
-        """creat `cls` from lat,long in degrees """
-        return cls(shipping_tuple[0], shipping_tuple[1], shipping_tuple[2])
+    def from_json_str(cls, json_str):
+        return cls.from_dict(json.loads(json_str))
+
 
     @classmethod
-    def fromJsonString(cls, shipping_json_str):
-        return Shipping.fromJson(json.loads(shipping_json_str))
-
-    def to_json(self):
-        return {
-            "id": self.id,
-            "orderNumber": self.order_number,
-            "orderImageAwsPath": self.order_image_aws_path
-        }
-
-    def insert_or_update(self):
-        DBUtils.insert_or_update_row(self.table, ['id', 'order_number', 'order_image_aws_path'],
-                                     [self.id, self.order_number, self.order_image_aws_path])
-
-    def delete(self):
-        DBUtils.delete_row(self.table, 'id', self.id)
+    def from_tuple(cls, tuple_values):
+        return cls(tuple_values[0], tuple_values[1], tuple_values[2])
 
     @staticmethod
     def get_shippings():
-        return DBUtils.get_all_elements(Shipping.TABLE, Shipping)
-
-    def get_shipping(self):
-        return DBUtils.get_element(self.table, 'id', self.id, Shipping)
+        return DBElementWithID.get_all_elements(Shipping.TABLE, Shipping)
 
     @staticmethod
-    def get_shipping_with_id(shippingID):
-        return DBUtils.get_element(Shipping.TABLE, 'id', shippingID, Shipping)
+    def get_shipping_with_id(shipping_id):
+        return DBElementWithID.get_element_with_id(Shipping.TABLE, Shipping.COLUMN_NAMES[0], shipping_id, Shipping)

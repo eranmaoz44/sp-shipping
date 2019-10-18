@@ -6,14 +6,14 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     self.shippingCards = []
 
-    self.defaultImageAwsPath = "orderImages/default.png"
+    self.default_image_aws_path = "orderImages/default.png"
 
 
     self.addShippingCard = function(){
         var cardToAdd = {
                 'id' : commonUtilsService.makeID(self.idLength),
-                'orderNumber' : '',
-                'orderImageAwsPath' : self.defaultImageAwsPath
+                'order_number' : '',
+                'order_image_aws_path' : self.default_image_aws_path
         }
 
         shippingCardService.updateCardTempOrderImageUrl($scope, cardToAdd)
@@ -53,11 +53,11 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                     if(indexInOldCards > -1){
                        var oldCard = oldCards[indexInOldCards]
                        oldCard.id = newOrOldCard.id
-                       oldCard.orderNumber = newOrOldCard.orderNumber
-                       if(oldCard.orderImageAwsPath != newOrOldCard.orderImageAwsPath){
+                       oldCard.order_number = newOrOldCard.order_number
+                       if(oldCard.order_image_aws_path != newOrOldCard.order_image_aws_path){
                             cardsToUpdateTempImageUrl.push(oldCard)
                        }
-                       oldCard.orderImageAwsPath = newOrOldCard.orderImageAwsPath
+                       oldCard.order_image_aws_path = newOrOldCard.order_image_aws_path
                     }
                     else {
                         oldCards.push(newOrOldCard)
@@ -130,8 +130,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 function (response) {
                     $scope.PostDataResponse = response.data;
                     commonUtilsService.deleteFromArray(self.shippingCards, card)
-                    if(card.orderImageAwsPath != self.defaultImageAwsPath){
-                        awsFileService.deleteFile(card.orderImageAwsPath)
+                    if(card.order_image_aws_path != self.default_image_aws_path){
+                        awsFileService.deleteFile(card.order_image_aws_path)
                     }
 
                  },
@@ -151,11 +151,11 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
          }
         var destination_file_name = `orderImages/${card.id}/${file.name}`
         awsFileService.postFile(file, destination_file_name).then(function(value){
-            var oldOrderImageAwsPath = card.orderImageAwsPath
-            card.orderImageAwsPath = destination_file_name
+            var oldOrderImageAwsPath = card.order_image_aws_path
+            card.order_image_aws_path = destination_file_name
             self.updateShippingCard(card)
             shippingCardService.updateCardTempOrderImageUrl($scope, card)
-            if(oldOrderImageAwsPath != card.orderImageAwsPath && oldOrderImageAwsPath != self.defaultImageAwsPath){
+            if(oldOrderImageAwsPath != card.order_image_aws_path && oldOrderImageAwsPath != self.default_image_aws_path){
                 awsFileService.deleteFile(oldOrderImageAwsPath)
             }
         }).catch(

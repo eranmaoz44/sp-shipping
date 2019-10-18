@@ -7,7 +7,7 @@ function shippingCardService($http, awsFileService) {
     var self = this;
 
     self.updateCardTempOrderImageUrl = function($scope, card){
-        awsFileService.getPresignedFileUrl(card.orderImageAwsPath).then(function(value){
+        awsFileService.getPresignedFileUrl(card.order_image_aws_path).then(function(value){
             $scope.$apply(function () {
                 card['tempOrderImageUrl'] = value
              });

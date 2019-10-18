@@ -31,24 +31,24 @@ def get_shipping():
     shippingID = request.args.get('shippingID')
     if shippingID is None:
         all_shippings = Shipping.get_shippings()
-        res = json.dumps([x.to_json() for x in all_shippings])
+        res = json.dumps([x.to_dict() for x in all_shippings])
     else:
         shipping = Shipping.get_shipping_with_id(shippingID)
-        res = json.dumps(shipping.to_json())
+        res = shipping.to_json_str()
     print(res)
     return Response(status=200, response=res)
 
 
 @application.route('/api/shipping', methods=['POST'])
 def set_shipping():
-    shipping = Shipping.fromJson(request.get_json())
+    shipping = Shipping.from_dict(request.get_json())
     shipping.insert_or_update()
     return Response(status=200)
 
 
 @application.route('/api/shipping', methods=['DELETE'])
 def delete_shipping():
-    shipping = Shipping.fromJsonString(request.args.get('shippingCard'))
+    shipping = Shipping.from_json_str(request.args.get('shippingCard'))
     shipping.delete()
     return Response(status=200)
 
