@@ -29,12 +29,16 @@ def render_coordination_template():
 @application.route('/api/shipping', methods=['GET'])
 def get_shipping():
     shippingID = request.args.get('shippingID')
-    if shippingID is None:
-        all_shippings = Shipping.get_all_elements()
+    return get_db_elements(shippingID, Shipping)
+
+
+def get_db_elements(id_value, element_class):
+    if id_value is None:
+        all_shippings = element_class.get_all_elements()
         res = json.dumps([x.to_dict() for x in all_shippings])
     else:
-        shipping = Shipping.get_element_with_id(shippingID)
-        res = shipping.to_json_str()
+        single_element = element_class.get_element_with_id(id_value)
+        res = single_element.to_json_str()
     print(res)
     return Response(status=200, response=res)
 
@@ -55,7 +59,7 @@ def delete_shipping():
 
 @application.route('/api/availability', methods=['POST'])
 def set_availability():
-    availability = Availability.fromJson(request.get_json())
+    availability = Availability.from_dict(request.get_json())
     availability.insert_or_update()
     return Response(status=200)
 

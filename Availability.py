@@ -12,7 +12,7 @@ class Availability(DBElementWithID):
                                 (Availability.COLUMN_NAMES[2], date), (Availability.COLUMN_NAMES[3], from_hour),
                                 (Availability.COLUMN_NAMES[4], to_hour)]
 
-        super(Availability, self).__init__(Availability.COLUMN_NAMES.TABLE, tuple_key_value_list)
+        super(Availability, self).__init__(Availability.TABLE, tuple_key_value_list)
 
     @classmethod
     def from_dict(cls, dict_obj):
