@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 import flask
 from flask import Flask, Response, request
@@ -7,7 +6,6 @@ from flask_cors import CORS
 
 from Availability import Availability
 from AwsConnector import AwsConnector
-from DBConnecter import DBConnecter
 from Shipping import Shipping
 
 application = Flask(__name__)
@@ -32,6 +30,14 @@ def get_shipping():
     return get_db_elements(shippingID, Shipping)
 
 
+@application.route('/api/availabilities', methods=['GET'])
+def get_availabilities():
+    shipping_id = request.args.get('shipping_id')
+    availabilities =  Availability.get_all_availabilities_of_shipping(shipping_id)
+    res = json.dumps([x.to_dict() for x in availabilities])
+    return Response(status=200, response=res)
+
+
 def get_db_elements(id_value, element_class):
     if id_value is None:
         all_shippings = element_class.get_all_elements()
@@ -54,6 +60,13 @@ def set_shipping():
 def delete_shipping():
     shipping = Shipping.from_json_str(request.args.get('shippingCard'))
     shipping.delete()
+    return Response(status=200)
+
+
+@application.route('/api/availability', methods=['DELETE'])
+def delete_availability():
+    availability = Availability.from_json_str(request.args.get('availability'))
+    availability.delete()
     return Response(status=200)
 
 
@@ -89,7 +102,6 @@ def aws_delete_file():
     res = AwsConnector.delete_file(file_name)
 
     return Response(status=200, response=res)
-
 
 
 if __name__ == '__main__':

@@ -25,12 +25,18 @@ class Availability(DBElementWithID):
 
     @classmethod
     def from_tuple(cls, tuple_values):
-        return cls(tuple_values[0], tuple_values[1], tuple_values[2])
+        return cls(tuple_values[0], tuple_values[1], tuple_values[2], tuple_values[3], tuple_values[4])
 
     @staticmethod
     def get_all_elements():
         return DBElementWithID.get_all_elements(Availability.TABLE, Availability)
 
     @staticmethod
+    def get_all_availabilities_of_shipping(shipping_id):
+        return DBElementWithID.get_multiple_elements(Availability.TABLE, Availability,
+                                                     [(Availability.COLUMN_NAMES[1], shipping_id)])
+
+    @staticmethod
     def get_element_with_id(id_value):
-        return DBElementWithID.get_element_with_id(Availability.TABLE, Availability.COLUMN_NAMES[0], id_value, Availability)
+        return DBElementWithID.get_element_with_id(Availability.TABLE, Availability.COLUMN_NAMES[0], id_value,
+                                                   Availability)

@@ -28,9 +28,17 @@ class DBElementWithID(object):
         return self.tuple_key_value_list[0][0]
 
     @staticmethod
+    def get_multiple_elements(table, element_class, required_equality_args=[]):
+        return DBUtils.get_multiple_elements(table, element_class, required_equality_args)
+
+    @staticmethod
     def get_all_elements(table, element_class):
         return DBUtils.get_all_elements(table, element_class)
 
     @staticmethod
     def get_element_with_id(table, id_key, id_value, element_class):
         return DBUtils.get_element(table, id_key, id_value, element_class)
+
+    def get_value(self, key):
+        return self.to_dict()[key]
+
