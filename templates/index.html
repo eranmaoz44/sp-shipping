@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../../../favicon.ico">
 
     <title>תיאום משלוחים סליפ דיפו</title>
 
@@ -25,8 +24,10 @@
     <script src="static\node_modules\ng-file-upload\dist\ng-file-upload.js"></script>
     <script src="static\node_modules\ng-file-upload\dist\ng-file-upload-shim.min.js"></script>
     <script src="static\node_modules\ng-file-upload\dist\ng-file-upload.min.js"></script>
-
+    <!--    <script src="static\node_modules\exif-js\exif.js"></script>-->
+    <script src="static\node_modules\JavaScript-Load-Image-master\js\load-image.all.min.js"></script>
     <script src="static\shippingApp.js"></script>
+    <script src="static\imageLoaderWithOrientation.js"></script>
     <script src="static\awsFileService.js"></script>
     <script src="static\shippingCardService.js"></script>
     <script src="static\mobileHoverFixDirective.js"></script>
@@ -34,6 +35,28 @@
     <script src="static\shippingCardsController.js"></script>
 
 
+    <!-- ****** faviconit.com favicons ****** -->
+    <link rel="shortcut icon" href="/static/favicon/favicon.ico">
+    <link rel="icon" sizes="16x16 32x32 64x64" href="/static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="196x196" href="/static/favicon/favicon-192.png">
+    <link rel="icon" type="image/png" sizes="160x160" href="/static/favicon/favicon-160.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/static/favicon/favicon-96.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="/static/favicon/favicon-64.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16.png">
+    <link rel="apple-touch-icon" href="/static/favicon/favicon-57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/static/favicon/favicon-114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/static/favicon/favicon-72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/static/favicon/favicon-144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/static/favicon/favicon-60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/static/favicon/favicon-120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/static/favicon/favicon-76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/static/favicon/favicon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/favicon-180.png">
+    <meta name="msapplication-TileColor" content="#FFFFFF">
+    <meta name="msapplication-TileImage" content="/static/favicon/favicon-144.png">
+    <meta name="msapplication-config" content="/static/favicon/browserconfig.xml">
+    <!-- ****** faviconit.com favicons ****** -->
 </head>
 
 <body ng-app="shippingApp">
@@ -86,9 +109,12 @@
             <div class="row">
                 <div class="col-md-4" ng-repeat="card in scc.shippingCards">
                     <div class="card mb-4 shadow-sm">
-                        <img class="card-img-top"
-                             ng-src="{{card.tempOrderImageUrl}}"
-                             alt="Card image cap">
+                        <div image-loader-with-orientation ng-model="card.tempOrderImageUrl"
+                             class="card-img-top max-height-400">
+                        </div>
+                        <!--                        <img class="card-img-top"-->
+                        <!--                             ng-src="{{card.tempOrderImageUrl}}"-->
+                        <!--                             alt="Card image cap">-->
                         <div class="card-body">
                             <input class="form-control form-control-lg" type="text" placeholder="מספר הזמנה"
                                    ng-model="card.order_number"
@@ -121,9 +147,13 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <img ng-src="{{card.tempOrderImageUrl}}" class="img-fluid" alt="Responsive image">
+                                    <div image-loader-with-orientation ng-model="card.tempOrderImageUrl"
+                                         class="img-fluid">
+                                    </div>
+                                    <!--img ng-src="{{card.tempOrderImageUrl}}" class="img-fluid" alt="Responsive image">-->
                                     <button class="btn btn-primary btn-lg btn-block"
-                                       ng-click="scc.navigateToCoordination(card.id)">לינק לתיאום ההובלה</button>
+                                            ng-click="scc.navigateToCoordination(card.id)">לינק לתיאום ההובלה
+                                    </button>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">סגור</button>
@@ -165,6 +195,8 @@
         crossorigin="anonymous"></script>
 <script>
     window.jQuery || document.write('<script src="static\node_modules\jquery-slim\dist\jquery-slim.min.js"><\/script>')
+
+
 
 
 </script>

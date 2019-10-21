@@ -33,20 +33,46 @@
     <script>
         window.jQuery || document.write('<script src="\static\node_modules\jquery-slim\dist\jquery-slim.min.js"><\/script>')
 
+
+
+
     </script>
     <script src="\static\node_modules\bootstrap-datepicker\dist\js\bootstrap-datepicker.min.js"></script>
     <script src="\static\node_modules\bootstrap-datepicker\js\locales\bootstrap-datepicker.he.js"
             charset="UTF-8"></script>
     <script src="\static\node_modules\dateformat\lib\dateformat.js"></script>
+    <script src="static\node_modules\JavaScript-Load-Image-master\js\load-image.all.min.js"></script>
 
     <script src="\static\shippingApp.js"></script>
     <script src="\static\awsFileService.js"></script>
+    <script src="static\imageLoaderWithOrientation.js"></script>
     <script src="\static\shippingCardService.js"></script>
     <script src="\static\mobileHoverFixDirective.js"></script>
     <script src="\static\commonUtilsService.js"></script>
     <script src="\static\coordinationController.js"></script>
 
-
+    <!-- ****** faviconit.com favicons ****** -->
+    <link rel="shortcut icon" href="/static/favicon/favicon.ico">
+    <link rel="icon" sizes="16x16 32x32 64x64" href="/static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="196x196" href="/static/favicon/favicon-192.png">
+    <link rel="icon" type="image/png" sizes="160x160" href="/static/favicon/favicon-160.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/static/favicon/favicon-96.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="/static/favicon/favicon-64.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16.png">
+    <link rel="apple-touch-icon" href="/static/favicon/favicon-57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/static/favicon/favicon-114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/static/favicon/favicon-72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/static/favicon/favicon-144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/static/favicon/favicon-60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/static/favicon/favicon-120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/static/favicon/favicon-76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/static/favicon/favicon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/favicon-180.png">
+    <meta name="msapplication-TileColor" content="#FFFFFF">
+    <meta name="msapplication-TileImage" content="/static/favicon/favicon-144.png">
+    <meta name="msapplication-config" content="/static/favicon/browserconfig.xml">
+    <!-- ****** faviconit.com favicons ****** -->
 </head>
 
 <body ng-app="shippingApp">
@@ -94,7 +120,7 @@
     </section>
 
     <div ng-controller="coordinationController as cc">
-        <div class="container text-center">
+        <div class="container">
             <div class="row">
                 <div class="col font-weight-bold d-inline p-2 bg-primary text-white coordinatorOrderText text-right">
                     מס הזמנה: {{cc.card.order_number}}
@@ -102,55 +128,62 @@
             </div>
             <div class="row">
                 <div class="col shadow-lg p-3 mb-5 bg-white rounded">
-                    <img ng-src="{{cc.card.tempOrderImageUrl}}"
-                         class="img-fluid coordinator-image border border-primary rounded" alt="Responsive image">
+                    <div image-loader-with-orientation ng-model="cc.card.tempOrderImageUrl"
+                         class="img-fluid coordinator-image border border-primary rounded">
+                        <!--                    <img ng-src="{{cc.card.tempOrderImageUrl}}"-->
+                        <!--                         class="img-fluid coordinator-image border border-primary rounded" alt="Responsive image">-->
+                    </div>
                 </div>
+                <div class="input-group row flex flex-row input-group-lg availabilities"
+                     ng-repeat="availability in cc.availabilities">
+                    <div class="col-sm-4 d-flex flex-row">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text xlargeFont">תאריך</span>
+                        </div>
+                        <input data-date-format="dd/mm/yyyy DD" class="form-control xlargeFont"
+                               id="datePicker{{availability.id}}">
+
+                    </div>
+                    <div class="col-sm-3 d-flex flex-row">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text xlargeFont">מ-</span>
+                        </div>
+                        <select class="custom-select xlargeFont" ng-model="availability.from_hour"
+                                ng-change="cc.updateAvailability(availability)">
+                            <option selected>{{cc.defaultHourValue}}</option>
+                            <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3 d-flex flex-row">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text xlargeFont">עד</span>
+                        </div>
+                        <select class="custom-select xlargeFont" ng-model="availability.to_hour"
+                                ng-change="cc.updateAvailability(availability)">
+                            <option selected>{{cc.defaultHourValue}}</option>
+                            <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
+                            </option>
+                        </select>
+                    </div>
+
+                    <img src="/static/open-iconic/svg/trash.svg"
+                         alt="icon name"
+                         class="deleteIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
+                         ng-click="cc.removeAvailability(availability)" mobile-hover-fix-directive>
+
+                </div>
+
             </div>
-            <div class="input-group row flex flex-row input-group-lg availabilities"
-                 ng-repeat="availability in cc.availabilities">
-                <div class="col-sm-4 d-flex flex-row">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text xlargeFont">תאריך</span>
-                    </div>
-                    <input data-date-format="dd/mm/yyyy DD" class="form-control xlargeFont"
-                           id="datePicker{{availability.id}}">
 
-                </div>
-                <div class="col-sm-3 d-flex flex-row">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text xlargeFont">מ-</span>
-                    </div>
-                    <select class="custom-select xlargeFont" ng-model="availability.from_hour"
-                            ng-change="cc.updateAvailability(availability)">
-                        <option selected>{{cc.defaultHourValue}}</option>
-                        <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
-                        </option>
-                    </select>
-                </div>
-                <div class="col-sm-3 d-flex flex-row">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text xlargeFont">עד</span>
-                    </div>
-                    <select class="custom-select xlargeFont" ng-model="availability.to_hour"
-                            ng-change="cc.updateAvailability(availability)">
-                        <option selected>{{cc.defaultHourValue}}</option>
-                        <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
-                        </option>
-                    </select>
-                </div>
-
-                <img src="/static/open-iconic/svg/trash.svg"
+            <div class="row">
+                <img src="/static/open-iconic/svg/plus.svg"
                      alt="icon name"
-                     class="deleteIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
-                     ng-click="cc.removeAvailability(availability)" mobile-hover-fix-directive>
-
+                     class="plusIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle img-fluid"
+                     ng-click="cc.addAvailability()" mobile-hover-fix-directive>
             </div>
-            <img src="/static/open-iconic/svg/plus.svg"
-                 alt="icon name" class="plusIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
-                 ng-click="cc.addAvailability()" mobile-hover-fix-directive>
-        </div>
 
-    </div>
+        </div>
 
 
 </main>
