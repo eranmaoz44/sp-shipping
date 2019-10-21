@@ -37,6 +37,7 @@
 
 
 
+
     </script>
     <script src="\static\node_modules\bootstrap-datepicker\dist\js\bootstrap-datepicker.min.js"></script>
     <script src="\static\node_modules\bootstrap-datepicker\js\locales\bootstrap-datepicker.he.js"
@@ -130,7 +131,8 @@
             <div class="row">
                 <div class="col shadow-lg p-3 mb-5 bg-white rounded">
                     <div image-loader-with-orientation ng-model="cc.card.tempOrderImageUrl"
-                         class="img-fluid coordinator-image border border-primary rounded">
+                         class="img-fluid coordinator-image btn btn-sm" data-toggle="modal"
+                                            data-target="#dialog">
                         <!--                    <img ng-src="{{cc.card.tempOrderImageUrl}}"-->
                         <!--                         class="img-fluid coordinator-image border border-primary rounded" alt="Responsive image">-->
                     </div>
@@ -185,7 +187,27 @@
             </div>
 
         </div>
-
+        <div class="modal fade" id="dialog" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div image-loader-with-orientation ng-model="cc.card.tempOrderImageUrl"
+                             class="img-fluid">
+                        </div>
+                        <!--img ng-src="{{card.tempOrderImageUrl}}" class="img-fluid" alt="Responsive image">-->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">סגור</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 </main>
 
