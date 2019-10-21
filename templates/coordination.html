@@ -36,6 +36,7 @@
 
 
 
+
     </script>
     <script src="\static\node_modules\bootstrap-datepicker\dist\js\bootstrap-datepicker.min.js"></script>
     <script src="\static\node_modules\bootstrap-datepicker\js\locales\bootstrap-datepicker.he.js"
@@ -120,7 +121,7 @@
     </section>
 
     <div ng-controller="coordinationController as cc">
-        <div class="container">
+        <div class="container text-center">
             <div class="row">
                 <div class="col font-weight-bold d-inline p-2 bg-primary text-white coordinatorOrderText text-right">
                     מס הזמנה: {{cc.card.order_number}}
@@ -134,49 +135,49 @@
                         <!--                         class="img-fluid coordinator-image border border-primary rounded" alt="Responsive image">-->
                     </div>
                 </div>
-                <div class="input-group row flex flex-row input-group-lg availabilities"
-                     ng-repeat="availability in cc.availabilities">
-                    <div class="col-sm-4 d-flex flex-row">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text xlargeFont">תאריך</span>
-                        </div>
-                        <input data-date-format="dd/mm/yyyy DD" class="form-control xlargeFont"
-                               id="datePicker{{availability.id}}">
+            </div>
 
+            <div class="row d-flex justify-content-center input-group flex-row input-group-lg availabilities"
+                 ng-repeat="availability in cc.availabilities">
+                <div class="col-sm-4 d-flex flex-row">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text xlargeFont">תאריך</span>
                     </div>
-                    <div class="col-sm-3 d-flex flex-row">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text xlargeFont">מ-</span>
-                        </div>
-                        <select class="custom-select xlargeFont" ng-model="availability.from_hour"
-                                ng-change="cc.updateAvailability(availability)">
-                            <option selected>{{cc.defaultHourValue}}</option>
-                            <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3 d-flex flex-row">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text xlargeFont">עד</span>
-                        </div>
-                        <select class="custom-select xlargeFont" ng-model="availability.to_hour"
-                                ng-change="cc.updateAvailability(availability)">
-                            <option selected>{{cc.defaultHourValue}}</option>
-                            <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
-                            </option>
-                        </select>
-                    </div>
-
-                    <img src="/static/open-iconic/svg/trash.svg"
-                         alt="icon name"
-                         class="deleteIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
-                         ng-click="cc.removeAvailability(availability)" mobile-hover-fix-directive>
+                    <input data-date-format="dd/mm/yyyy DD" class="form-control xlargeFont"
+                           id="datePicker{{availability.id}}">
 
                 </div>
+                <div class="col-sm-3 d-flex flex-row">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text xlargeFont">מ-</span>
+                    </div>
+                    <select class="custom-select xlargeFont" ng-model="availability.from_hour"
+                            ng-change="cc.updateAvailability(availability)">
+                        <option selected>{{cc.defaultHourValue}}</option>
+                        <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-3 d-flex flex-row">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text xlargeFont">עד</span>
+                    </div>
+                    <select class="custom-select xlargeFont" ng-model="availability.to_hour"
+                            ng-change="cc.updateAvailability(availability)">
+                        <option selected>{{cc.defaultHourValue}}</option>
+                        <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
+                        </option>
+                    </select>
+                </div>
+
+                <img src="/static/open-iconic/svg/trash.svg"
+                     alt="icon name"
+                     class="deleteIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
+                     ng-click="cc.removeAvailability(availability)" mobile-hover-fix-directive>
 
             </div>
 
-            <div class="row">
+            <div class="row d-flex justify-content-center">
                 <img src="/static/open-iconic/svg/plus.svg"
                      alt="icon name"
                      class="plusIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle img-fluid"
