@@ -1,0 +1,20 @@
+{
+  "name": "lazify",
+  "repo": "nathan7/lazify",
+  "description": "convenient wrapper for lazy promises",
+  "version": "1.0.0",
+  "keywords": [
+    "lazy",
+    "promise",
+    "utility"
+  ],
+  "dependencies": {
+    "nathan7/lazy-promise": "*",
+    "then/is-promise": "*"
+  },
+  "development": {},
+  "license": "MIT",
+  "scripts": [
+    "index.js"
+  ]
+}
