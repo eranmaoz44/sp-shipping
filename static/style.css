@@ -129,3 +129,7 @@ footer p {
 .max-height-400{
     max-height: 400px;
 }
+
+.click-cursor{
+    cursor: pointer;
+}
