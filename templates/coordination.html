@@ -38,6 +38,7 @@
 
 
 
+
     </script>
     <script src="\static\node_modules\bootstrap-datepicker\dist\js\bootstrap-datepicker.min.js"></script>
     <script src="\static\node_modules\bootstrap-datepicker\js\locales\bootstrap-datepicker.he.js"
@@ -130,12 +131,15 @@
             </div>
             <div class="row">
                 <div class="col shadow-lg p-3 mb-5 bg-white rounded">
-                    <div image-loader-with-orientation ng-model="cc.card.tempOrderImageUrl"
-                         class="img-fluid coordinator-image btn btn-sm" data-toggle="modal"
-                                            data-target="#dialog">
-                        <!--                    <img ng-src="{{cc.card.tempOrderImageUrl}}"-->
-                        <!--                         class="img-fluid coordinator-image border border-primary rounded" alt="Responsive image">-->
-                    </div>
+                    <!--                    <div image-loader-with-orientation ng-model="cc.card.tempOrderImageUrl"-->
+                    <!--                         class="img-fluid coordinator-image btn btn-sm" data-toggle="modal"-->
+                    <!--                                            data-target="#dialog">-->
+
+                    <!--                    </div>-->
+                    <img ng-src="{{cc.card.tempOrderImageUrl}}"
+                         class="img-fluid coordinator-image border border-primary rounded" alt="Responsive image"
+                         data-toggle="modal"
+                         data-target="#dialog">
                 </div>
             </div>
 
