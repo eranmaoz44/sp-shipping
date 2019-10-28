@@ -1,6 +1,10 @@
 import json
 
+from Config import Config
 from DBElementWithID import DBElementWithID
+from WhatsappConnector import WhatsappConnector
+from flask import request
+import os
 
 
 class Shipping(DBElementWithID):
@@ -13,6 +17,12 @@ class Shipping(DBElementWithID):
 
         super(Shipping, self).__init__(Shipping.TABLE, tuple_key_value_list)
 
+    def send_new_shipping_message(self):
+        message = "נוצר משלוח חדש, קישור לפרטים נוספים:" + '\n' + os.path.join('http://www.{0}/coordination?shippingID={1}'.format(request.headers['Host'], self.get_id_value()))
+        from_whatsapp_number = Config.get_value('FROM_WHATSAPP_NUMBER')
+        to_whatsapp_number = Config.get_value('TO_WHATSAPP_NUMBER')
+        WhatsappConnector.send_message(message, from_whatsapp_number, to_whatsapp_number)
+
     @classmethod
     def from_dict(cls, dict_obj):
         values = list(dict_obj.values())
@@ -21,7 +31,6 @@ class Shipping(DBElementWithID):
     @classmethod
     def from_json_str(cls, json_str):
         return cls.from_dict(json.loads(json_str))
-
 
     @classmethod
     def from_tuple(cls, tuple_values):

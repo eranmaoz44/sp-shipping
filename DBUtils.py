@@ -7,7 +7,7 @@ class DBUtils(object):
 
     @staticmethod
     def insert_or_update_row(table, arg_names, arg_values):
-        exists = DBUtils.get_element_row(table, arg_names[0], arg_values[0]) is not None
+        exists = DBUtils.check_if_row_exists(table, arg_names[0], arg_values[0])
         query_params = tuple(arg_values)
         if not exists:
             args_clause = ', '.join(arg_names)
@@ -21,6 +21,10 @@ class DBUtils(object):
         print(query_to_execute)
         print(query_params)
         DBConnecter.execute_write_query(query_to_execute, query_params)
+
+    @staticmethod
+    def check_if_row_exists(table, key_name, key_value):
+        return DBUtils.get_element_row(table, key_name, key_value) is not None
 
     @staticmethod
     def delete_row(table, arg_id_name, arg_id_value):

@@ -18,6 +18,9 @@ class DBElementWithID(object):
         DBUtils.insert_or_update_row(self.table, list(self.to_dict().keys()),
                                      list(self.to_dict().values()))
 
+    def check_if_element_exists(self):
+        return DBUtils.check_if_row_exists(self.table, self.get_id_name(), self.get_id_value())
+
     def delete(self):
         DBUtils.delete_row(self.table, self.get_id_name(), self.get_id_value())
 
@@ -41,4 +44,3 @@ class DBElementWithID(object):
 
     def get_value(self, key):
         return self.to_dict()[key]
-

@@ -33,7 +33,7 @@ def get_shipping():
 @application.route('/api/availabilities', methods=['GET'])
 def get_availabilities():
     shipping_id = request.args.get('shipping_id')
-    availabilities =  Availability.get_all_availabilities_of_shipping(shipping_id)
+    availabilities = Availability.get_all_availabilities_of_shipping(shipping_id)
     res = json.dumps([x.to_dict() for x in availabilities])
     return Response(status=200, response=res)
 
@@ -52,7 +52,12 @@ def get_db_elements(id_value, element_class):
 @application.route('/api/shipping', methods=['POST'])
 def set_shipping():
     shipping = Shipping.from_dict(request.get_json())
+    new_shipping = False
+    if not shipping.check_if_element_exists():
+        new_shipping = True
     shipping.insert_or_update()
+    if new_shipping:
+        shipping.send_new_shipping_message()
     return Response(status=200)
 
 
@@ -106,6 +111,7 @@ def aws_delete_file():
 
 if __name__ == '__main__':
     application.run(host='0.0.0.0')
+    # WhatsappConnector.send_message("hello whatsapp", WhatsappConnector.TWILIO_SANDBOX_TEST_NUMBER, WhatsappConnector.MY_WHATSAPP)
     # DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar);")
     # DBConnecter.execute_write_query(
     #     "CREATE TABLE availabilities (id varchar, shipping_id varchar REFERENCES shipping(id) ON DELETE CASCADE, "
