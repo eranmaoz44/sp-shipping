@@ -118,7 +118,8 @@
                         <!--                             alt="Card image cap">-->
                                                     <button type="button" class="btn btn-outline-primary float-right"
                                     ngf-select="scc.uploadFileToAws(card,$file)"
-                                    accept="image/*" ngf-max-size="10MB" class="orderImage">בחר תמונה
+                                    accept="image/*" ngf-max-size="30MB" ngf-resize="{width: 600, height: 800, quality: .8, type: 'image/jpeg',
+               ratio: '3:4'}">בחר תמונה
                             </button>
                         <div class="card-body">
 
