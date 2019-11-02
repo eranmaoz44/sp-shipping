@@ -8,12 +8,14 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     self.default_image_aws_path = "orderImages/default.png"
 
+    self.dateFormat = 'dd/mm/yyyy'
 
     self.addShippingCard = function(){
         var cardToAdd = {
                 'id' : commonUtilsService.makeID(self.idLength),
                 'order_number' : '',
-                'order_image_aws_path' : self.default_image_aws_path
+                'order_image_aws_path' : self.default_image_aws_path,
+                'date' : dateFormat(new Date(), self.dateFormat)
         }
 
         shippingCardService.updateCardTempOrderImageUrl($scope, cardToAdd)
@@ -58,6 +60,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                             cardsToUpdateTempImageUrl.push(oldCard)
                        }
                        oldCard.order_image_aws_path = newOrOldCard.order_image_aws_path
+                       oldCard.date = newOrOldCard.date
                     }
                     else {
                         oldCards.push(newOrOldCard)

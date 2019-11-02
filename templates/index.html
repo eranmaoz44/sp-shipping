@@ -26,6 +26,7 @@
     <script src="static\node_modules\ng-file-upload\dist\ng-file-upload.min.js"></script>
     <!--    <script src="static\node_modules\exif-js\exif.js"></script>-->
     <script src="static\node_modules\JavaScript-Load-Image-master\js\load-image.all.min.js"></script>
+    <script src="\static\node_modules\dateformat\lib\dateformat.js"></script>
     <script src="static\shippingApp.js"></script>
     <script src="static\imageLoaderWithOrientation.js"></script>
     <script src="static\awsFileService.js"></script>
@@ -134,7 +135,7 @@
                                     <!--                                    </button>-->
 
                                 </div>
-                                <small class="text-muted">9 mins</small>
+                                <small class="text-muted">{{card.date}}</small>
                             </div>
                         </div>
                     </div>
