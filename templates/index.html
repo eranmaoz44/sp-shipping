@@ -34,6 +34,7 @@
     <script src="static\mobileHoverFixDirective.js"></script>
     <script src="static\commonUtilsService.js"></script>
     <script src="static\shippingCardsController.js"></script>
+    <script src="static\shippingCardsDirective.js"></script>
 
 
     <!-- ****** faviconit.com favicons ****** -->
@@ -103,82 +104,26 @@
             <p class="lead text-muted">סדר, מקבול, חסכון</p>
         </div>
     </section>
-
-    <div class="album py-5 bg-light" ng-controller="shippingCardsController as scc">
-        <div class="container">
-
-            <div class="row">
-                <div class="col-md-4" ng-repeat="card in scc.shippingCards">
-                    <div class="card mb-4 shadow-sm">
-                        <!--                                                <div image-loader-with-orientation ng-model="card.tempOrderImageUrl"-->
-                        <!--                                                     class="card-img-top max-height-400 click-cursor" data-toggle="modal"-->
-                        <!--                                                     data-target="#dialog{{card.id}}">-->
-                        <!--                                                </div>-->
-                        <img class="card-img-top click-cursor"
-                             ng-src="{{card.tempOrderImageUrl}}"
-                             alt="Card image cap" data-toggle="modal"
-                             data-target="#dialog{{card.id}}">
-                        <button type="button" class="btn btn-outline-primary float-right"
-                                ngf-select="scc.uploadFileToAws(card,$file)"
-                                accept="image/*" ngf-max-size="30MB" ngf-resize="{width: 600, height: 800, quality: .8, type: 'image/jpeg',
-               ratio: '3:4'}" ngf-fix-orientation="true">בחר תמונה
-                        </button>
-                        <div class="card-body">
-
-                            <input class="form-control form-control-lg" type="text" placeholder="מספר הזמנה"
-                                   ng-model="card.order_number"
-                                   ng-change="scc.updateShippingCard(card)">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <!--                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal"-->
-                                    <!--                                            data-target="#dialog{{card.id}}">הרחב-->
-                                    <!--                                    </button>-->
-
-                                </div>
-                                <small class="text-muted">{{card.date}}</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal fade" id="dialog{{card.id}}" tabindex="-1" role="dialog"
-                         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">{{card.order_number}}</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <!--                                    <div image-loader-with-orientation ng-model="card.tempOrderImageUrl"-->
-                                    <!--                                         class="img-fluid">-->
-                                    <!--                                    </div>-->
-                                    <img ng-src="{{card.tempOrderImageUrl}}" class="img-fluid" alt="Responsive image">
-                                    <button class="btn btn-primary btn-lg btn-block"
-                                            ng-click="scc.navigateToCoordination(card.id)">לינק לתיאום ההובלה
-                                    </button>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-danger ml-auto"
-                                            data-dismiss="modal" ng-click="scc.deleteShippingCard(card)">מחק
-                                    </button>
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">סגור</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <ul class="nav nav-tabs justify-content-center" id="shippingsTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="ongoing-shippings" data-toggle="tab" href="#ongoing" role="tab"
+               aria-controls="ongoing"
+               aria-selected="true">תיאומים חיים</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="finished_shippings" data-toggle="tab" href="#finished" role="tab"
+               aria-controls="finished"
+               aria-selected="false">תיאומים שבוצעו</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="ongoing" role="tabpanel" aria-labelledby="ongoing-shippings">
+            <shipping-cards-directive></shipping-cards-directive>
         </div>
-        <div class="fixed-bottom text-center">
-
-            <img src="/static/open-iconic/svg/plus.svg"
-                 alt="icon name" class="plusIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
-                 ng-click="scc.addShippingCard()" mobile-hover-fix-directive>
-        </div>
-        <!-- Modal -->
-
+        <div class="tab-pane fade" id="finished" role="tabpanel" aria-labelledby="finished_shippings"><p>
+            wowowowowowowowowowowowowow</p></div>
     </div>
+
 
 </main>
 
@@ -201,6 +146,8 @@
         crossorigin="anonymous"></script>
 <script>
     window.jQuery || document.write('<script src="static\node_modules\jquery-slim\dist\jquery-slim.min.js"><\/script>')
+
+
 
 
 
