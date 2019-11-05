@@ -28,7 +28,16 @@ def render_coordination_template():
 @application.route('/api/shipping', methods=['GET'])
 def get_shipping():
     shippingID = request.args.get('shippingID')
-    return get_db_elements(shippingID, Shipping)
+    state = request.args.get('state')
+    print(state)
+    if shippingID is None:
+        all_shippings = Shipping.get_shippings_by_state(state)
+        res = json.dumps([x.to_dict() for x in all_shippings])
+    else:
+        single_element = Shipping.get_element_with_id(shippingID)
+        res = single_element.to_json_str()
+    print(res)
+    return Response(status=200, response=res)
 
 
 @application.route('/api/availabilities', methods=['GET'])
@@ -36,17 +45,6 @@ def get_availabilities():
     shipping_id = request.args.get('shipping_id')
     availabilities = Availability.get_all_availabilities_of_shipping(shipping_id)
     res = json.dumps([x.to_dict() for x in availabilities])
-    return Response(status=200, response=res)
-
-
-def get_db_elements(id_value, element_class):
-    if id_value is None:
-        all_shippings = element_class.get_all_elements()
-        res = json.dumps([x.to_dict() for x in all_shippings])
-    else:
-        single_element = element_class.get_element_with_id(id_value)
-        res = single_element.to_json_str()
-    print(res)
     return Response(status=200, response=res)
 
 
@@ -115,7 +113,7 @@ if __name__ == '__main__':
     # WhatsappConnector.send_message("hello whatsapp", WhatsappConnector.TWILIO_SANDBOX_TEST_NUMBER, WhatsappConnector.MY_WHATSAPP)
     #DBConnecter.execute_write_query("DROP TABLE availabilities")
     #DBConnecter.execute_write_query("DROP TABLE shipping")
-    # DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar, date varchar);")
+    # DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar, date varchar, state varchar);")
     # DBConnecter.execute_write_query(
     #     "CREATE TABLE availabilities (id varchar, shipping_id varchar REFERENCES shipping(id) ON DELETE CASCADE, "
     #     "date varchar, from_hour varchar, to_hour varchar, PRIMARY KEY (id,shipping_id));")

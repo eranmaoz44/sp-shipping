@@ -1,4 +1,4 @@
-function shippingCardsController($http, $scope, $location,$window, awsFileService,shippingCardService, commonUtilsService){
+function shippingCardsController($http, $scope, $location,$window, awsFileService,shippingCardService, commonUtilsService, $timeout){
 
     var self = this
 
@@ -15,7 +15,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 'id' : commonUtilsService.makeID(self.idLength),
                 'order_number' : '',
                 'order_image_aws_path' : self.default_image_aws_path,
-                'date' : dateFormat(new Date(), self.dateFormat)
+                'date' : dateFormat(new Date(), self.dateFormat),
+                'state' : 'ongoing'
         }
 
         shippingCardService.updateCardTempOrderImageUrl($scope, cardToAdd)
@@ -36,11 +37,14 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     }
 
     self.getShippingCards = function(){
+        console.log('state is ')
+        console.log(self.state)
         var config = {
             headers : {
                     'Content-Type': 'application/json;charset=utf-8;'
             },
             params : {
+                state: self.state
             }
         }
 
@@ -177,14 +181,16 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         $window.location.href = self.getCoordinationLink(shippingID);
     }
 
-     self.getShippingCards()
-             setInterval(function(){
-          self.getShippingCards();
-        }, 30000)
+    $timeout(self.getShippingCards, 0);
+
+
+    setInterval(function(){
+        self.getShippingCards();
+    }, 30000)
 }
 
 angular
     .module('shippingApp')
-    .controller('shippingCardsController', shippingCardsController, ['$http', '$scope', '$location','$window', 'awsFileService', 'shippingCardService', 'commonUtilsService'])
+    .controller('shippingCardsController', shippingCardsController, ['$http', '$scope', '$location','$window', 'awsFileService', 'shippingCardService', 'commonUtilsService', '$timeout'])
 
 

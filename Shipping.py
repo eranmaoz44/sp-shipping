@@ -9,11 +9,11 @@ import os
 
 class Shipping(DBElementWithID):
     TABLE = "shipping"
-    COLUMN_NAMES = ['id', 'order_number', 'order_image_aws_path', 'date']
+    COLUMN_NAMES = ['id', 'order_number', 'order_image_aws_path', 'date', 'state']
 
-    def __init__(self, id, order_number, order_image_aws_path, date):
+    def __init__(self, id, order_number, order_image_aws_path, date, state):
         tuple_key_value_list = [(Shipping.COLUMN_NAMES[0], id), (Shipping.COLUMN_NAMES[1], order_number),
-                                (Shipping.COLUMN_NAMES[2], order_image_aws_path), (Shipping.COLUMN_NAMES[3], date)]
+                                (Shipping.COLUMN_NAMES[2], order_image_aws_path), (Shipping.COLUMN_NAMES[3], date), (Shipping.COLUMN_NAMES[4], state)]
 
         super(Shipping, self).__init__(Shipping.TABLE, tuple_key_value_list)
 
@@ -28,7 +28,7 @@ class Shipping(DBElementWithID):
     @classmethod
     def from_dict(cls, dict_obj):
         values = list(dict_obj.values())
-        return cls(values[0], values[1], values[2], values[3])
+        return cls(values[0], values[1], values[2], values[3], values[4])
 
     @classmethod
     def from_json_str(cls, json_str):
@@ -36,7 +36,11 @@ class Shipping(DBElementWithID):
 
     @classmethod
     def from_tuple(cls, tuple_values):
-        return cls(tuple_values[0], tuple_values[1], tuple_values[2], tuple_values[3])
+        return cls(tuple_values[0], tuple_values[1], tuple_values[2], tuple_values[3], tuple_values[4])
+
+    @staticmethod
+    def get_shippings_by_state(state):
+        return DBElementWithID.get_multiple_elements(Shipping.TABLE, Shipping, [(Shipping.COLUMN_NAMES[4], state)])
 
     @staticmethod
     def get_all_elements():
