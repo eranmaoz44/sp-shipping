@@ -10,6 +10,16 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     self.dateFormat = 'dd/mm/yyyy'
 
+    self.isEditable = function(){
+        return self.state == 'ongoing'
+    }
+
+    self.moveCardToFinished = function(card){
+        card.state = "finished"
+        self.updateShippingCard(card)
+        commonUtilsService.deleteFromArray(self.shippingCards, card)
+    }
+
     self.addShippingCard = function(){
         var cardToAdd = {
                 'id' : commonUtilsService.makeID(self.idLength),
