@@ -150,7 +150,7 @@
                         <span class="input-group-text xlargeFont">תאריך</span>
                     </div>
                     <input data-date-format="dd/mm/yyyy DD" class="form-control xlargeFont"
-                           id="datePicker{{availability.id}}">
+                           id="datePicker{{availability.id}}" ng-disabled="!cc.isEditable()">
 
                 </div>
                 <div class="col-sm-3 d-flex flex-row">
@@ -158,7 +158,7 @@
                         <span class="input-group-text xlargeFont">מ-</span>
                     </div>
                     <select class="custom-select xlargeFont" ng-model="availability.from_hour"
-                            ng-change="cc.updateAvailability(availability)">
+                            ng-change="cc.updateAvailability(availability)" ng-disabled="!cc.isEditable()">
                         <option selected>{{cc.defaultHourValue}}</option>
                         <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
                         </option>
@@ -169,7 +169,7 @@
                         <span class="input-group-text xlargeFont">עד</span>
                     </div>
                     <select class="custom-select xlargeFont" ng-model="availability.to_hour"
-                            ng-change="cc.updateAvailability(availability)">
+                            ng-change="cc.updateAvailability(availability)" ng-disabled="!cc.isEditable()">
                         <option selected>{{cc.defaultHourValue}}</option>
                         <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
                         </option>
@@ -179,11 +179,11 @@
                 <img src="/static/open-iconic/svg/trash.svg"
                      alt="icon name"
                      class="deleteIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
-                     ng-click="cc.removeAvailability(availability)" mobile-hover-fix-directive>
+                     ng-click="cc.removeAvailability(availability)" mobile-hover-fix-directive ng-show="cc.isEditable()">
 
             </div>
 
-            <div class="row d-flex justify-content-center">
+            <div class="row d-flex justify-content-center" ng-show="cc.isEditable()">
                 <img src="/static/open-iconic/svg/plus.svg"
                      alt="icon name"
                      class="plusIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle img-fluid"
@@ -212,6 +212,7 @@
                 </div>
             </div>
         </div>
+    </div>
 
 </main>
 
