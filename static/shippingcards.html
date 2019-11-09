@@ -24,7 +24,8 @@
                                ng-change="scc.updateShippingCard(card)" ng-disabled="!scc.isEditable()">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
-                                <button ng-show="scc.isEditable()" type="button" ng-click="scc.moveCardToFinished(card)" class="btn btn-success float-right mt-1">בוצע
+                                <button ng-show="scc.isEditable()" type="button" ng-click="scc.moveCardToFinished(card)"
+                                        class="btn btn-success float-right mt-1">בוצע
                                 </button>
                             </div>
 
@@ -46,10 +47,24 @@
                                 <!--                                    <div image-loader-with-orientation ng-model="card.tempOrderImageUrl"-->
                                 <!--                                         class="img-fluid">-->
                                 <!--                                    </div>-->
-                                <img ng-src="{{card.tempOrderImageUrl}}" class="img-fluid" alt="Responsive image">
-                                <button class="btn btn-primary btn-lg btn-block"
-                                        ng-click="scc.navigateToCoordination(card.id)">לינק לתיאום ההובלה
-                                </button>
+
+                                <div class="d-flex flex-column">
+                                    <div class="d-inline-flex p-2 justify-content-center"">
+                                        <img ng-src="{{card.tempOrderImageUrl}}"
+                                             class="img-fluid" alt="Responsive image">
+                                    </div>
+
+                                    <div class="d-flex flex-row" role="group" aria-label="Basic example">
+                                        <button class="btn btn-primary m-1"
+                                                ng-click="scc.navigateToCoordination(card.id)">לינק לתיאום ההובלה
+                                        </button>
+                                        <button class="btn btn-primary m-1"
+                                                ng-click="scc.copyCoordinationLinkToClipboard(card.id)">העתק קישור
+                                        </button>
+                                    </div>
+                                </div>
+
+
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-outline-danger ml-auto"

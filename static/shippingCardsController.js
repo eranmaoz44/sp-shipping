@@ -182,9 +182,33 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         })
     }
 
+    self.copyToClipboard = function(text_to_share) {
+
+        // create temp element
+        var copyElement = document.createElement("span");
+        copyElement.appendChild(document.createTextNode(text_to_share));
+        copyElement.id = 'tempCopyToClipboard';
+        angular.element(document.body.append(copyElement));
+
+        // select the text
+        var range = document.createRange();
+        range.selectNode(copyElement);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+
+        // copy & cleanup
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+        copyElement.remove();
+    }
+
     self.getCoordinationLink = function(shippingID){
         var baseUrl = $location.$$absUrl.replace($location.$$url, '/')
         return baseUrl + 'coordination?shippingID=' + shippingID
+    }
+
+    self.copyCoordinationLinkToClipboard = function(shippingID){
+        self.copyToClipboard(self.getCoordinationLink(shippingID))
     }
 
     self.navigateToCoordination = function(shippingID){
