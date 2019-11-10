@@ -10,6 +10,10 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     self.dateFormat = 'dd/mm/yyyy'
 
+    self.shouldFetchCards = true
+
+    self.loadedFirstTime = false
+
     self.isEditable = function(){
         return self.state == 'ongoing'
     }
@@ -47,6 +51,9 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     }
 
     self.getShippingCards = function(){
+        if(self.shouldFetchCards == false){
+            return;
+        }
         console.log('state is ')
         console.log(self.state)
         var config = {
@@ -61,6 +68,9 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
         $http.get('/api/shipping', config).then(
             function (response) {
+                if(self.shouldFetchCards == false){
+                    return;
+                }
                 var oldCards = self.shippingCards
                 var newAndOldCards = response.data
                 var cardsToUpdateTempImageUrl = []
@@ -89,7 +99,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                     }
                 });
 
-
+                self.loadedFirstTime = true
 
                 self.updateCardsTempOrderImages(cardsToUpdateTempImageUrl)
 
@@ -104,6 +114,12 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     }
 
     self.updateShippingCard = function(card){
+
+        self.shouldFetchCards = false
+        $timeout(function(){
+            self.shouldFetchCards = true
+        }, 5000);
+
         var cardToUpdate = card
         var data = cardToUpdate
 
