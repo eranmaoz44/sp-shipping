@@ -85,6 +85,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                        }
                        oldCard.order_image_aws_path = newOrOldCard.order_image_aws_path
                        oldCard.date = newOrOldCard.date
+                       oldCard.state = newOrOldCard.state
                     }
                     else {
                         oldCards.push(newOrOldCard)
@@ -92,12 +93,20 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                     }
                 });
 
-                oldCards.forEach(function(card){
+                var i = 0;
+                var count = 0;
+                var oldCardsLength = oldCards.length;
+
+                while(count < oldCardsLength){
+                    var card = oldCards[i]
+                    i = i + 1
                     var indexInNewAndOld = commonUtilsService.findIndex(newAndOldCards, card)
                     if (indexInNewAndOld == -1){
                         commonUtilsService.deleteFromArray(oldCards, card)
+                        i = i - 1
                     }
-                });
+                    count = count + 1
+                }
 
                 self.loadedFirstTime = true
 
