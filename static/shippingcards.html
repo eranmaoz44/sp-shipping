@@ -11,7 +11,12 @@
                     <img class="card-img-top click-cursor border-bottom"
                          ng-src="{{card.tempOrderImageUrl}}"
                          alt="Card image cap" data-toggle="modal"
-                         data-target="#dialog{{card.id}}">
+                         data-target="#dialog{{card.id}}" ng-show="!card.loadingImage">
+                    <div class="d-flex justify-content-center" ng-show="card.loadingImage">
+                        <div class="spinner-border m-5 p-5" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
                     <button type="button" class="btn btn-outline-primary mt-1"
                             ngf-select="scc.uploadFileToAws(card,$file)"
                             accept="image/*" ngf-max-size="30MB" ngf-resize="{width: 600, height: 800, quality: .8, type: 'image/jpeg',
@@ -49,41 +54,42 @@
                                 <!--                                    </div>-->
 
                                 <div class="d-flex flex-column">
-                                    <div class="d-inline-flex p-2 justify-content-center"">
-                                        <img ng-src="{{card.tempOrderImageUrl}}"
-                                             class="img-fluid" alt="Responsive image">
-                                    </div>
-
-                                    <div class="d-flex flex-row" role="group" aria-label="Basic example">
-                                        <button class="btn btn-primary m-1"
-                                                ng-click="scc.navigateToCoordination(card.id)">לינק לתיאום ההובלה
-                                        </button>
-                                        <button class="btn btn-primary m-1"
-                                                ng-click="scc.copyCoordinationLinkToClipboard(card.id)">העתק קישור
-                                        </button>
-                                    </div>
+                                    <div class="d-inline-flex p-2 justify-content-center"
+                                    ">
+                                    <img ng-src="{{card.tempOrderImageUrl}}"
+                                         class="img-fluid" alt="Responsive image">
                                 </div>
 
+                                <div class="d-flex flex-row" role="group" aria-label="Basic example">
+                                    <button class="btn btn-primary m-1"
+                                            ng-click="scc.navigateToCoordination(card.id)">לינק לתיאום ההובלה
+                                    </button>
+                                    <button class="btn btn-secondary m-1"
+                                            ng-click="scc.copyCoordinationLinkToClipboard(card.id)">העתק קישור
+                                    </button>
+                                </div>
+                            </div>
 
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-outline-danger ml-auto"
-                                        data-dismiss="modal" ng-click="scc.deleteShippingCard(card)">מחק
-                                </button>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">סגור</button>
-                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-danger ml-auto"
+                                    data-dismiss="modal" ng-click="scc.deleteShippingCard(card)">מחק
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">סגור</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div ng-show="scc.isEditable()" class="fixed-bottom text-center">
+</div>
+<div ng-show="scc.isEditable()" class="fixed-bottom text-center">
 
-        <img src="/static/open-iconic/svg/plus.svg"
-             alt="icon name" class="plusIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
-             ng-click="scc.addShippingCard()" mobile-hover-fix-directive>
-    </div>
-    <!-- Modal -->
+    <img src="/static/open-iconic/svg/plus.svg"
+         alt="icon name" class="plusIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
+         ng-click="scc.addShippingCard()" mobile-hover-fix-directive>
+</div>
+<!-- Modal -->
 
 </div>

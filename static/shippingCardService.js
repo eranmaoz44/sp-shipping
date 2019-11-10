@@ -10,6 +10,7 @@ function shippingCardService($http, awsFileService) {
         awsFileService.getPresignedFileUrl(card.order_image_aws_path).then(function(value){
             $scope.$apply(function () {
                 card['tempOrderImageUrl'] = value
+                card.loadingImage = false
              });
             }).catch(
                 (reason) => {

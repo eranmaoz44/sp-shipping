@@ -161,11 +161,14 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
            );
     };
 
+
     self.uploadFileToAws = function(card, file){
+
         if(file == null){
             console.log('File not selected, exiting upload to aws function')
             return
          }
+         card.loadingImage = true
         var destination_file_name = `orderImages/${card.id}/${file.name}`
         awsFileService.postFile(file, destination_file_name).then(function(value){
             var oldOrderImageAwsPath = card.order_image_aws_path
