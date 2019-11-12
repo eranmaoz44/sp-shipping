@@ -157,6 +157,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     self.deleteShippingCard = function(card){
 
+        card.isDeleting = true
+
         var config = {
             headers : {
                     'Content-Type': 'application/json;charset=utf-8;'
@@ -175,7 +177,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                     if(card.order_image_aws_path != self.default_image_aws_path){
                         awsFileService.deleteFile(card.order_image_aws_path)
                     }
-
+                    card.isDeleting = false
+                    $(`#dialog${card.id}`).modal('hide');
                  },
                 function (error) {
                     $scope.ResponseDetails = "Data: " + error.data +

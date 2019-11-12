@@ -74,7 +74,8 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-danger ml-auto"
-                                    data-dismiss="modal" ng-click="scc.deleteShippingCard(card)">מחק
+                                    ng-click="scc.deleteShippingCard(card)" ng-show="!scc.isEditable()">מחק
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" ng-show="card.isDeleting"></span>
                             </button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">סגור</button>
                         </div>
