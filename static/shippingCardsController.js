@@ -19,13 +19,20 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     }
 
     self.moveCardToFinished = function(card){
+        card.isMovingToFinishState = true
         card.state = "finished"
-        self.updateShippingCard(card)
-        commonUtilsService.deleteFromArray(self.shippingCards, card)
+        self.updateShippingCardWithPresign(card).then(function(response){
+            card.isMovingToFinishState = false
+            commonUtilsService.deleteFromArray(self.shippingCards, card)
+        }, function(error){
+            card.state = 'ongoing'
+            console.log(`could not move shipping card ${card} to finished because ${error}`)
+        })
+
     }
 
     self.addShippingCard = function(){
-        var cardToAdd = {
+        self.cardToAdd = {
                 'id' : commonUtilsService.makeID(self.idLength),
                 'order_number' : '',
                 'order_image_aws_path' : self.default_image_aws_path,
@@ -33,15 +40,55 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 'state' : 'ongoing'
         }
 
-        shippingCardService.updateCardTempOrderImageUrl($scope, cardToAdd)
+        self.cardToSaveFilePath = 'default.png'
 
-        self.updateShippingCard(cardToAdd)
+        self.onEditImage = '/static/default.png'
 
-        self.shippingCards.push(
-            cardToAdd
-        )
+//        shippingCardService.updateCardTempOrderImageUrl($scope, cardToAdd)
+
+//        self.updateShippingCard(cardToAdd)
+//
+//        self.shippingCards.push(
+//            cardToAdd
+//        )
+
+        $('#createModal').modal({})
 
 
+    }
+
+    self.uploadImageOnModal = function(file){
+        self.onEditImage = file
+        self.cardToSaveFilePath = file.name
+    }
+
+    self.saveShippingCard = function(){
+        self.shouldFetchCards = false
+        self.cardToAdd.isSaving = true
+        if (self.onEditImage == '/static/default.png'){
+            self.saveShippingCardPostImageUpload()
+        } else {
+            self.uploadFileToAwsWithPresign(self.cardToAdd, self.onEditImage).then(function(response){
+            self.saveShippingCardPostImageUpload()
+            }, function(error){
+            })
+        }
+    }
+
+    self.saveShippingCardPostImageUpload = function(){
+        self.updateShippingCardWithPresign(self.cardToAdd).then(function(response){
+        $timeout(function(){
+               self.shippingCards.push(
+                self.cardToAdd
+            )
+            shippingCardService.updateCardTempOrderImageUrl($scope, self.cardToAdd)
+        }, 0);
+
+            $('#createModal').modal('hide');
+            self.cardToAdd.isSaving = false
+            self.shouldFetchCards = true
+        }, function(error){
+        })
     }
 
     self.updateCardsTempOrderImages = function(cards){
@@ -51,6 +98,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     }
 
     self.getShippingCards = function(){
+
         if(self.shouldFetchCards == false){
             return;
         }
@@ -64,7 +112,6 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 state: self.state
             }
         }
-
 
         $http.get('/api/shipping', config).then(
             function (response) {
@@ -119,10 +166,9 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                     "<hr />config: " + error.config;
             }
          );
-
     }
 
-    self.updateShippingCard = function(card){
+    self.updateShippingCard = function(card, resolve, reject){
 
         self.shouldFetchCards = false
         $timeout(function(){
@@ -140,20 +186,27 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
             }
         }
 
-
         $http.post('/api/shipping', data, config)
             .then(
                 function (response) {
                     $scope.PostDataResponse = response.data;
+                    resolve(true)
                  },
                 function (error) {
                     $scope.ResponseDetails = "Data: " + error.data +
                         "<hr />status: " + error.status +
                         "<hr />headers: " + error.headers +
                         "<hr />config: " + error.config;
+                    reject(`could not update shipping card because of ${error.data}`)
                  }
            );
     };
+
+    self.updateShippingCardWithPresign = function(card){
+        return new Promise(function(resolve, reject) {
+            self.updateShippingCard(card, resolve, reject)
+        })
+    }
 
     self.deleteShippingCard = function(card){
 
@@ -190,10 +243,11 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     };
 
 
-    self.uploadFileToAws = function(card, file){
+    self.uploadFileToAws = function(card, file, resolve, reject){
 
         if(file == null){
             console.log('File not selected, exiting upload to aws function')
+            reject('File not selected, exiting upload to aws function')
             return
          }
          card.loadingImage = true
@@ -201,15 +255,23 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         awsFileService.postFile(file, destination_file_name).then(function(value){
             var oldOrderImageAwsPath = card.order_image_aws_path
             card.order_image_aws_path = destination_file_name
-            self.updateShippingCard(card)
-            shippingCardService.updateCardTempOrderImageUrl($scope, card)
+            //self.updateShippingCard(card)
+            //shippingCardService.updateCardTempOrderImageUrl($scope, card)
             if(oldOrderImageAwsPath != card.order_image_aws_path && oldOrderImageAwsPath != self.default_image_aws_path){
                 awsFileService.deleteFile(oldOrderImageAwsPath)
             }
+            resolve(true)
         }).catch(
         // Log the rejection reason
        (reason) => {
             console.log(`Failed to upload file to aws because: ${reason}`);
+            reject(`Failed to upload file to aws because: ${reason}`)
+        })
+    }
+
+    self.uploadFileToAwsWithPresign= function(card, file) {
+        return new Promise(function(resolve, reject) {
+            self.uploadFileToAws(card, file, resolve, reject)
         })
     }
 

@@ -31,7 +31,10 @@
                             <div class="btn-group">
                                 <button ng-show="scc.isEditable()" type="button" ng-click="scc.moveCardToFinished(card)"
                                         class="btn btn-success float-right mt-1">בוצע
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                          ng-show="card.isMovingToFinishState"></span>
                                 </button>
+
                             </div>
 
                             <small class="text-muted">{{card.date}}</small>
@@ -54,43 +57,100 @@
                                 <!--                                    </div>-->
 
                                 <div class="d-flex flex-column">
-                                    <div class="d-inline-flex p-2 justify-content-center"
-                                    ">
-                                    <img ng-src="{{card.tempOrderImageUrl}}"
-                                         class="img-fluid" alt="Responsive image">
+                                    <div class="d-inline-flex p-2 justify-content-center">
+                                        <img ng-src="{{card.tempOrderImageUrl}}"
+                                             class="img-fluid" alt="Responsive image">
+                                    </div>
+
+                                    <div class="d-flex flex-row" role="group" aria-label="Basic example">
+                                        <button class="btn btn-primary m-1"
+                                                ng-click="scc.navigateToCoordination(card.id)">לינק לתיאום ההובלה
+                                        </button>
+                                        <button class="btn btn-secondary m-1"
+                                                ng-click="scc.copyCoordinationLinkToClipboard(card.id)">העתק קישור
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div class="d-flex flex-row" role="group" aria-label="Basic example">
-                                    <button class="btn btn-primary m-1"
-                                            ng-click="scc.navigateToCoordination(card.id)">לינק לתיאום ההובלה
-                                    </button>
-                                    <button class="btn btn-secondary m-1"
-                                            ng-click="scc.copyCoordinationLinkToClipboard(card.id)">העתק קישור
-                                    </button>
-                                </div>
+
                             </div>
-
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-danger ml-auto"
-                                    ng-click="scc.deleteShippingCard(card)" ng-show="!scc.isEditable()">מחק
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" ng-show="card.isDeleting"></span>
-                            </button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">סגור</button>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-danger ml-auto"
+                                        ng-click="scc.deleteShippingCard(card)" ng-show="!scc.isEditable()">מחק
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                          ng-show="card.isDeleting"></span>
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">סגור</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div ng-show="scc.isEditable() && scc.loadedFirstTime" class="fixed-bottom text-center">
+    <div ng-show="scc.isEditable() && scc.loadedFirstTime" class="fixed-bottom text-center">
 
-    <img src="/static/open-iconic/svg/plus.svg"
-         alt="icon name" class="plusIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
-         ng-click="scc.addShippingCard()" mobile-hover-fix-directive>
-</div>
-<!-- Modal -->
+        <img src="/static/open-iconic/svg/plus.svg"
+             alt="icon name" class="plusIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
+             ng-click="scc.addShippingCard()" mobile-hover-fix-directive>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="createModal" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                            ng-disabled="scc.cardToAdd.isSaving">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h5 class="modal-title ml-auto float-right">חלון יצירת תיאום למשלוח</h5>
+                </div>
+                <div class="modal-body">
 
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">#</span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="מס' הזמנה" aria-label="Username"
+                               aria-describedby="basic-addon1" ng-model="scc.cardToAdd.order_number">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="exampleInputFile"
+                                   ngf-select="scc.uploadImageOnModal($file)"
+                                   accept="image/*" ngf-max-size="30MB" ngf-resize="{width: 600, height: 800, quality: .8, type: 'image/jpeg',
+               ratio: '3:4'}" ngf-fix-orientation="true">
+                            <label class="custom-file-label" for="exampleInputFile" data-browse="בחר תמונה">
+                                <div class="text-center">
+                                    {{scc.cardToSaveFilePath}}
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <img class="border border-primary rounded img-fluid"
+                             ngf-src="scc.onEditImage"
+                             ngf-background="scc.onEditImage"
+                             ngf-resize="{width: 356, quality: 0.9}">
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary ml-auto"
+                            ng-click="scc.saveShippingCard(card)" ng-show="scc.isEditable()">שמור
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                              ng-show="scc.cardToAdd.isSaving"></span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                            ng-disabled="scc.cardToAdd.isSaving">סגור
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
