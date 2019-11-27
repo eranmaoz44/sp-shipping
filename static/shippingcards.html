@@ -13,20 +13,21 @@
                          alt="Card image cap" data-toggle="modal"
                          data-target="#dialog{{card.id}}" ng-show="!card.loadingImage">
                     <div class="d-flex justify-content-center" ng-show="card.loadingImage">
-                        <div class="spinner-border m-5 p-5" role="status">
+                        <div class="spinner-border m-3 p-3" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-outline-primary mt-1"
-                            ngf-select="scc.uploadFileToAws(card,$file)"
-                            accept="image/*" ngf-max-size="30MB" ngf-resize="{width: 600, height: 800, quality: .8, type: 'image/jpeg',
-               ratio: '3:4'}" ngf-fix-orientation="true" ng-show="scc.isEditable()">בחר תמונה
-                    </button>
+                    <!--                    <button type="button" class="btn btn-outline-primary mt-1"-->
+                    <!--                            ngf-select="scc.uploadFileToAws(card,$file)"-->
+                    <!--                            accept="image/*" ngf-max-size="30MB" ngf-resize="{width: 600, height: 800, quality: .8, type: 'image/jpeg',-->
+                    <!--               ratio: '3:4'}" ngf-fix-orientation="true" ng-show="scc.isEditable()">בחר תמונה-->
+                    <!--                    </button>-->
                     <div class="card-body">
 
-                        <input class="form-control form-control-lg" type="text" placeholder="מספר הזמנה"
-                               ng-model="card.order_number"
-                               ng-change="scc.updateShippingCard(card)" ng-disabled="!scc.isEditable()">
+                        <!--                        <input class="form-control form-control-lg" type="text" placeholder="מספר הזמנה"-->
+                        <!--                               ng-model="card.order_number"-->
+                        <!--                               ng-change="scc.updateShippingCard(card)" ng-disabled="!scc.isEditable()">-->
+                        <h5 class="card-title text-right">מספר הזמנה: {{card.order_number}}</h5>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
                                 <button ng-show="scc.isEditable()" type="button" ng-click="scc.moveCardToFinished(card)"
@@ -46,10 +47,13 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLongTitle">{{card.order_number}}</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                                <h5 class="modal-title text-right" id="exampleModalLongTitle">
+                                     מס' הזמנה: {{card.order_number}}</h5>
+                                <div class="float-left">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
                             </div>
                             <div class="modal-body">
                                 <!--                                    <div image-loader-with-orientation ng-model="card.tempOrderImageUrl"-->
@@ -75,6 +79,9 @@
 
                             </div>
                             <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-primary ml-auto"
+                                        ng-click="scc.moveToEditMode(card)" ng-show="scc.isEditable()">ערוך
+                                </button>
                                 <button type="button" class="btn btn-outline-danger ml-auto"
                                         ng-click="scc.deleteShippingCard(card)" ng-show="!scc.isEditable()">מחק
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
@@ -104,7 +111,7 @@
                             ng-disabled="scc.cardToAdd.isSaving">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h5 class="modal-title ml-auto float-right">חלון יצירת תיאום למשלוח</h5>
+                    <h5 class="modal-title ml-auto float-right">{{scc.createModalTitle()}}</h5>
                 </div>
                 <div class="modal-body">
 
@@ -131,17 +138,18 @@
                     </div>
 
                     <div class="text-center">
-                        <img class="border border-primary rounded img-fluid"
+                        <img class="border border-primary rounded img-fluid edit-image"
                              ngf-src="scc.onEditImage"
                              ngf-background="scc.onEditImage"
-                             ngf-resize="{width: 356, quality: 0.9}">
+                             ngf-resize="{width: 256, quality: 0.9}">
                     </div>
 
 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary ml-auto"
-                            ng-click="scc.saveShippingCard(card)" ng-show="scc.isEditable()">שמור
+                            ng-click="scc.saveShippingCard(card)" ng-show="scc.isEditable()">
+                        {{scc.getModalCreateType()}}
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                               ng-show="scc.cardToAdd.isSaving"></span>
                     </button>

@@ -14,6 +14,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     self.loadedFirstTime = false
 
+    self.shippingCardInEditMode = false
+
     self.isEditable = function(){
         return self.state == 'ongoing'
     }
@@ -32,6 +34,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     }
 
     self.addShippingCard = function(){
+        self.shouldFetchCards = false
         self.cardToAdd = {
                 'id' : commonUtilsService.makeID(self.idLength),
                 'order_number' : '',
@@ -57,19 +60,60 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     }
 
+    if (typeof JSON.clone !== "function") {
+        JSON.clone = function(obj) {
+            return JSON.parse(JSON.stringify(obj));
+        };
+    }
+
+    self.moveToEditMode = function(card){
+        self.shouldFetchCards = false
+        self.shippingCardInEditMode = true
+        self.cardToAdd = JSON.clone(card)
+        self.imageChanged = false
+        $(`#dialog${card.id}`).modal('hide')
+        self.cardToSaveFilePath = card.order_image_aws_path
+
+        self.onEditImage = card.tempOrderImageUrl
+        $('#createModal').modal({})
+    }
+
+    $('#createModal').on('hidden.bs.modal', function () {
+        self.shippingCardInEditMode = false
+        self.shouldFetchCards = true
+    });
+
+    self.getModalCreateType = function(){
+        if (self.shippingCardInEditMode == false){
+            return "צור"
+        } else{
+            return "שמור"
+        }
+    }
+
+    self.createModalTitle = function(){
+        if (self.shippingCardInEditMode == false){
+            return "חלון יצירת תיאום למשלוח"
+        } else{
+            return "חלון עריכת תיאום משלוח קיים"
+        }
+    }
+
     self.uploadImageOnModal = function(file){
-        self.onEditImage = file
-        self.cardToSaveFilePath = file.name
+        if(file != null){
+            self.imageChanged = true
+            self.onEditImage = file
+            self.cardToSaveFilePath = file.name
+        }
     }
 
     self.saveShippingCard = function(){
-        self.shouldFetchCards = false
         self.cardToAdd.isSaving = true
-        if (self.onEditImage == '/static/default.png'){
+        if (self.onEditImage == '/static/default.png' || self.imageChanged == false){
             self.saveShippingCardPostImageUpload()
         } else {
             self.uploadFileToAwsWithPresign(self.cardToAdd, self.onEditImage).then(function(response){
-            self.saveShippingCardPostImageUpload()
+                self.saveShippingCardPostImageUpload()
             }, function(error){
             })
         }
@@ -77,13 +121,16 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     self.saveShippingCardPostImageUpload = function(){
         self.updateShippingCardWithPresign(self.cardToAdd).then(function(response){
-        $timeout(function(){
-               self.shippingCards.push(
-                self.cardToAdd
-            )
+            if (self.shippingCardInEditMode == true){
+                var cardBeforeEdit = commonUtilsService.findByID(self.shippingCards, self.cardToAdd.id)
+                commonUtilsService.deleteFromArray(self.shippingCards, cardBeforeEdit)
+            }
+            $timeout(function(){
+                self.shippingCards.push(
+                    self.cardToAdd
+                    )
+            }, 0);
             shippingCardService.updateCardTempOrderImageUrl($scope, self.cardToAdd)
-        }, 0);
-
             $('#createModal').modal('hide');
             self.cardToAdd.isSaving = false
             self.shouldFetchCards = true

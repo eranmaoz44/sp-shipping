@@ -133,3 +133,7 @@ footer p {
 .click-cursor{
     cursor: pointer;
 }
+
+.edit-image{
+    width: 256px;
+}
