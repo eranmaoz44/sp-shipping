@@ -43,27 +43,62 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
 
     self.availabilities = []
 
-    self.addAvailability = function(){
-        var nextAvailabilityIndex = self.availabilities.length
-        nextAvailability = {
+    self.createCoordinationWithModal = function(){
+        self.isCreatingNewCoordination = true
+//        var nextAvailabilityIndex = self.availabilities.length
+        self.coordinationInEdit = {
             id: commonUtilsService.makeID(self.idLength),
             shipping_id: self.getShippingID(),
             date: dateFormat(new Date(), self.dateFormat),
             from_hour: self.defaultHourValue,
             to_hour: self.defaultHourValue,
         }
-        self.availabilities.push(nextAvailability)
+//        self.availabilities.push(nextAvailability)
 
-        self.updateAvailability(nextAvailability)
+//        self.updateAvailability(nextAvailability)
 
-        $timeout(self.setUpDateElement.bind(null, nextAvailability), 0);
+        $('#editCoordinationModal').modal({})
+
+        $timeout(self.setUpDateElement.bind(null, self.coordinationInEdit), 0);
+
+    }
+
+    self.getEditCoordinationModalUpdateButton = function (){
+        if (self.isCreatingNewCoordination == true){
+            return "צור"
+        } else {
+            return "שמור"
+        }
+    }
+
+    self.getEditCoordinationModalTitle = function (){
+        if (self.isCreatingNewCoordination == true){
+            return "חלון יצירת טווח שעות לתיאום חדש"
+        } else {
+            return "חלון עריכת טווח שעות לתיאום קיים"
+        }
+    }
+
+    self.saveCoordinationFromEditModal = function(){
+        self.isSavingCoordination = true
+        self.updateAvailabilityWithPresign(self.coordinationInEdit)
+            .then(function(result){
+                $timeout(function(){
+                    self.availabilities.push(self.coordinationInEdit)
+                }, 0);
+                self.isSavingCoordination = false
+                $('#editCoordinationModal').modal('hide');
+            }, function(error){
+                console.log(`Failed creating/saving coordination because ${error}`)
+                self.isSavingCoordination = false
+            })
 
     }
 
     self.setUpDateElement = function(availability){
         console.log('setUpDateElement')
         console.log(availability)
-        var dateElement = $(`#datePicker${availability.id}`)
+        var dateElement = $(`#datePickerInEdit${availability.id}`)
         dateElement.datepicker({
             weekStart: 1,
             daysOfWeekHighlighted: "6,0",
@@ -76,10 +111,10 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
 
         dateElement.datepicker()
             .on('changeDate', function(e) {
-                currentID = e.currentTarget.id.replace('datePicker', '')
+                currentID = e.currentTarget.id.replace('datePickerInEdit', '')
                 currentAvailability = commonUtilsService.findByID(self.availabilities, currentID)
-                currentAvailability.date = dateFormat(e.date, self.dateFormat),
-                self.updateAvailability(currentAvailability)
+                currentAvailability.date = dateFormat(e.date, self.dateFormat)
+//                self.updateAvailability(currentAvailability)
             });
     }
 
@@ -114,7 +149,7 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
         console.log(self.availabilities)
     }
 
-    self.updateAvailability = function(availability){
+    self.updateAvailability = function(availability, resolve, reject){
 
         var config = {
             headers : {
@@ -130,14 +165,22 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
             .then(
                 function (response) {
                     $scope.PostDataResponse = response.data;
+                    resolve(true)
                  },
                 function (error) {
                     $scope.ResponseDetails = "Data: " + error.data +
                         "<hr />status: " + error.status +
                         "<hr />headers: " + error.headers +
                         "<hr />config: " + error.config;
+                    reject(error.data)
                  }
            );
+    }
+
+    self.updateAvailabilityWithPresign = function(availability){
+        return new Promise(function(resolve, reject){
+            return self.updateAvailability(availability, resolve, reject)
+        })
     }
 
     self.getAllAvailabilities = function(shipping_id){
