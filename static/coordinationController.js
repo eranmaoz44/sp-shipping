@@ -44,6 +44,7 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
     self.availabilities = []
 
     self.createCoordinationWithModal = function(){
+        self.disableCoordinationRefresh = true
         self.isCreatingNewCoordination = true
 //        var nextAvailabilityIndex = self.availabilities.length
         self.coordinationInEdit = {
@@ -62,6 +63,26 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
         $timeout(self.setUpDateElement.bind(null, self.coordinationInEdit), 0);
 
     }
+
+    if (typeof JSON.clone !== "function") {
+        JSON.clone = function(obj) {
+            return JSON.parse(JSON.stringify(obj));
+        };
+    }
+
+    self.openEditModalForExistingCoordination = function(coordination) {
+        self.disableCoordinationRefresh = true
+        self.isCreatingNewCoordination = false
+        self.coordinationInEdit = JSON.clone(coordination)
+
+        $('#editCoordinationModal').modal({})
+
+        $timeout(self.setUpDateElement.bind(null, self.coordinationInEdit), 0);
+    }
+
+    $('#editCoordinationModal').on('hidden.bs.modal', function () {
+        self.disableCoordinationRefresh = false
+    });
 
     self.getEditCoordinationModalUpdateButton = function (){
         if (self.isCreatingNewCoordination == true){
@@ -83,6 +104,10 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
         self.isSavingCoordination = true
         self.updateAvailabilityWithPresign(self.coordinationInEdit)
             .then(function(result){
+                if (self.isCreatingNewCoordination == false){
+                    var oldCoordination = commonUtilsService.findByID(self.availabilities, self.coordinationInEdit.id)
+                    commonUtilsService.deleteFromArray(self.availabilities, oldCoordination)
+                }
                 $timeout(function(){
                     self.availabilities.push(self.coordinationInEdit)
                 }, 0);
@@ -93,6 +118,21 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
                 self.isSavingCoordination = false
             })
 
+    }
+
+    self.deleteCoordinationInEdit = function(){
+        self.isDeletingCoordination = true
+        self.deleteCoordinationWithPresign(self.coordinationInEdit).then(function(result){
+
+            self.isDeletingCoordination = false
+            $timeout(function(){
+                commonUtilsService.deleteFromArray(self.availabilities, self.coordinationInEdit)
+            }, 0);
+            $('#editCoordinationModal').modal('hide');
+        }, function(error){
+            self.isDeletingCoordination = false
+            console.log(`could not remove coordination inside edit because ${error}`)
+        })
     }
 
     self.setUpDateElement = function(availability){
@@ -120,7 +160,7 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
 
     self.hours = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00']
 
-    self.removeAvailability = function(availability){
+    self.deleteCoordination = function(availability, resolve, reject){
         console.log(availability)
 
         var config = {
@@ -137,16 +177,24 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
             .then(
                 function (response) {
                     $scope.PostDataResponse = response.data;
-                    commonUtilsService.deleteFromArray(self.availabilities, availability)
+//                    commonUtilsService.deleteFromArray(self.availabilities, availability)
+                    resolve(true)
                  },
                 function (error) {
                     $scope.ResponseDetails = "Data: " + error.data +
                         "<hr />status: " + error.status +
                         "<hr />headers: " + error.headers +
                         "<hr />config: " + error.config;
+                    resolve(error.data)
                  }
            );
         console.log(self.availabilities)
+    }
+
+    self.deleteCoordinationWithPresign = function(coordination){
+        return new Promise(function(resolve, reject){
+            self.deleteCoordination(coordination, resolve,reject)
+        })
     }
 
     self.updateAvailability = function(availability, resolve, reject){
@@ -184,6 +232,9 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
     }
 
     self.getAllAvailabilities = function(shipping_id){
+        if(self.disableCoordinationRefresh == true){
+            return
+        }
         var config = {
             headers : {
                     'Content-Type': 'application/json;charset=utf-8;'

@@ -46,6 +46,10 @@
 
 
 
+
+
+
+
     </script>
     <script src="\static\node_modules\bootstrap-datepicker\dist\js\bootstrap-datepicker.min.js"></script>
     <script src="\static\node_modules\bootstrap-datepicker\js\locales\bootstrap-datepicker.he.js"
@@ -149,7 +153,9 @@
                          data-target="#dialog">
                 </div>
             </div>
-
+            <div class="col font-weight-bold d-inline p-2 bg-secondary text-white text-right float-right my-2">
+                תיאום שעות
+            </div>
             <div class="row d-flex justify-content-center input-group flex-row input-group-lg availabilities"
                  ng-repeat="availability in cc.availabilities">
                 <div class="col-sm-4 d-flex flex-row">
@@ -183,10 +189,15 @@
                     </select>
                 </div>
 
-                <img src="/static/open-iconic/svg/trash.svg"
+                <!--                <img src="/static/open-iconic/svg/trash.svg"-->
+                <!--                     alt="icon name"-->
+                <!--                     class="editIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"-->
+                <!--                     ng-click="cc.removeAvailability(availability)" mobile-hover-fix-directive-->
+                <!--                     ng-show="cc.isEditable()">-->
+                <img src="/static/open-iconic/svg/wrench.svg"
                      alt="icon name"
-                     class="deleteIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
-                     ng-click="cc.removeAvailability(availability)" mobile-hover-fix-directive
+                     class="editIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
+                     ng-click="cc.openEditModalForExistingCoordination(availability)" mobile-hover-fix-directive
                      ng-show="cc.isEditable()">
 
             </div>
@@ -230,7 +241,12 @@
                                 ng-disabled="cc.isSavingCoordination">
                             <span aria-hidden="true">&times;</span>
                         </button>
+
                         <h5 class="modal-title ml-auto float-right">{{cc.getEditCoordinationModalTitle()}}</h5>
+<!--                        <button type="button" class="btn btn-secondary" data-dismiss="modal"-->
+<!--                                ng-disabled="cc.isSavingCoordination">סגור-->
+<!--                        </button>-->
+
                     </div>
                     <div class="modal-body">
                         <div class="input-group mb-3">
@@ -270,9 +286,13 @@
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                                       ng-show="cc.isSavingCoordination"></span>
                             </button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                                    ng-disabled="cc.isSavingCoordination">סגור
-                            </button>
+                                                    <button type="button" class="btn btn-outline-danger"
+                                ng-click="cc.deleteCoordinationInEdit()" ng-disabled="cc.isSavingCoordination"
+                                ng-show="!cc.isCreatingNewCoordination">
+                            מחק
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                  ng-show="cc.isDeletingCoordination"></span>
+                        </button>
                         </div>
                     </div>
                 </div>
