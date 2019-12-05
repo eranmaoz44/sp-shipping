@@ -48,7 +48,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title text-right" id="exampleModalLongTitle">
-                                     מס' הזמנה: {{card.order_number}}</h5>
+                                    מס' הזמנה: {{card.order_number}}</h5>
                                 <div class="float-left">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
@@ -65,23 +65,28 @@
                                         <img ng-src="{{card.tempOrderImageUrl}}"
                                              class="img-fluid" alt="Responsive image">
                                     </div>
-
-                                    <div class="d-flex flex-row" role="group" aria-label="Basic example">
-                                        <button class="btn btn-primary m-1"
-                                                ng-click="scc.navigateToCoordination(card.id)">לינק לתיאום ההובלה
-                                        </button>
-                                        <button class="btn btn-secondary m-1"
-                                                ng-click="scc.copyCoordinationLinkToClipboard(card.id)">העתק קישור
-                                        </button>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">#טלפון</span>
+                                        </div>
+                                        <input type="text" class="form-control" placeholder="מס' טלפון"
+                                               aria-label="Username"
+                                               aria-describedby="basic-addon1" ng-model="card.phone_number" readonly>
                                     </div>
                                 </div>
 
 
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-outline-primary ml-auto"
-                                        ng-click="scc.moveToEditMode(card)" ng-show="scc.isEditable()">ערוך
-                                </button>
+                                <div class="ml-auto">
+                                    <button type="button" class="btn btn-outline-primary"
+                                            ng-click="scc.moveToEditMode(card)" ng-show="scc.isEditable()">ערוך
+                                    </button>
+                                    <button class="btn btn-primary m-1"
+                                            ng-click="scc.navigateToCoordination(card.id)">לינק לתיאום ההובלה
+                                    </button>
+                                </div>
+
                                 <button type="button" class="btn btn-outline-danger ml-auto"
                                         ng-click="scc.deleteShippingCard(card)" ng-show="!scc.isEditable()">מחק
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
@@ -107,7 +112,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
                             ng-disabled="scc.cardToAdd.isSaving">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -117,7 +122,7 @@
 
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">#</span>
+                            <span class="input-group-text" id="basic-addon1">#הזמנה</span>
                         </div>
                         <input type="text" class="form-control" placeholder="מס' הזמנה" aria-label="Username"
                                aria-describedby="basic-addon1" ng-model="scc.cardToAdd.order_number">
@@ -144,6 +149,13 @@
                              ngf-resize="{width: 256, quality: 0.9}">
                     </div>
 
+                    <div class="input-group mb-3 my-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">#טלפון</span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="מס' טלפון" aria-label="Username"
+                               aria-describedby="basic-addon1" ng-model="scc.cardToAdd.phone_number">
+                    </div>
 
                 </div>
                 <div class="modal-footer">

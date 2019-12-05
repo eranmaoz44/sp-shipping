@@ -111,9 +111,9 @@ def aws_delete_file():
 if __name__ == '__main__':
     application.run(host='0.0.0.0')
     # WhatsappConnector.send_message("hello whatsapp", WhatsappConnector.TWILIO_SANDBOX_TEST_NUMBER, WhatsappConnector.MY_WHATSAPP)
-    #DBConnecter.execute_write_query("DROP TABLE availabilities")
-    #DBConnecter.execute_write_query("DROP TABLE shipping")
-    # DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar, date varchar, state varchar);")
+    # DBConnecter.execute_write_query("DROP TABLE availabilities")
+    # DBConnecter.execute_write_query("DROP TABLE shipping")
+    # DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar, date varchar, state varchar, phone_number varchar);")
     # DBConnecter.execute_write_query(
     #     "CREATE TABLE availabilities (id varchar, shipping_id varchar REFERENCES shipping(id) ON DELETE CASCADE, "
     #     "date varchar, from_hour varchar, to_hour varchar, PRIMARY KEY (id,shipping_id));")
