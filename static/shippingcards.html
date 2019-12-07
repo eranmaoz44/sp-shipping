@@ -23,7 +23,6 @@
                     <!--               ratio: '3:4'}" ngf-fix-orientation="true" ng-show="scc.isEditable()">בחר תמונה-->
                     <!--                    </button>-->
                     <div class="card-body">
-
                         <!--                        <input class="form-control form-control-lg" type="text" placeholder="מספר הזמנה"-->
                         <!--                               ng-model="card.order_number"-->
                         <!--                               ng-change="scc.updateShippingCard(card)" ng-disabled="!scc.isEditable()">-->
@@ -69,10 +68,35 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text">#טלפון</span>
                                         </div>
-                                        <a class="btn btn-link text-right" href="tel:{{card.phone_number}}">{{card.phone_number}}</a>
-<!--                                        <input type="text" class="form-control" placeholder="מס' טלפון"-->
-<!--                                               aria-label="Username"-->
-<!--                                               aria-describedby="basic-addon1" ng-model="card.phone_number" readonly>-->
+                                        <a class="btn btn-link text-right" href="tel:{{card.phone_number}}"
+                                           ng-click="scc.">{{card.phone_number}}</a>
+                                        <!--                                        <input type="text" class="form-control" placeholder="מס' טלפון"-->
+                                        <!--                                               aria-label="Username"-->
+                                        <!--                                               aria-describedby="basic-addon1" ng-model="card.phone_number" readonly>-->
+                                    </div>
+                                    <div class="input-group mb-3 my-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">עלות ההובלה</span>
+                                        </div>
+                                        <input type="text" class="form-control" placeholder="לא צוין"
+                                               aria-label="Price"
+                                               aria-describedby="basic-addon1" ng-model="card.price" disabled>
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">מי משלם</span>
+                                        </div>
+                                        <select class="custom-select" ng-model="card.who_pays" disabled>
+                                            <option selected>לא צוין</option>
+                                            <option>הלקוח</option>
+                                            <option>החנות</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="input-group mb-3 my-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">מידע נוסף</span>
+                                        </div>
+                                        <textarea class="form-control" aria-label="מידע נוסף"
+                                                  ng-model="card.extra_info" disabled></textarea>
                                     </div>
                                 </div>
 
@@ -157,6 +181,31 @@
                         <input type="text" class="form-control" placeholder="מס' טלפון" aria-label="Username"
                                aria-describedby="basic-addon1" ng-model="scc.cardToAdd.phone_number">
                     </div>
+
+                    <div class="input-group mb-3 my-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">עלות ההובלה</span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="לא צוין" aria-label="Price"
+                               aria-describedby="basic-addon1" ng-model="scc.cardToAdd.price">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">על חשבון</span>
+                        </div>
+                        <select class="custom-select" ng-model="scc.cardToAdd.who_pays">
+                            <option selected>לא צוין</option>
+                            <option>הלקוח</option>
+                            <option>החנות</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group mb-3 my-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">מידע נוסף</span>
+                        </div>
+                        <textarea class="form-control" aria-label="מידע נוסף"
+                                  ng-model="scc.cardToAdd.extra_info"></textarea>
+                    </div>
+
 
                 </div>
                 <div class="modal-footer">

@@ -41,7 +41,10 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 'order_image_aws_path' : self.default_image_aws_path,
                 'date' : dateFormat(new Date(), self.dateFormat),
                 'state' : 'ongoing',
-                'phone_number' : ''
+                'phone_number' : '',
+                'price' : '',
+                'who_pays' : 'לא צוין',
+                'extra_info' : ''
         }
 
         self.cardToSaveFilePath = 'default.png'
@@ -182,6 +185,9 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                        oldCard.date = newOrOldCard.date
                        oldCard.state = newOrOldCard.state
                        oldCard.phone_number = newOrOldCard.phone_number
+                       oldCard.price = newOrOldCard.price
+                       oldCard.who_pays = newOrOldCard.who_pays
+                       oldCard.extra_info = newOrOldCard.extra_info
                     }
                     else {
                         oldCards.push(newOrOldCard)
