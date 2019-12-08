@@ -18,6 +18,11 @@ def index():
     print(os.getcwd())
     return flask.send_file('templates/index.html', mimetype='text.html')
 
+@application.route('/login')
+def login():
+    print(os.getcwd())
+    return flask.send_file('templates/login.html', mimetype='text.html')
+
 
 @application.route('/coordination')
 def render_coordination_template():
