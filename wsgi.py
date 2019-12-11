@@ -8,6 +8,7 @@ from Availability import Availability
 from AwsConnector import AwsConnector
 from DBConnecter import DBConnecter
 from Shipping import Shipping
+from User import User
 
 application = Flask(__name__)
 cors = CORS(application, resources={r"/api/*": {"origins": "*"}})
@@ -118,10 +119,16 @@ if __name__ == '__main__':
     # WhatsappConnector.send_message("hello whatsapp", WhatsappConnector.TWILIO_SANDBOX_TEST_NUMBER, WhatsappConnector.MY_WHATSAPP)
     # DBConnecter.execute_write_query("DROP TABLE availabilities")
     # DBConnecter.execute_write_query("DROP TABLE shipping")
-    # DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar, date varchar, state varchar, phone_number varchar, price varchar, who_pays varchar, extra_info varchar);")
+    #DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar, date varchar, state varchar, phone_number varchar, price varchar, who_pays varchar, extra_info varchar);")
     # DBConnecter.execute_write_query(
     #     "CREATE TABLE availabilities (id varchar, shipping_id varchar REFERENCES shipping(id) ON DELETE CASCADE, "
     #     "date varchar, from_hour varchar, to_hour varchar, PRIMARY KEY (id,shipping_id));")
+    # DBConnecter.execute_write_query("DROP TABLE users")
+    # DBConnecter.execute_write_query("CREATE TABLE users (id varchar PRIMARY KEY, password_hash varchar);")
+    # user = User.create_new_user('admin', 'admin')
+    # user.insert_or_update()
+    # print(User.get_all_elements())
+
     # shipping = Shipping.fromJson({
     #         'id': 'abcdefghijklmnop',
     #          'orderNumber': '22222',
