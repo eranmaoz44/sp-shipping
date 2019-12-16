@@ -1,31 +1,101 @@
 import json
 import os
 import flask
-from flask import Flask, Response, request
+from flask import Flask, Response, request, flash, redirect, url_for
 from flask_cors import CORS
+from werkzeug.urls import url_parse
 
 from Availability import Availability
 from AwsConnector import AwsConnector
-from DBConnecter import DBConnecter
+
 from Shipping import Shipping
+
+from flask_login import LoginManager, current_user, login_user, logout_user, login_required
+
 from User import User
+from UserWithHashPassword import UserWithHashPassword
 
 application = Flask(__name__)
 cors = CORS(application, resources={r"/api/*": {"origins": "*"}})
 
+application.secret_key = 'super secret key'
 
+login = LoginManager(application)
+login.login_view = 'login'
+users = {}
+
+
+
+@login.user_loader
+def load_user(id):
+    res = None
+    if id in users:
+        res = users[id]
+    return res
+
+
+@application.route('/index')
 @application.route('/')
+@login_required
 def index():
     print(os.getcwd())
     return flask.send_file('templates/index.html', mimetype='text.html')
 
-@application.route('/login')
-def login():
+
+def send_login_html():
     print(os.getcwd())
     return flask.send_file('templates/login.html', mimetype='text.html')
 
 
+@application.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        request_json = request.get_json()
+        id = request_json['id']
+        password = request_json['password']
+        remember_me = request_json['remember_me']
+        user = User(id, password)
+        users[id] = user
+        if not user.is_authenticated():
+            flash('Invalid username or password')
+            return Response(status=401)
+        login_user(user, remember=remember_me)
+        next_page = extract_next_page_from_login_referer()
+
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('index')
+        print('next_page ' + next_page)
+        return Response(status=200, response=next_page)
+    return send_login_html()
+
+
+def extract_next_page_from_login_referer():
+    referer_args = url_parse(request.headers['Referer']).decode_query()
+    res = None
+    if 'next' in referer_args:
+        res = referer_args['next']
+    return res
+
+
+@application.route('/user/id', methods=['GET'])
+def get_user_id():
+    res = 'Not signed in, please do'
+    if current_user is not None and current_user.is_authenticated:
+        res = current_user.id
+        print(current_user.get_id())
+    return Response(status=200, response=res)
+
+
+@application.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
 @application.route('/coordination')
+@login_required
 def render_coordination_template():
     print(os.getcwd())
     return flask.send_file('templates/coordination.html', mimetype='text.html')
@@ -119,7 +189,7 @@ if __name__ == '__main__':
     # WhatsappConnector.send_message("hello whatsapp", WhatsappConnector.TWILIO_SANDBOX_TEST_NUMBER, WhatsappConnector.MY_WHATSAPP)
     # DBConnecter.execute_write_query("DROP TABLE availabilities")
     # DBConnecter.execute_write_query("DROP TABLE shipping")
-    #DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar, date varchar, state varchar, phone_number varchar, price varchar, who_pays varchar, extra_info varchar);")
+    # DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar, date varchar, state varchar, phone_number varchar, price varchar, who_pays varchar, extra_info varchar);")
     # DBConnecter.execute_write_query(
     #     "CREATE TABLE availabilities (id varchar, shipping_id varchar REFERENCES shipping(id) ON DELETE CASCADE, "
     #     "date varchar, from_hour varchar, to_hour varchar, PRIMARY KEY (id,shipping_id));")

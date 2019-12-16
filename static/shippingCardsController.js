@@ -16,6 +16,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     self.shippingCardInEditMode = false
 
+
     self.isEditable = function(){
         return self.state == 'ongoing'
     }

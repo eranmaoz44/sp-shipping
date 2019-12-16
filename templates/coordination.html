@@ -35,29 +35,11 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     </script>
     <script src="\static\node_modules\bootstrap-datepicker\dist\js\bootstrap-datepicker.min.js"></script>
     <script src="\static\node_modules\bootstrap-datepicker\js\locales\bootstrap-datepicker.he.js"
             charset="UTF-8"></script>
     <script src="\static\node_modules\dateformat\lib\dateformat.js"></script>
-    <script src="static\node_modules\JavaScript-Load-Image-master\js\load-image.all.min.js"></script>
 
     <script src="\static\shippingApp.js"></script>
     <script src="\static\awsFileService.js"></script>
@@ -66,6 +48,7 @@
     <script src="\static\mobileHoverFixDirective.js"></script>
     <script src="\static\commonUtilsService.js"></script>
     <script src="\static\coordinationController.js"></script>
+    <script src="\static\userController.js"></script>
 
     <!-- ****** faviconit.com favicons ****** -->
     <link rel="shortcut icon" href="/static/favicon/favicon.ico">
@@ -113,6 +96,12 @@
         </div>
     </div>
     <div class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="pull-right align-middle">
+            <p class="navbar-brand text-center" ng-controller="userController as uc">
+                <span class="text-right">שלום {{uc.user_id}}</span><br>
+                <a target="_self" href="/logout" class="btn btn-link text-light bg-dark">לחץ כאן כדי להתנתק</a>
+            </p>
+        </div>
         <div class="container d-flex justify-content-between">
             <a target="_self" href="/" class="navbar-brand d-flex align-items-center">
                 <img src="/static/open-iconic/svg/location.svg" class="sp-ship-icon">
@@ -159,8 +148,7 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text">#טלפון</span>
                 </div>
-                <a class="btn btn-link text-right" href="tel:{{card.phone_number}}"
-                   ng-click="scc.">{{cc.card.phone_number}}</a>
+                <a class="btn btn-link text-right" href="tel:{{card.phone_number}}">{{cc.card.phone_number}}</a>
                 <!--                                        <input type="text" class="form-control" placeholder="מס' טלפון"-->
                 <!--                                               aria-label="Username"-->
                 <!--                                               aria-describedby="basic-addon1" ng-model="card.phone_number" readonly>-->
@@ -340,10 +328,7 @@
 
 <footer class="text-muted">
     <div class="container">
-
-        <p class="float-right">
-            <a href="#">שלום</a>
-        </p>
+        
         <p>sp-shipping is &copy; Eran Maoz, Use it to your advantage!</p>
         <p>תוכנה זו נודעה לייצר המלצות בלבד ואינה מחייבת</p>
     </div>

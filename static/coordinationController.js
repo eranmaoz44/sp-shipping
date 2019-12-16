@@ -9,7 +9,11 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
     self.dateFormat = 'dd/mm/yyyy'
 
     self.isEditable = function(){
-        return self.card.state == 'ongoing'
+        res = false
+        if (self.card != null){
+            res = (self.card.state == 'ongoing')
+        }
+        return res
     }
 
     self.getShippingID =  function(){
