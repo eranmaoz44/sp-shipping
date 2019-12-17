@@ -76,12 +76,16 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         self.shippingCardInEditMode = true
         self.cardToAdd = JSON.clone(card)
         self.imageChanged = false
-        $(`#dialog${card.id}`).modal('hide')
         self.cardToSaveFilePath = card.order_image_aws_path
-
         self.onEditImage = card.tempOrderImageUrl
-        $('#createModal').modal({})
+        $(`#dialog${card.id}`).on('hidden.bs.modal', function () {
+            if(self.shippingCardInEditMode){
+                $('#createModal').modal('show')
+            }
+        })
+        $(`#dialog${card.id}`).modal('hide')
     }
+
 
     $('#createModal').on('hidden.bs.modal', function () {
         self.shippingCardInEditMode = false
