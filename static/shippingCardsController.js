@@ -1,4 +1,4 @@
-function shippingCardsController($http, $scope, $location,$window, awsFileService,shippingCardService, commonUtilsService, $timeout){
+function shippingCardsController($http, $scope, $location,$window, awsFileService,shippingCardService, commonUtilsService, $timeout, userService){
 
     var self = this
 
@@ -16,10 +16,39 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     self.shippingCardInEditMode = false
 
+    self.user_id = null
 
     self.isEditable = function(){
         return self.state == 'ongoing'
     }
+
+    self.hasAdminPermissions = function(){
+        return self.user_id == 'admin'
+    }
+
+    self.setUserId = function(){
+        userService.getUserIdWithPromise().then(function(result){
+            self.user_id = result
+            console.log(`Setting user_id to ${self.user_id}`)
+        }, function(error){
+            console.log(`Could retrieve user id for admin permissions ${error}`)
+        })
+    }
+
+    self.setUserId()
+
+    self.setUserIdInterval = setInterval(function(){
+        console.log('Entering set user id interval')
+        if(self.user_id != null){
+            clearInterval(self.setUserIdInterval)
+            console.log('Ending set user id interval')
+        } else {
+            console.log('Set user id interval attempting another go')
+            self.setUserId();
+        }
+    }, 30000)
+
+    self.blabla = true
 
     self.moveCardToFinished = function(card){
         card.isMovingToFinishState = true
@@ -378,6 +407,6 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
 angular
     .module('shippingApp')
-    .controller('shippingCardsController', shippingCardsController, ['$http', '$scope', '$location','$window', 'awsFileService', 'shippingCardService', 'commonUtilsService', '$timeout'])
+    .controller('shippingCardsController', shippingCardsController, ['$http', '$scope', '$location','$window', 'awsFileService', 'shippingCardService', 'commonUtilsService', '$timeout', 'userService'])
 
 

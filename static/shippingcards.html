@@ -124,7 +124,7 @@
             </div>
         </div>
     </div>
-    <div ng-show="scc.isEditable() && scc.loadedFirstTime" class="fixed-bottom text-center">
+    <div ng-show="scc.isEditable() && scc.loadedFirstTime && scc.hasAdminPermissions()" class="fixed-bottom text-center">
 
         <img src="/static/open-iconic/svg/plus.svg"
              alt="icon name" class="plusIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
