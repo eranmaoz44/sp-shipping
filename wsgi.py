@@ -7,6 +7,7 @@ from werkzeug.urls import url_parse
 
 from Availability import Availability
 from AwsConnector import AwsConnector
+from Scheduler import Scheduler
 
 from Shipping import Shipping
 
@@ -185,6 +186,7 @@ def aws_delete_file():
 
 
 if __name__ == '__main__':
+    Scheduler.schedule_tasks()
     application.run(host='0.0.0.0')
     # WhatsappConnector.send_message("hello whatsapp", WhatsappConnector.TWILIO_SANDBOX_TEST_NUMBER, WhatsappConnector.MY_WHATSAPP)
     # DBConnecter.execute_write_query("DROP TABLE availabilities")

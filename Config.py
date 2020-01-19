@@ -9,6 +9,9 @@ class Config(object):
 
         "TO_WHATSAPP_NUMBER": {
             "TEST": "whatsapp:+972525568537"
+        },
+        "SHIPPING_NUM_DAYS_ALIVE": {
+            "TEST": 60
         }
     }
 

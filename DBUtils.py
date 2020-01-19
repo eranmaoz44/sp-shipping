@@ -2,6 +2,8 @@ from DBConnecter import DBConnecter
 
 
 class DBUtils(object):
+    _SELECT_ALL_OPERATOR = 'SELECT *'
+    _DELETE_OPERATOR = 'DELETE'
     def __init__(self):
         pass
 
@@ -59,3 +61,21 @@ class DBUtils(object):
     def get_element(table, arg_id_name, arg_id_value, element_class):
         element_row = DBUtils.get_element_row(table, arg_id_name, arg_id_value)
         return element_class.from_tuple(element_row) if element_row is not None else element_row
+
+    @staticmethod
+    def get_elements_before_date(table, date_column_name, before_date, date_format, element_class):
+        query = DBUtils.create_before_date_query(table, DBUtils._SELECT_ALL_OPERATOR, date_column_name, date_format)
+        query_res = DBConnecter.execute_read_query(query, (before_date,))
+        elements = [element_class.from_tuple(x) for x in query_res]
+        return elements
+
+    @staticmethod
+    def create_before_date_query(table, operator_name, date_column_name, date_format):
+        return "{0} FROM {1} where TO_DATE({2}, {3})<TO_DATE(%s, {3})".format(operator_name, table,
+                                                                                date_column_name, date_format)
+
+    @staticmethod
+    def delete_elements_before_date(table, date_column_name, before_date, date_format):
+        query = DBUtils.create_before_date_query(table, DBUtils._DELETE_OPERATOR, date_column_name, date_format)
+        DBConnecter.execute_write_query(query, (before_date,))
+
