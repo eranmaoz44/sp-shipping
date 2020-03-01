@@ -11,7 +11,11 @@ class Config(object):
             "TEST": "whatsapp:+972525568537"
         },
         "SHIPPING_NUM_DAYS_ALIVE": {
-            "TEST": 60
+            "TEST": 14
+        }
+        ,
+        "WHATSAPP_SENDER_ADDRESS": {
+            "TEST": "http://localhost:5005/api/send"
         }
     }
 

@@ -14,7 +14,6 @@ from Shipping import Shipping
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 
 from User import User
-from UserWithHashPassword import UserWithHashPassword
 
 application = Flask(__name__)
 cors = CORS(application, resources={r"/api/*": {"origins": "*"}})

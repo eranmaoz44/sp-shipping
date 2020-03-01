@@ -4,9 +4,10 @@ from datetime import timedelta, date
 from AwsConnector import AwsConnector
 from Config import Config
 from DBElementWithID import DBElementWithID
-from WhatsappConnector import WhatsappConnector
 from flask import request
 import os
+
+from WhatsApp.WhatsAppConnector import WhatsAppConnector
 
 
 class Shipping(DBElementWithID):
@@ -37,7 +38,7 @@ class Shipping(DBElementWithID):
                                                      self.get_id_value()))
         from_whatsapp_number = Config.get_value('FROM_WHATSAPP_NUMBER')
         to_whatsapp_number = Config.get_value('TO_WHATSAPP_NUMBER')
-        WhatsappConnector.send_message(message, from_whatsapp_number, to_whatsapp_number)
+        WhatsAppConnector.send_message(message, from_whatsapp_number, to_whatsapp_number)
 
     @classmethod
     def from_dict(cls, dict_obj):
