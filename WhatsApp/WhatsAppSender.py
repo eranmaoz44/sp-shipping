@@ -14,7 +14,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 class WhatsAppSender(object):
     CHROMEDRIVER_PATH = 'C:\\Users\\User\\Desktop\\chromedriver.exe'
-    CHROME_PROFILE_PATH = 'C:\\Users\\User\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1'
+    CHROME_PROFILE_PATH = r'C:\Users\User\AppData\Local\Google\Chrome\User Data\Profile 3'
     WHATSAPP_URL = "https://web.whatsapp.com/"
     GROUP_X_PATH = "//div[span/@title='{0}']"
     GROUP_NAME = 'test'
@@ -26,9 +26,10 @@ class WhatsAppSender(object):
     @staticmethod
     def _set_browser():
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('profile-directory=Default')
+        #chrome_options.add_argument('profile-directory=Default')
         chrome_options.add_argument("disable-extensions")
-        chrome_options.add_argument("user-data-dir={0}".format(WhatsAppSender.CHROME_PROFILE_PATH))
+        chrome_options.add_argument(r"user-data-dir=C:\Users\User\AppData\Local\Google\Chrome\User Data")
+        chrome_options.add_argument('--profile-directory=Profile 3')
         browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=WhatsAppSender.CHROMEDRIVER_PATH)
 
         return browser
@@ -51,15 +52,12 @@ class WhatsAppSender(object):
 
     @staticmethod
     def _close_browser(browser):
-        time.sleep(1)
-        browser.close()
-        time.sleep(1)
         browser.quit()
 
     @staticmethod
     def _send_message_aux(browser, message):
         chatbox_x_path = WhatsAppSender.CHAT_BOX_X_PATH
-        chatbox_delay = 10
+        chatbox_delay = 15
         try:
             chatbox = WebDriverWait(browser, chatbox_delay).until(
                 EC.presence_of_element_located((By.XPATH, chatbox_x_path)))

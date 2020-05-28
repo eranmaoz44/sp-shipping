@@ -11,6 +11,9 @@ cors = CORS(application, resources={r"/api/*": {"origins": "*"}})
 
 application.secret_key = 'super secret key2'
 
+@application.route("/")
+def hello():
+    return "Hello from FastCGI via IIS!"
 
 @application.route('/api/send', methods=['POST'])
 def set_availability():
@@ -27,5 +30,6 @@ def fix_python_path_to_allow_import():
 
 if __name__ == '__main__':
     fix_python_path_to_allow_import()
-    application.run(host='0.0.0.0', port='5005')
+    #application.run(host='0.0.0.0', port='5005')
+    application.run()
 
