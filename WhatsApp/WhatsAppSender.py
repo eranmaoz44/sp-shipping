@@ -1,3 +1,4 @@
+import base64
 import logging
 import time
 
@@ -13,12 +14,14 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 
 class WhatsAppSender(object):
-    CHROMEDRIVER_PATH = 'C:\\Users\\User\\Desktop\\chromedriver.exe'
-    CHROME_PROFILE_PATH = r'C:\Users\User\AppData\Local\Google\Chrome\User Data\Profile 3'
+    CHROMEDRIVER_PATH = 'C:\\ChromeDriver\\chromedriver.exe'
+    CHROME_USERDATA_PATH = 'UserData'
+    CHROME_PROFILE_DIR = 'Profile'
     WHATSAPP_URL = "https://web.whatsapp.com/"
     GROUP_X_PATH = "//div[span/@title='{0}']"
     GROUP_NAME = 'test'
     CHAT_BOX_X_PATH = '//*[@id="main"]/footer/div[1]/div[2]/div/div[2]'
+    QR_CODE_IMG_PATH = 'qr_code\\img.png'
 
     def __init__(self):
         pass
@@ -28,8 +31,12 @@ class WhatsAppSender(object):
         chrome_options = webdriver.ChromeOptions()
         #chrome_options.add_argument('profile-directory=Default')
         chrome_options.add_argument("disable-extensions")
-        chrome_options.add_argument(r"user-data-dir=C:\Users\User\AppData\Local\Google\Chrome\User Data")
-        chrome_options.add_argument('--profile-directory=Profile 3')
+        chrome_options.add_argument(r"user-data-dir={0}".format(WhatsAppSender.CHROME_USERDATA_PATH))
+        chrome_options.add_argument('--profile-directory={0}'.format(WhatsAppSender.CHROME_PROFILE_DIR))
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--remote-debugging-port=9222")
+        chrome_options.add_argument('--window-size=1200,1100');
         browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=WhatsAppSender.CHROMEDRIVER_PATH)
 
         return browser
@@ -37,10 +44,12 @@ class WhatsAppSender(object):
     @staticmethod
     def send_message_local(message):
         try:
+            logging.info('Waiting for Browser')
             browser = WhatsAppSender._set_browser()
 
             browser.get(WhatsAppSender.WHATSAPP_URL)
 
+            WhatsAppSender._handle_qrcode(browser)
             # Replace 'Friend's Name' with the name of your friend
             # or the name of a group
 
@@ -57,7 +66,7 @@ class WhatsAppSender(object):
     @staticmethod
     def _send_message_aux(browser, message):
         chatbox_x_path = WhatsAppSender.CHAT_BOX_X_PATH
-        chatbox_delay = 15
+        chatbox_delay = 100000
         try:
             chatbox = WebDriverWait(browser, chatbox_delay).until(
                 EC.presence_of_element_located((By.XPATH, chatbox_x_path)))
@@ -67,7 +76,7 @@ class WhatsAppSender(object):
                     Keys.ENTER).perform()
             chatbox.send_keys(Keys.ENTER)
         except TimeoutException:
-            logging.ERROR('Was not able to load WhatsApp checkbox when trying to load it')
+            logging.error('Was not able to load WhatsApp checkbox when trying to load it')
 
     @staticmethod
     def _get_group_element(browser):
@@ -77,7 +86,29 @@ class WhatsAppSender(object):
             group = WebDriverWait(browser, group_delay).until(EC.presence_of_element_located((By.XPATH, group_x_path)))
             group.click()
         except TimeoutException:
-            logging.ERROR('Was not able to load the WhatsApp website when trying to find group element')
+            logging.error('Was not able to load the WhatsApp website when trying to find group element')
 
+    @staticmethod
+    def _handle_qrcode(browser):
+        logging.info('Waiting for QE')
+        try:
+            WebDriverWait(browser, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, "canvas")))
+
+        except TimeoutException:
+            logging.info('No QR Code needed')
+            return
+
+        canvas = browser.find_element_by_css_selector("canvas")
+        # get the canvas as a PNG base64 string
+        canvas_base64 = browser.execute_script("return arguments[0].toDataURL('image/png').substring(21);", canvas)
+
+        # decode
+        canvas_png = base64.b64decode(canvas_base64)
+
+        # save to a file
+        with open(WhatsAppSender.QR_CODE_IMG_PATH, 'wb') as f:
+            f.write(canvas_png)
+
+        time.sleep(20)
 
 
