@@ -1,8 +1,10 @@
 import base64
 import logging
+import pickle
 import time
 
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
@@ -13,8 +15,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 
 
-class WhatsAppSender(object):
-    CHROMEDRIVER_PATH = 'C:\\ChromeDriver\\chromedriver.exe'
+class WhatsAppSenderFirefox(object):
+    DRIVER_PATH_FIREFOX = 'C:\\FirefoxDriver\\geckodriver.exe'
     CHROME_USERDATA_PATH = 'UserData'
     CHROME_PROFILE_DIR = 'Profile'
     WHATSAPP_URL = "https://web.whatsapp.com/"
@@ -28,22 +30,32 @@ class WhatsAppSender(object):
 
     @staticmethod
     def _set_browser():
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument(r"user-data-dir={0}".format(WhatsAppSender.CHROME_USERDATA_PATH))
-        chrome_options.add_argument('--profile-directory={0}'.format(WhatsAppSender.CHROME_PROFILE_DIR))
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--proxy-server='direct://'")
-        chrome_options.add_argument("--proxy-bypass-list=*")
-        chrome_options.add_argument("--start-maximized")
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--disable-gpu')
-        chrome_options.add_argument('--disable-dev-shm-usage')
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--ignore-certificate-errors')
-        chrome_options.add_argument("--remote-debugging-port=9222")
+        # chrome_options = webdriver.ChromeOptions()
+        # chrome_options.add_argument(r"user-data-dir={0}".format(WhatsAppSender.CHROME_USERDATA_PATH))
+        # chrome_options.add_argument('--profile-directory={0}'.format(WhatsAppSender.CHROME_PROFILE_DIR))
+        # chrome_options.add_argument("--window-size=1920,1080")
+        # chrome_options.add_argument("--disable-extensions")
+        # chrome_options.add_argument("--proxy-server='direct://'")
+        # chrome_options.add_argument("--proxy-bypass-list=*")
+        # chrome_options.add_argument("--start-maximized")
+        # chrome_options.add_argument('--headless')
+        # chrome_options.add_argument('--disable-gpu')
+        # chrome_options.add_argument('--disable-dev-shm-usage')
+        # chrome_options.add_argument('--no-sandbox')
+        # chrome_options.add_argument('--ignore-certificate-errors')
+        # chrome_options.add_argument("--remote-debugging-port=9222")
+        #
+        # browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=WhatsAppSender.CHROMEDRIVER_PATH)
+        #
+        # return browser
 
-        browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=WhatsAppSender.CHROMEDRIVER_PATH)
+        options = Options()
+        #options.headless = True
+        browser = webdriver.Firefox(options=options, executable_path=WhatsAppSenderFirefox.DRIVER_PATH_FIREFOX)
+
+        cookies = pickle.load(open("cookies.pkl", "rb"))
+        for cookie in cookies:
+            browser.add_cookie(cookie)
 
         return browser
 
@@ -51,19 +63,20 @@ class WhatsAppSender(object):
     def send_message_local(message):
         try:
             logging.info('Waiting for Browser')
-            browser = WhatsAppSender._set_browser()
+            browser = WhatsAppSenderFirefox._set_browser()
 
-            browser.get(WhatsAppSender.WHATSAPP_URL)
+            browser.get(WhatsAppSenderFirefox.WHATSAPP_URL)
 
-            WhatsAppSender._handle_qrcode(browser)
-            # Replace 'Friend's Name' with the name of your friend
-            # or the name of a group
+            WhatsAppSenderFirefox._handle_qrcode(browser)
 
-            WhatsAppSender._get_group_element(browser)
+            pickle.dump(browser.get_cookies(), open("cookies.pkl", "wb"))
 
-            WhatsAppSender._send_message_aux(browser, message)
+            WhatsAppSenderFirefox._get_group_element(browser)
+
+            WhatsAppSenderFirefox._send_message_aux(browser, message)
+
         finally:
-            WhatsAppSender._close_browser(browser)
+            WhatsAppSenderFirefox._close_browser(browser)
 
     @staticmethod
     def _close_browser(browser):
@@ -71,7 +84,7 @@ class WhatsAppSender(object):
 
     @staticmethod
     def _send_message_aux(browser, message):
-        chatbox_x_path = WhatsAppSender.CHAT_BOX_X_PATH
+        chatbox_x_path = WhatsAppSenderFirefox.CHAT_BOX_X_PATH
         chatbox_delay = 100000
         try:
             chatbox = WebDriverWait(browser, chatbox_delay).until(
@@ -86,7 +99,7 @@ class WhatsAppSender(object):
 
     @staticmethod
     def _get_group_element(browser):
-        group_x_path = WhatsAppSender.GROUP_X_PATH.format(WhatsAppSender.GROUP_NAME)
+        group_x_path = WhatsAppSenderFirefox.GROUP_X_PATH.format(WhatsAppSenderFirefox.GROUP_NAME)
         group_delay = 20  # seconds
         try:
             group = WebDriverWait(browser, group_delay).until(EC.presence_of_element_located((By.XPATH, group_x_path)))
@@ -112,7 +125,7 @@ class WhatsAppSender(object):
         canvas_png = base64.b64decode(canvas_base64)
 
         # save to a file
-        with open(WhatsAppSender.QR_CODE_IMG_PATH, 'wb') as f:
+        with open(WhatsAppSenderFirefox.QR_CODE_IMG_PATH, 'wb') as f:
             f.write(canvas_png)
 
         time.sleep(20)

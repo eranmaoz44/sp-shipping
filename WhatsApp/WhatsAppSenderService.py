@@ -5,6 +5,7 @@ from WhatsApp.WhatsAppSender import WhatsAppSender
 import sys
 import os
 
+from WhatsApp.WhatsAppSenderFirefox import WhatsAppSenderFirefox
 
 application = Flask(__name__)
 cors = CORS(application, resources={r"/api/*": {"origins": "*"}})
@@ -20,7 +21,7 @@ def set_availability():
     request_json = request.get_json()
     payload = request_json['message']
 
-    WhatsAppSender.send_message_local(payload)
+    WhatsAppSenderFirefox.send_message_local(payload)
     return Response(status=200)
 
 
