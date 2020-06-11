@@ -38,7 +38,7 @@ class Shipping(DBElementWithID):
                                                      self.get_id_value()))
         from_whatsapp_number = Config.get_value('FROM_WHATSAPP_NUMBER')
         to_whatsapp_number = Config.get_value('TO_WHATSAPP_NUMBER')
-        WhatsAppConnector.send_message(message, from_whatsapp_number, to_whatsapp_number)
+        WhatsAppConnector.send_message(message)
 
     @classmethod
     def from_dict(cls, dict_obj):

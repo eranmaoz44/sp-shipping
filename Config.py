@@ -15,7 +15,7 @@ class Config(object):
         }
         ,
         "WHATSAPP_SENDER_ADDRESS": {
-            "TEST": "http://localhost:5005/api/send"
+            "TEST": "http://139.162.138.160:80/api/send"
         }
     }
 
