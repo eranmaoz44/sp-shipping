@@ -34,7 +34,7 @@ class Shipping(DBElementWithID):
 
     def send_new_shipping_message(self):
         message = "נוצר משלוח חדש, קישור לפרטים נוספים:" + '\n' + os.path.join(
-            '{0}/coordination/?shippingID={1}'.format(request.url_root.replace("http://", "http://").rstrip('/'),
+            '{0}/coordination?shippingID={1}'.format(request.url_root.replace("http://", "http://").rstrip('/'),
                                                      self.get_id_value()))
         WhatsAppConnector.send_message(message)
 
