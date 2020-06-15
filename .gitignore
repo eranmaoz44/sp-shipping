@@ -5,3 +5,4 @@ __pycache__/AwsConnector.cpython-37.pyc
 *.pyc
 WhatsApp/qr_code/*
 WhatsApp/UserData/*
+nohup.out

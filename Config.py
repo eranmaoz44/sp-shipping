@@ -11,11 +11,13 @@ class Config(object):
             "TEST": "whatsapp:+972525568537"
         },
         "SHIPPING_NUM_DAYS_ALIVE": {
-            "TEST": 14
+            "TEST": 14,
+            "REMOTE": 14
         }
         ,
         "WHATSAPP_SENDER_ADDRESS": {
-            "TEST": "http://139.162.138.160:80/api/send"
+            "TEST": "http://139.162.138.160:81/api/send",
+            "REMOTE": "http://139.162.138.160:81/api/send"
         }
     }
 
