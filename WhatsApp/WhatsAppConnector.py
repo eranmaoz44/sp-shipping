@@ -11,9 +11,10 @@ class WhatsAppConnector(object):
         pass
 
     @staticmethod
-    def send_message(body):
+    def send_message(body, recipient):
         url = Config.get_value('WHATSAPP_SENDER_ADDRESS')
-        request_json = {'message': body}
+        request_json = {'message': body,
+                        'recipient': recipient}
         request_json_str = json.dumps(request_json)
         print(request_json)
         x = requests.post(url, headers={'content-type':'application/json'}, data=request_json_str)

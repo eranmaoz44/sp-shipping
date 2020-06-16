@@ -15,10 +15,12 @@ from flask_login import LoginManager, current_user, login_user, logout_user, log
 
 from User import User
 
+_secret_key = 'SECRET_KEY'
+
 application = Flask(__name__)
 cors = CORS(application, resources={r"/api/*": {"origins": "*"}})
 
-application.secret_key = 'super secret key'
+application.secret_key = os.environ.get(_secret_key)
 
 login = LoginManager(application)
 login.login_view = 'login'

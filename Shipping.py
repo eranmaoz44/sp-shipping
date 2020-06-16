@@ -8,6 +8,7 @@ from flask import request
 import os
 
 from WhatsApp.WhatsAppConnector import WhatsAppConnector
+from WhatsApp.WhatsAppHandlerThread import WhatsAppHandlerThread
 
 
 class Shipping(DBElementWithID):
@@ -36,7 +37,8 @@ class Shipping(DBElementWithID):
         message = "נוצר משלוח חדש, קישור לפרטים נוספים:" + '\n' + os.path.join(
             '{0}/coordination?shippingID={1}'.format(request.url_root.replace("http://", "http://").rstrip('/'),
                                                      self.get_id_value()))
-        WhatsAppConnector.send_message(message)
+        # WhatsAppConnector.send_message(message)
+        WhatsAppHandlerThread(message, Config.get_value('WHATSAPP_RECIPIENT')).start()
 
     @classmethod
     def from_dict(cls, dict_obj):
