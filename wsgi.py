@@ -27,7 +27,6 @@ login.login_view = 'login'
 users = {}
 
 
-
 @login.user_loader
 def load_user(id):
     res = None
@@ -40,12 +39,10 @@ def load_user(id):
 @application.route('/')
 @login_required
 def index():
-    print(os.getcwd())
     return flask.send_file('templates/index.html', mimetype='text.html')
 
 
 def send_login_html():
-    print(os.getcwd())
     return flask.send_file('templates/login.html', mimetype='text.html')
 
 
@@ -68,7 +65,6 @@ def login():
 
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
-        print('next_page ' + next_page)
         return Response(status=200, response=next_page)
     return send_login_html()
 
@@ -86,7 +82,6 @@ def get_user_id():
     res = 'Not signed in, please do'
     if current_user is not None and current_user.is_authenticated:
         res = current_user.id
-        print(current_user.get_id())
     return Response(status=200, response=res)
 
 
@@ -99,7 +94,6 @@ def logout():
 @application.route('/coordination')
 @login_required
 def render_coordination_template():
-    print(os.getcwd())
     return flask.send_file('templates/coordination.html', mimetype='text.html')
 
 
@@ -107,14 +101,12 @@ def render_coordination_template():
 def get_shipping():
     shippingID = request.args.get('shippingID')
     state = request.args.get('state')
-    print(state)
     if shippingID is None:
         all_shippings = Shipping.get_shippings_by_state(state)
         res = json.dumps([x.to_dict() for x in all_shippings])
     else:
         single_element = Shipping.get_element_with_id(shippingID)
         res = single_element.to_json_str()
-    print(res)
     return Response(status=200, response=res)
 
 
@@ -186,8 +178,9 @@ def aws_delete_file():
     return Response(status=200, response=res)
 
 
+Scheduler.schedule_tasks()
+
 if __name__ == '__main__':
-    Scheduler.schedule_tasks()
     application.run(host='0.0.0.0')
     # WhatsappConnector.send_message("hello whatsapp", WhatsappConnector.TWILIO_SANDBOX_TEST_NUMBER, WhatsappConnector.MY_WHATSAPP)
     # DBConnecter.execute_write_query("DROP TABLE availabilities")

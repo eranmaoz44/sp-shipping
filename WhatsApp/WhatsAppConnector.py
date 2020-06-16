@@ -16,8 +16,8 @@ class WhatsAppConnector(object):
         request_json = {'message': body,
                         'recipient': recipient}
         request_json_str = json.dumps(request_json)
-        print(request_json)
-        x = requests.post(url, headers={'content-type':'application/json'}, data=request_json_str)
+        res = requests.post(url, headers={'content-type':'application/json'}, data=request_json_str)
+        return res
 
 
 

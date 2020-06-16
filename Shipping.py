@@ -69,7 +69,6 @@ class Shipping(DBElementWithID):
 
     @staticmethod
     def get_shippings_before_date(before_date):
-        print(before_date)
         return DBElementWithID.get_elements_before_date(Shipping.TABLE, Shipping.COLUMN_NAMES[3],
                                                         before_date, Shipping)
 
@@ -85,7 +84,6 @@ class Shipping(DBElementWithID):
         shippings_before_date = Shipping.get_shippings_before_date(remove_from_date)
         for shipping in shippings_before_date:
             image_path = shipping.get_value(Shipping.COLUMN_NAMES[2])
-            print(image_path)
             if image_path != Shipping._DEFAULT_IMAGE_PATH:
                 AwsConnector.delete_file(image_path)
         Shipping.delete_shippings_before_date(remove_from_date)
