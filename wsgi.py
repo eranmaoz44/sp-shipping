@@ -1,7 +1,7 @@
 import json
 import os
 import flask
-from flask import Flask, Response, request, flash, redirect, url_for
+from flask import Flask, Response, request, flash, redirect, url_for, render_template
 from flask_cors import CORS
 from werkzeug.urls import url_parse
 
@@ -39,11 +39,13 @@ def load_user(id):
 @application.route('/')
 @login_required
 def index():
-    return flask.send_file('templates/index.html', mimetype='text.html')
+    return render_template('index.html',
+                           title="סליפ דיפו - הובלות")
 
 
 def send_login_html():
-    return flask.send_file('templates/login.html', mimetype='text.html')
+    return render_template('login.html',
+                           title="סליפ דיפו - הובלות - התחברות")
 
 
 @application.route('/login', methods=['GET', 'POST'])
@@ -80,8 +82,8 @@ def extract_next_page_from_login_referer():
 @application.route('/user/id', methods=['GET'])
 def get_user_id():
     res = 'Not signed in, please do'
-    if current_user is not None and current_user.is_authenticated():
-        res = current_user.get_id()
+    if current_user is not None and current_user.is_authenticated:
+        res = current_user.id
     return Response(status=200, response=res)
 
 
