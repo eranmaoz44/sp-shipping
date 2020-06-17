@@ -1,1 +1,1 @@
-curl -X DELETE http://localhost:80/api/aws/delete
+curl -X DELETE shlak.live/api/maintenance/remove_old_shipments
