@@ -52,11 +52,11 @@ def login():
         return redirect(url_for('index'))
     if request.method == 'POST':
         request_json = request.get_json()
-        id = request_json['id']
+        user_id = request_json['id']
         password = request_json['password']
         remember_me = request_json['remember_me']
-        user = User(id, password)
-        users[id] = user
+        user = User(user_id, password)
+        users[user_id] = user
         if not user.is_authenticated():
             flash('Invalid username or password')
             return Response(status=401)
@@ -80,8 +80,8 @@ def extract_next_page_from_login_referer():
 @application.route('/user/id', methods=['GET'])
 def get_user_id():
     res = 'Not signed in, please do'
-    if current_user is not None and current_user.is_authenticated:
-        res = current_user.id
+    if current_user is not None and current_user.is_authenticated():
+        res = current_user.get_id()
     return Response(status=200, response=res)
 
 

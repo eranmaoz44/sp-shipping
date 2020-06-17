@@ -2,8 +2,8 @@ from UserWithHashPassword import UserWithHashPassword
 
 
 class User(object):
-    def __init__(self, id, password):
-        self.id = id
+    def __init__(self, user_id, password):
+        self.id = user_id
         self.password = password
         self.is_authenticated_bool = False
         self.userWithPasswordHash = None
