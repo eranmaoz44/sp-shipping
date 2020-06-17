@@ -86,7 +86,7 @@ class Shipping(DBElementWithID):
             Shipping._date_format)
         LoggerSelector().get_logger().info('Going to remove shipments older than {0}'.format(remove_from_date))
         shippings_before_date = Shipping.get_shippings_before_date(remove_from_date)
-        LoggerSelector().get_logger().info(shippings_before_date)
+        LoggerSelector().get_logger().info([str(x) for x in shippings_before_date])
         LoggerSelector().get_logger().info('Removing AWS data')
         for shipping in shippings_before_date:
             image_path = shipping.get_value(Shipping.COLUMN_NAMES[2])
