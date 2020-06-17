@@ -7,6 +7,7 @@ from DBElementWithID import DBElementWithID
 from flask import request
 import os
 
+from Loggers.LoggerSelector import LoggerSelector
 from WhatsApp.WhatsAppConnector import WhatsAppConnector
 from WhatsApp.WhatsAppHandlerThread import WhatsAppHandlerThread
 
@@ -24,6 +25,8 @@ class Shipping(DBElementWithID):
                                 (Shipping.COLUMN_NAMES[4], state), (Shipping.COLUMN_NAMES[5], phone_number),
                                 (Shipping.COLUMN_NAMES[6], price), (Shipping.COLUMN_NAMES[7], who_pays),
                                 (Shipping.COLUMN_NAMES[8], extra_info)]
+
+        self.logger = LoggerSelector().get_logger()
 
         super(Shipping, self).__init__(Shipping.TABLE, tuple_key_value_list)
 
@@ -81,9 +84,13 @@ class Shipping(DBElementWithID):
     def remove_and_clean_old_elements():
         remove_from_date = (date.today() - timedelta(Config.get_value('SHIPPING_NUM_DAYS_ALIVE'))).strftime(
             Shipping._date_format)
+        LoggerSelector().get_logger().info('Going to remove shipments older than {0}'.format(remove_from_date))
         shippings_before_date = Shipping.get_shippings_before_date(remove_from_date)
+        LoggerSelector().get_logger().info(shippings_before_date)
+        LoggerSelector().get_logger().info('Removing AWS data')
         for shipping in shippings_before_date:
             image_path = shipping.get_value(Shipping.COLUMN_NAMES[2])
             if image_path != Shipping._DEFAULT_IMAGE_PATH:
                 AwsConnector.delete_file(image_path)
+        LoggerSelector().get_logger().info('Removing SQL data')
         Shipping.delete_shippings_before_date(remove_from_date)

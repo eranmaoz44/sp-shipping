@@ -151,6 +151,12 @@ def set_availability():
     return Response(status=200)
 
 
+@application.route('/api/maintenance/remove_old_shipments', methods=['DELETE'])
+def remove_old_shipments():
+    Shipping.remove_and_clean_old_elements()
+    return Response(status=200)
+
+
 @application.route('/api/aws/presign_post', methods=['GET'])
 def get_aws_presign_post():
     file_name = request.args.get('file_name')
@@ -178,10 +184,8 @@ def aws_delete_file():
     return Response(status=200, response=res)
 
 
-Scheduler.schedule_tasks()
-
 if __name__ == '__main__':
-    application.run(host='0.0.0.0')
+    application.run(host='0.0.0.0', port=8005)
     # WhatsappConnector.send_message("hello whatsapp", WhatsappConnector.TWILIO_SANDBOX_TEST_NUMBER, WhatsappConnector.MY_WHATSAPP)
     # DBConnecter.execute_write_query("DROP TABLE availabilities")
     # DBConnecter.execute_write_query("DROP TABLE shipping")
