@@ -110,7 +110,7 @@
                ng-model="lc.password">
         <div class="checkbox mb-3">
             <label>
-                <input type="checkbox" value="remember-me" ng-model="lc.remember_me"> זכור אותי
+                <input type="checkbox" value="remember-me" ng-model="lc.remember_me" ng-init="checked=true"> זכור אותי
             </label>
         </div>
         <div class="alert alert-warning alert-dismissible fade show" role="alert" ng-show="lc.bad_credentials">

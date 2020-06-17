@@ -4,6 +4,7 @@ function loginController($http, $scope, $window){
 
     self.is_attempting_login = false
     self.bad_credentials = false
+    self.remember_me = true
 
     self.login= function(){
 
