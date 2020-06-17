@@ -11,8 +11,8 @@ class Config(object):
             "TEST": "whatsapp:+972525568537"
         },
         "SHIPPING_NUM_DAYS_ALIVE": {
-            "TEST":-1,
-            "REMOTE": -1
+            "TEST": 30,
+            "REMOTE": 30
         }
         ,
         "WHATSAPP_SENDER_ADDRESS": {
