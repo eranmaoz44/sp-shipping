@@ -155,9 +155,10 @@ function coordinationController($http, $scope, $location, $timeout, $filter, shi
 
         dateElement.datepicker()
             .on('changeDate', function(e) {
-                currentID = e.currentTarget.id.replace('datePickerInEdit', '')
-                currentAvailability = commonUtilsService.findByID(self.availabilities, currentID)
-                currentAvailability.date = dateFormat(e.date, self.dateFormat)
+//                currentID = e.currentTarget.id.replace('datePickerInEdit', '')
+//                currentAvailability = commonUtilsService.findByID(self.availabilities, currentID)
+//                currentAvailability.date = dateFormat(e.date, self.dateFormat)
+                  self.coordinationInEdit.date = dateFormat(e.date, self.dateFormat)
 //                self.updateAvailability(currentAvailability)
             });
     }

@@ -98,7 +98,8 @@ def logout():
 @application.route('/coordination')
 @login_required
 def render_coordination_template():
-    return flask.send_file('templates/coordination.html', mimetype='text.html')
+    return render_template('coordination.html',
+                           title="סליפ דיפו - הובלות")
 
 
 @application.route('/api/shipping', methods=['GET'])

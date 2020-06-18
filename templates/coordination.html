@@ -1,131 +1,18 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../../../../favicon.ico">
-
-    <title>תיאום משלוחים סליפ דיפו</title>
-
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-          rel="stylesheet">
-    <script src="\static\node_modules\angular\angular.min.js"></script>
-    <script src="\static\node_modules\ng-file-upload\dist\ng-file-upload-shim.js"></script>
-    <!-- Bootstrap core CSS -->
-    <link href="\static\node_modules\bootstrap\dist\css\bootstrap.min.css" rel="stylesheet">
-    <link href="\static\open-iconic\font\css\open-iconic-bootstrap.css" rel="stylesheet">
-    <link href="\static\node_modules\bootstrap-datepicker\dist\css\bootstrap-datepicker.standalone.css"
-          rel="stylesheet">
+{% extends 'layout.html' %}
 
 
-    <!-- Custom styles for this template -->
-    <link href="\static\style.css" rel="stylesheet">
+{% block style %}
+    <link href="static\style.css" rel="stylesheet">
+{% endblock %}
 
-
-    <script src="\static\node_modules\ng-file-upload\dist\ng-file-upload.js"></script>
-    <script src="\static\node_modules\ng-file-upload\dist\ng-file-upload-shim.min.js"></script>
-    <script src="\static\node_modules\ng-file-upload\dist\ng-file-upload.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-            crossorigin="anonymous"></script>
-    <script>
-        window.jQuery || document.write('<script src="\static\node_modules\jquery-slim\dist\jquery-slim.min.js"><\/script>')
-
-
-
-    </script>
-    <script src="\static\node_modules\bootstrap-datepicker\dist\js\bootstrap-datepicker.min.js"></script>
-    <script src="\static\node_modules\bootstrap-datepicker\js\locales\bootstrap-datepicker.he.js"
-            charset="UTF-8"></script>
-    <script src="\static\node_modules\dateformat\lib\dateformat.js"></script>
-
-    <script src="\static\shippingApp.js"></script>
-    <script src="\static\awsFileService.js"></script>
-    <script src="static\imageLoaderWithOrientation.js"></script>
-    <script src="\static\shippingCardService.js"></script>
-    <script src="\static\mobileHoverFixDirective.js"></script>
-    <script src="\static\commonUtilsService.js"></script>
+{% block scripts %}
     <script src="\static\coordinationController.js"></script>
-    <script src="static\userService.js"></script>
-    <script src="\static\userController.js"></script>
+{% endblock %}
 
-    <!-- ****** faviconit.com favicons ****** -->
-    <link rel="shortcut icon" href="/static/favicon/favicon.ico">
-    <link rel="icon" sizes="16x16 32x32 64x64" href="/static/favicon/favicon.ico">
-    <link rel="icon" type="image/png" sizes="196x196" href="/static/favicon/favicon-192.png">
-    <link rel="icon" type="image/png" sizes="160x160" href="/static/favicon/favicon-160.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/static/favicon/favicon-96.png">
-    <link rel="icon" type="image/png" sizes="64x64" href="/static/favicon/favicon-64.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16.png">
-    <link rel="apple-touch-icon" href="/static/favicon/favicon-57.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/static/favicon/favicon-114.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/static/favicon/favicon-72.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/static/favicon/favicon-144.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/static/favicon/favicon-60.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/static/favicon/favicon-120.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/static/favicon/favicon-76.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/static/favicon/favicon-152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/favicon-180.png">
-    <meta name="msapplication-TileColor" content="#FFFFFF">
-    <meta name="msapplication-TileImage" content="/static/favicon/favicon-144.png">
-    <meta name="msapplication-config" content="/static/favicon/browserconfig.xml">
-    <!-- ****** faviconit.com favicons ****** -->
-</head>
+{% block content %}
 
-<body ng-app="shippingApp">
-
-<header>
-    <div class="collapse bg-dark" id="navbarHeader">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-8 col-md-7 py-4">
-                    <h4 class="text-white">תיאום הובלות</h4>
-                    <p class="text-muted">תוכנה זו נועדה לשם סידור תהליך תיאום ההובלות, גם מבחינת יצירת סדר וגם מבחינת
-                        מקבול תיאום ההובלה הן מול הלקוח והן מול המוביל תוך חסכון ביצירת קשר טלפוני</p>
-                </div>
-                <div class="col-sm-4 offset-md-1 py-4">
-                    <h4 class="text-white">צור קשר</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">ערן מעוז</a></li>
-                        <li><a href="#" class="text-white">e.magnex@gmail.com</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="navbar navbar-dark bg-dark shadow-sm">
-        <div class="pull-right align-middle">
-            <p class="navbar-brand text-center" ng-controller="userController as uc">
-                <span class="text-right">שלום {{uc.user_id}}</span><br>
-                <a target="_self" href="/logout" class="btn btn-link text-light bg-dark">לחץ כאן כדי להתנתק</a>
-            </p>
-        </div>
-        <div class="container d-flex justify-content-between">
-            <a target="_self" href="/" class="navbar-brand d-flex align-items-center">
-                <img src="/static/open-iconic/svg/location.svg" class="sp-ship-icon">
-                <strong>סליפ דיפו</strong>
-            </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader"
-                    aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </div>
-</header>
-
-<main role="main">
-
-    <section class="jumbotron text-center">
-        <div class="container">
-            <h1 class="jumbotron-heading">תיאום הובלות סליפ דיפו</h1>
-            <p class="lead text-muted">סדר, מקבול, חסכון</p>
-        </div>
-    </section>
-
-    <div ng-controller="coordinationController as cc">
+{% raw %}
+     <div ng-controller="coordinationController as cc">
         <div class="container text-center">
             <div class="row">
                 <div class="col font-weight-bold d-inline p-2 bg-primary text-white coordinatorOrderText text-right">
@@ -137,7 +24,6 @@
                     <!--                    <div image-loader-with-orientation ng-model="cc.card.tempOrderImageUrl"-->
                     <!--                         class="img-fluid coordinator-image btn btn-sm" data-toggle="modal"-->
                     <!--                                            data-target="#dialog">-->
-
                     <!--                    </div>-->
                     <img ng-src="{{cc.card.tempOrderImageUrl}}"
                          class="img-fluid coordinator-image border border-primary rounded" alt="Responsive image"
@@ -170,7 +56,6 @@
                     <option>החנות</option>
                 </select>
             </div>
-
             <div class="input-group mb-3 my-3">
                 <div class="input-group-prepend">
                     <span class="input-group-text">מידע נוסף</span>
@@ -189,7 +74,6 @@
                     </div>
                     <input data-date-format="dd/mm/yyyy DD" class="form-control xlargeFont"
                            id="datePicker{{availability.id}}" ng-disabled="true" ng-model="availability.date">
-
                 </div>
                 <div class="col-sm-3 d-flex flex-row">
                     <div class="input-group-prepend">
@@ -213,7 +97,6 @@
                         </option>
                     </select>
                 </div>
-
                 <!--                <img src="/static/open-iconic/svg/trash.svg"-->
                 <!--                     alt="icon name"-->
                 <!--                     class="editIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"-->
@@ -224,16 +107,13 @@
                      class="editIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
                      ng-click="cc.openEditModalForExistingCoordination(availability)" mobile-hover-fix-directive
                      ng-show="cc.isEditable()">
-
             </div>
-
             <div class="row d-flex justify-content-center" ng-show="cc.isEditable()">
                 <img src="/static/open-iconic/svg/plus.svg"
                      alt="icon name"
                      class="plusIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle img-fluid"
                      ng-click="cc.createCoordinationWithModal()" mobile-hover-fix-directive>
             </div>
-
         </div>
         <div class="modal fade" id="dialog" tabindex="-1" role="dialog"
              aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -256,7 +136,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
         <div class="modal fade" id="editCoordinationModal" tabindex="-1" role="dialog"
              aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -267,12 +146,10 @@
                                 ng-disabled="cc.isSavingCoordination">
                             <span aria-hidden="true">&times;</span>
                         </button>
-
                         <h5 class="modal-title ml-auto float-right">{{cc.getEditCoordinationModalTitle()}}</h5>
                         <!--                        <button type="button" class="btn btn-secondary" data-dismiss="modal"-->
                         <!--                                ng-disabled="cc.isSavingCoordination">סגור-->
                         <!--                        </button>-->
-
                     </div>
                     <div class="modal-body">
                         <div class="input-group mb-3">
@@ -282,7 +159,6 @@
                             <input data-date-format="dd/mm/yyyy DD" class="form-control xlargeFont"
                                    id="datePickerInEdit{{cc.coordinationInEdit.id}}">
                         </div>
-
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">מ-</span>
@@ -293,7 +169,6 @@
                                 </option>
                             </select>
                         </div>
-
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">עד</span>
@@ -304,7 +179,6 @@
                                 </option>
                             </select>
                         </div>
-
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-primary ml-auto"
                                     ng-click="cc.saveCoordinationFromEditModal()">
@@ -324,26 +198,9 @@
                 </div>
             </div>
         </div>
-
-</main>
-
-<footer class="text-muted">
-    <div class="container">
-        
-        <p>sp-shipping is &copy; Eran Maoz, Use it to your advantage!</p>
-        <p>תוכנה זו נודעה לייצר המלצות בלבד ואינה מחייבת</p>
-    </div>
-</footer>
-
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
+     </div>
 
 
-<script src="\static\node_modules\popper.js\dist\popper.min.js"></script>
-<script src="\static\node_modules\bootstrap\dist\js\bootstrap.min.js"></script>
-<script src="\static\node_modules\holderjs\holder.min.js"></script>
-</body>
-</html>
+{% endraw %}
 
-
+{% endblock %}
