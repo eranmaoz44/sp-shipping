@@ -88,3 +88,11 @@ main {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+.sp-ship-icon{
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border-color: white;
+    margin: 4px;
+}

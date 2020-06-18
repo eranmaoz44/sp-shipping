@@ -17,8 +17,7 @@
     <link href="static\open-iconic\font\css\open-iconic-bootstrap.css" rel="stylesheet">
 
 
-    <!-- Custom styles for this template -->
-    <link href="static\style.css" rel="stylesheet">
+    {% block style %}{% endblock %}
 
 
     <script src="static\node_modules\ng-file-upload\dist\ng-file-upload.js"></script>
@@ -37,6 +36,7 @@
     <script src="static\userService.js"></script>
     <script src="static\userController.js"></script>
 
+    {% block scripts %}{% endblock %}
 
     <!-- ****** faviconit.com favicons ****** -->
     <link rel="shortcut icon" href="/static/favicon/favicon.ico">
@@ -84,15 +84,19 @@
         </div>
     </div>
 
-    {% raw %}
+
 
     <div class="navbar navbar-dark bg-dark shadow-sm">
-        <div class="pull-right align-middle">
-            <p class="navbar-brand text-center" ng-controller="userController as uc">
-                <span class="text-right">שלום {{uc.user_id}}</span><br>
-                <a target="_self" href="/logout" class="btn btn-link text-light bg-dark">לחץ כאן כדי להתנתק</a>
-            </p>
-        </div>
+        {% if not is_login_page %}
+
+            <div class="pull-right align-middle">
+                <p class="navbar-brand text-center" ng-controller="userController as uc">
+                    {% raw %}<span class="text-right">שלום {{uc.user_id}}</span><br>{% endraw %}
+                    <a target="_self" href="/logout" class="btn btn-link text-light bg-dark">לחץ כאן כדי להתנתק</a>
+                </p>
+            </div>
+
+        {% endif %}
         <div class="container d-flex justify-content-between">
             <a target="_self" href="/" class="navbar-brand d-flex align-items-center">
                 <img src="/static/open-iconic/svg/location.svg" class="sp-ship-icon">
@@ -106,10 +110,12 @@
         </div>
     </div>
 
-    {% endraw %}
+
 </header>
 
 <main role="main" class="text-center">
+
+    {% if not is_login_page %}
 
     <section class="jumbotron text-center">
         <div class="container">
@@ -117,6 +123,8 @@
             <p class="lead text-muted">סדר, מקבול, חסכון</p>
         </div>
     </section>
+
+    {% endif %}
 
     {% block content %}{% endblock %}
 

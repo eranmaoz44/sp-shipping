@@ -44,7 +44,9 @@ def index():
 
 
 def send_login_html():
+    is_login_page = True
     return render_template('login.html',
+                           is_login_page=is_login_page,
                            title="סליפ דיפו - הובלות - התחברות")
 
 
