@@ -35,20 +35,20 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         })
     }
 
-    self.setUserId()
-
-    self.setUserIdInterval = setInterval(function(){
-        console.log('Entering set user id interval')
-        if(self.user_id != null){
-            clearInterval(self.setUserIdInterval)
-            console.log('Ending set user id interval')
-        } else {
-            console.log('Set user id interval attempting another go')
-            self.setUserId();
-        }
-    }, 30000)
-
-    self.blabla = true
+//    self.setUserId()
+//
+//    self.setUserIdInterval = setInterval(function(){
+//        console.log('Entering set user id interval')
+//        if(self.user_id != null){
+//            clearInterval(self.setUserIdInterval)
+//            console.log('Ending set user id interval')
+//        } else {
+//            console.log('Set user id interval attempting another go')
+//            self.setUserId();
+//        }
+//    }, 30000)
+//
+//    self.blabla = true
 
     self.moveCardToFinished = function(card){
         card.isMovingToFinishState = true
