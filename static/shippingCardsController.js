@@ -26,14 +26,20 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         return self.user_id == 'admin'
     }
 
-    self.setUserId = function(){
-        userService.getUserIdWithPromise().then(function(result){
-            self.user_id = result
-            console.log(`Setting user_id to ${self.user_id}`)
+
+    $timeout(function(){
+        userService.getUserIdWithPromise().then(function (value){
+            self.user_id = value
         }, function(error){
-            console.log(`Could retrieve user id for admin permissions ${error}`)
+            console.log(error)
         })
-    }
+    }, 0);
+
+
+    
+
+
+
 
 //    self.setUserId()
 //
