@@ -137,3 +137,13 @@ footer p {
 .edit-image{
     width: 256px;
 }
+
+input:disabled, select:disabled, textarea:disabled {
+  color: black!important;
+  background:#ffff!important;
+}
+
+input:disabled:hover, select:disabled:hover, textarea:disabled:hover {
+  color: black!important;
+  background:lightslategrey!important;
+}

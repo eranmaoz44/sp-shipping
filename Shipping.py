@@ -16,15 +16,17 @@ class Shipping(DBElementWithID):
     _date_format = "%d/%m/%Y"
     TABLE = "shipping"
     COLUMN_NAMES = ['id', 'order_number', 'order_image_aws_path', 'date', 'state', 'phone_number', 'price', 'who_pays',
-                    'extra_info']
+                    'supply_date', 'supply_from_hour', 'supply_to_hour', 'extra_info']
     _DEFAULT_IMAGE_PATH = 'orderImages/default.png'
 
-    def __init__(self, id, order_number, order_image_aws_path, date, state, phone_number, price, who_pays, extra_info):
+    def __init__(self, id, order_number, order_image_aws_path, date, state, phone_number,
+                 price, who_pays, supply_date, supply_from_hour, supply_to_hour, extra_info):
         tuple_key_value_list = [(Shipping.COLUMN_NAMES[0], id), (Shipping.COLUMN_NAMES[1], order_number),
                                 (Shipping.COLUMN_NAMES[2], order_image_aws_path), (Shipping.COLUMN_NAMES[3], date),
                                 (Shipping.COLUMN_NAMES[4], state), (Shipping.COLUMN_NAMES[5], phone_number),
                                 (Shipping.COLUMN_NAMES[6], price), (Shipping.COLUMN_NAMES[7], who_pays),
-                                (Shipping.COLUMN_NAMES[8], extra_info)]
+                                (Shipping.COLUMN_NAMES[8], supply_date), (Shipping.COLUMN_NAMES[9], supply_from_hour),
+                                (Shipping.COLUMN_NAMES[10], supply_to_hour), (Shipping.COLUMN_NAMES[11], extra_info)]
 
         self.logger = LoggerSelector().get_logger()
 
@@ -56,7 +58,7 @@ class Shipping(DBElementWithID):
     @classmethod
     def from_tuple(cls, tuple_values):
         return cls(tuple_values[0], tuple_values[1], tuple_values[2], tuple_values[3], tuple_values[4], tuple_values[5],
-                   tuple_values[6], tuple_values[7], tuple_values[8])
+                   tuple_values[6], tuple_values[7], tuple_values[8], tuple_values[9], tuple_values[10], tuple_values[11])
 
     @staticmethod
     def get_shippings_by_state(state):

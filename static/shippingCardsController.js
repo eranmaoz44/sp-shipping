@@ -18,6 +18,12 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     self.user_id = null
 
+    self.supplyHours = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00']
+
+    self.defaultSupplyHour = 'בחר/י שעה'
+
+    self.dateFormat = 'dd/mm/yyyy'
+
     self.isEditable = function(){
         return self.state == 'ongoing'
     }
@@ -69,6 +75,30 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     }
 
+
+    self.setUpDateElement = function(shippingCard){
+        var dateElement = $(`#datePicker`)
+        dateElement.datepicker({
+            weekStart: 1,
+            daysOfWeekHighlighted: "6,0",
+            autoclose: true,
+            todayHighlight: true,
+            format: self.dateFormat,
+            language: 'he'
+        });
+        dateElement.datepicker("setDate",shippingCard.supply_date);
+
+        dateElement.datepicker()
+            .on('changeDate', function(e) {
+//                currentID = e.currentTarget.id.replace('datePickerInEdit', '')
+//                currentAvailability = commonUtilsService.findByID(self.availabilities, currentID)
+//                currentAvailability.date = dateFormat(e.date, self.dateFormat)
+                  self.cardToAdd.supply_date = dateFormat(e.date, self.dateFormat)
+//                self.updateAvailability(currentAvailability)
+            });
+    }
+
+
     self.addShippingCard = function(){
         self.shouldFetchCards = false
         self.cardToAdd = {
@@ -80,12 +110,17 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 'phone_number' : '',
                 'price' : '',
                 'who_pays' : 'לא צוין',
+                'supply_date' : dateFormat(new Date(), self.dateFormat),
+                'supply_from_hour' : self.defaultSupplyHour,
+                'supply_to_hour' : self.defaultSupplyHour,
                 'extra_info' : ''
         }
 
         self.cardToSaveFilePath = 'default.png'
 
         self.onEditImage = '/static/default.png'
+
+        self.setUpDateElement(self.cardToAdd)
 
 //        shippingCardService.updateCardTempOrderImageUrl($scope, cardToAdd)
 
@@ -113,6 +148,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         self.imageChanged = false
         self.cardToSaveFilePath = card.order_image_aws_path
         self.onEditImage = card.tempOrderImageUrl
+        self.setUpDateElement(self.cardToAdd)
         $(`#dialog${card.id}`).on('hidden.bs.modal', function () {
             if(self.shippingCardInEditMode){
                 $('#createModal').modal('show')
@@ -227,6 +263,9 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                        oldCard.phone_number = newOrOldCard.phone_number
                        oldCard.price = newOrOldCard.price
                        oldCard.who_pays = newOrOldCard.who_pays
+                       oldCard.supply_date = newOrOldCard.supply_date
+                       oldCard.supply_from_hour = newOrOldCard.supply_from_hour
+                       oldCard.supply_to_hour = newOrOldCard.supply_to_hour
                        oldCard.extra_info = newOrOldCard.extra_info
                     }
                     else {

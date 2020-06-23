@@ -7,6 +7,7 @@ from werkzeug.urls import url_parse
 
 from Availability import Availability
 from AwsConnector import AwsConnector
+from DBConnecter import DBConnecter
 from Scheduler import Scheduler
 
 from Shipping import Shipping
@@ -192,12 +193,12 @@ def aws_delete_file():
 if __name__ == '__main__':
     application.run(host='0.0.0.0', port=8005)
     # WhatsappConnector.send_message("hello whatsapp", WhatsappConnector.TWILIO_SANDBOX_TEST_NUMBER, WhatsappConnector.MY_WHATSAPP)
-    # DBConnecter.execute_write_query("DROP TABLE availabilities")
-    # DBConnecter.execute_write_query("DROP TABLE shipping")
-    # DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar, date varchar, state varchar, phone_number varchar, price varchar, who_pays varchar, extra_info varchar);")
-    # DBConnecter.execute_write_query(
-    #     "CREATE TABLE availabilities (id varchar, shipping_id varchar REFERENCES shipping(id) ON DELETE CASCADE, "
-    #     "date varchar, from_hour varchar, to_hour varchar, PRIMARY KEY (id,shipping_id));")
+    #DBConnecter.execute_write_query("DROP TABLE availabilities")
+    #DBConnecter.execute_write_query("DROP TABLE shipping")
+    #DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar, date varchar, state varchar, phone_number varchar, price varchar, who_pays varchar, supply_date varchar, supply_from_hour varchar, supply_to_hour varchar, extra_info varchar);")
+    #DBConnecter.execute_write_query(
+    #    "CREATE TABLE availabilities (id varchar, shipping_id varchar REFERENCES shipping(id) ON DELETE CASCADE, "
+    #    "date varchar, from_hour varchar, to_hour varchar, PRIMARY KEY (id,shipping_id));")
     # DBConnecter.execute_write_query("DROP TABLE users")
     # DBConnecter.execute_write_query("CREATE TABLE users (id varchar PRIMARY KEY, password_hash varchar);")
     # user = User.create_new_user('admin', 'admin')
