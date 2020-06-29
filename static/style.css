@@ -147,3 +147,7 @@ input:disabled:hover, select:disabled:hover, textarea:disabled:hover {
   color: black!important;
   background:lightslategrey!important;
 }
+
+img {
+    image-orientation: from-image;
+}
