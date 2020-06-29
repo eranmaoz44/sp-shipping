@@ -202,12 +202,13 @@
                     </div>
 
                     <div class="input-group mb-3">
+                        <button type="button" class="btn btn-outline-primary float-right"
+                                ngf-select="scc.uploadImageOnModal($file)"
+                                accept="image/*" ngf-max-size="30MB" ngf-resize="{width: 600, height: 800, quality: .8, type: 'image/jpeg',
+               ratio: '3:4'}" ngf-fix-orientation="true">בחר תמונה
+                        </button>
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="exampleInputFile"
-                                   ngf-select="scc.uploadImageOnModal($file)"
-                                   accept="image/*" ngf-max-size="30MB" ngf-resize="{width: 600, height: 800, quality: .8, type: 'image/jpeg',
-               ratio: '3:4'}" ngf-fix-orientation="false">
-                            <label class="custom-file-label" for="exampleInputFile" data-browse="בחר תמונה">
+                            <label class="custom-file-label" data-browse="בחר תמונה">
                                 <div class="text-center">
                                     {{scc.cardToSaveFilePath}}
                                 </div>
