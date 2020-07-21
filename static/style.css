@@ -148,6 +148,3 @@ input:disabled:hover, select:disabled:hover, textarea:disabled:hover {
   background:lightslategrey!important;
 }
 
-img {
-    image-orientation: from-image;
-}

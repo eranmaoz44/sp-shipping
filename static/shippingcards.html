@@ -202,25 +202,22 @@
                     </div>
 
                     <div class="input-group mb-3">
-                        <button type="button" class="btn btn-outline-primary float-right"
-                                ngf-select="scc.uploadImageOnModal($file)"
-                                accept="image/*" ngf-max-size="30MB" ngf-resize="{width: 600, height: 800, quality: .8, type: 'image/jpeg',
-               ratio: '3:4'}" ngf-fix-orientation="false">בחר תמונה
-                        </button>
                         <div class="custom-file">
-                            <label class="custom-file-label" data-browse="בחר תמונה">
-                                <div class="text-center">
-                                    {{scc.cardToSaveFilePath}}
-                                </div>
+                            <input type="file" class="custom-file-input" id="exampleInputFile"
+                                   ngf-select="scc.uploadImageOnModal($file)" ngf-capture="camera" ngf-fix-orientation="false">
+                            <label class="custom-file-label" for="exampleInputFile" data-browse="בחר תמונה">
+                                <label class="custom-file-label" data-browse="בחר תמונה">
+                                    <div class="text-center">
+                                        {{scc.cardToSaveFilePath}}
+                                    </div>
+                                </label>
                             </label>
                         </div>
                     </div>
 
                     <div class="text-center">
-                        <img class="border border-primary rounded img-fluid edit-image"
-                             ngf-src="scc.onEditImage"
-                             ngf-background="scc.onEditImage"
-                             ngf-resize="{width: 256, quality: 1}">
+                        <img class="img-fluid"
+                             ngf-src="scc.onEditImage">
                     </div>
 
                     <div class="input-group mb-3 my-3">
