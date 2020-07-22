@@ -42,7 +42,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     }, 0);
 
 
-    
+
 
 
 
@@ -366,6 +366,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                     }
                     card.isDeleting = false
                     $(`#dialog${card.id}`).modal('hide');
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
                  },
                 function (error) {
                     $scope.ResponseDetails = "Data: " + error.data +
