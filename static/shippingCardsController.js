@@ -68,6 +68,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         self.updateShippingCardWithPresign(card).then(function(response){
             card.isMovingToFinishState = false
             commonUtilsService.deleteFromArray(self.shippingCards, card)
+            $(`#approveCompletionModal${card.id}`).modal('hide')
+
         }, function(error){
             card.state = 'ongoing'
             console.log(`could not move shipping card ${card} to finished because ${error}`)
