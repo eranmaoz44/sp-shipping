@@ -2,203 +2,199 @@
 
 
 {% block style %}
-    <link href="static\style.css" rel="stylesheet">
+<link href="static\style.css" rel="stylesheet">
 {% endblock %}
 
 {% block scripts %}
-    <script src="\static\coordinationController.js"></script>
+<script src="\static\coordinationController.js"></script>
 {% endblock %}
 
 {% block content %}
 
 {% raw %}
-     <div ng-controller="coordinationController as cc">
-        <div class="container text-center">
-            <div class="row">
-                <div class="col font-weight-bold d-inline p-2 bg-primary text-white coordinatorOrderText text-right">
-                    מס הזמנה: {{cc.card.order_number}}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col shadow-lg p-3 mb-5 bg-white rounded">
-                    <!--                    <div image-loader-with-orientation ng-model="cc.card.tempOrderImageUrl"-->
-                    <!--                         class="img-fluid coordinator-image btn btn-sm" data-toggle="modal"-->
-                    <!--                                            data-target="#dialog">-->
-                    <!--                    </div>-->
-                    <img ng-src="{{cc.card.tempOrderImageUrl}}"
-                         class="img-fluid coordinator-image border border-primary rounded" alt="Responsive image"
-                         data-toggle="modal"
-                         data-target="#dialog">
-                </div>
-            </div>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">#טלפון</span>
-                </div>
-                <a class="btn btn-link text-right" href="tel:{{card.phone_number}}">{{cc.card.phone_number}}</a>
-                <!--                                        <input type="text" class="form-control" placeholder="מס' טלפון"-->
-                <!--                                               aria-label="Username"-->
-                <!--                                               aria-describedby="basic-addon1" ng-model="card.phone_number" readonly>-->
-            </div>
-            <div class="input-group mb-3 my-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">₪</span>
-                </div>
-                <input type="text" class="form-control" placeholder="עלות הובלה"
-                       aria-label="Price"
-                       aria-describedby="basic-addon1" ng-model="cc.card.price" disabled>
-                <div class="input-group-prepend">
-                    <span class="input-group-text">מי משלם</span>
-                </div>
-                <select class="custom-select" ng-model="cc.card.who_pays" disabled>
-                    <option selected>לא צוין</option>
-                    <option>הלקוח</option>
-                    <option>החנות</option>
-                </select>
-            </div>
-            <div class="input-group mb-3 my-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">מידע נוסף</span>
-                </div>
-                <textarea class="form-control" aria-label="מידע נוסף"
-                          ng-model="cc.card.extra_info" disabled></textarea>
-            </div>
-            <div class="col font-weight-bold d-inline p-2 bg-secondary text-white text-right float-right my-2">
-                תיאום שעות
-            </div>
-            <div class="row d-flex justify-content-center input-group flex-row input-group-lg availabilities"
-                 ng-repeat="availability in cc.availabilities">
-                <div class="col-sm-4 d-flex flex-row">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text xlargeFont">תאריך</span>
-                    </div>
-                    <input data-date-format="dd/mm/yyyy DD" class="form-control xlargeFont"
-                           id="datePicker{{availability.id}}" ng-disabled="true" ng-model="availability.date">
-                </div>
-                <div class="col-sm-3 d-flex flex-row">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text xlargeFont">מ-</span>
-                    </div>
-                    <select class="custom-select xlargeFont" ng-model="availability.from_hour"
-                            ng-change="cc.updateAvailability(availability)" ng-disabled="true">
-                        <option selected>{{cc.defaultHourValue}}</option>
-                        <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
-                        </option>
-                    </select>
-                </div>
-                <div class="col-sm-3 d-flex flex-row">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text xlargeFont">עד</span>
-                    </div>
-                    <select class="custom-select xlargeFont" ng-model="availability.to_hour"
-                            ng-change="cc.updateAvailability(availability)" ng-disabled="true">
-                        <option selected>{{cc.defaultHourValue}}</option>
-                        <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
-                        </option>
-                    </select>
-                </div>
-                <!--                <img src="/static/open-iconic/svg/trash.svg"-->
-                <!--                     alt="icon name"-->
-                <!--                     class="editIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"-->
-                <!--                     ng-click="cc.removeAvailability(availability)" mobile-hover-fix-directive-->
-                <!--                     ng-show="cc.isEditable()">-->
-                <img src="/static/open-iconic/svg/wrench.svg"
-                     alt="icon name"
-                     class="editIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle"
-                     ng-click="cc.openEditModalForExistingCoordination(availability)" mobile-hover-fix-directive
-                     ng-show="cc.isEditable()">
-            </div>
-            <div class="row d-flex justify-content-center" ng-show="cc.isEditable()">
-                <img src="/static/open-iconic/svg/plus.svg"
-                     alt="icon name"
-                     class="plusIcon btn btn-outline-primary btn-rounded waves-effect rounded-circle img-fluid"
-                     ng-click="cc.createCoordinationWithModal()" mobile-hover-fix-directive>
+<div ng-controller="coordinationController as cc">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col font-weight-bold d-inline p-2 bg-primary text-white coordinatorOrderText text-right">
+                מס הזמנה: {{cc.card.order_number}}
             </div>
         </div>
-        <div class="modal fade" id="dialog" tabindex="-1" role="dialog"
-             aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="d-inline-flex p-2 justify-content-center">
-                            <img ng-src="{{cc.card.tempOrderImageUrl}}"
-                                 class="img-fluid" alt="Responsive image">
+        <div class="row">
+            <div class="col shadow-lg p-3 mb-5 bg-white rounded">
+                <!--                    <div image-loader-with-orientation ng-model="cc.card.tempOrderImageUrl"-->
+                <!--                         class="img-fluid coordinator-image btn btn-sm" data-toggle="modal"-->
+                <!--                                            data-target="#dialog">-->
+                <!--                    </div>-->
+                <img ng-src="{{cc.card.tempOrderImageUrl}}"
+                     class="img-fluid coordinator-image border border-primary rounded" alt="Responsive image"
+                     data-toggle="modal"
+                     data-target="#dialog">
+            </div>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">#טלפון</span>
+            </div>
+            <a class="btn btn-link text-right" href="tel:{{cc.card.phone_number}}">{{cc.card.phone_number}}</a>
+            <!--                                        <input type="text" class="form-control" placeholder="מס' טלפון"-->
+            <!--                                               aria-label="Username"-->
+            <!--                                               aria-describedby="basic-addon1" ng-model="card.phone_number" readonly>-->
+        </div>
+        <div class="input-group mb-3 my-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">₪</span>
+            </div>
+            <input type="text" class="form-control" placeholder="עלות הובלה"
+                   aria-label="Price"
+                   aria-describedby="basic-addon1" ng-model="cc.card.price" disabled>
+            <div class="input-group-prepend">
+                <span class="input-group-text">מי משלם</span>
+            </div>
+            <select class="custom-select" ng-model="cc.card.who_pays" disabled>
+                <option selected>לא צוין</option>
+                <option>הלקוח</option>
+                <option>החנות</option>
+            </select>
+        </div>
+        <div class="input-group mb-3 my-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">מידע נוסף</span>
+            </div>
+            <textarea class="form-control" aria-label="מידע נוסף"
+                      ng-model="cc.card.extra_info" disabled></textarea>
+        </div>
+        <div class="col font-weight-bold d-inline p-2 bg-light text-black text-right float-right my-2 input-group-text">
+            צפי אספקה
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text xlargeFont">תאריך</span>
                         </div>
-                        <!--img ng-src="{{card.tempOrderImageUrl}}" class="img-fluid" alt="Responsive image">-->
+                        <input data-date-format="dd/mm/yyyy DD"
+                               class="form-control xlargeFont"
+                               ng-model="cc.card.supply_date" disabled>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text xlargeFont">מ-</span>
+                        </div>
+                        <select class="custom-select xlargeFont"
+                                ng-model="cc.card.supply_from_hour" disabled>
+                            <option selected>{{cc.defaultHourValue}}</option>
+                            <option ng-repeat="hour in cc.hours" value="{{hour}}">
+                                {{hour}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text xlargeFont">עד</span>
+                        </div>
+                        <select class="custom-select xlargeFont"
+                                ng-model="cc.card.supply_to_hour" disabled>
+                            <option selected>{{cc.defaultHourValue}}</option>
+                            <option ng-repeat="hour in cc.hours" value="{{hour}}">
+                                {{hour}}
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="dialog" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-inline-flex p-2 justify-content-center">
+                        <img ng-src="{{cc.card.tempOrderImageUrl}}"
+                             class="img-fluid" alt="Responsive image">
+                    </div>
+                    <!--img ng-src="{{card.tempOrderImageUrl}}" class="img-fluid" alt="Responsive image">-->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">סגור</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editCoordinationModal" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                            ng-disabled="cc.isSavingCoordination">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h5 class="modal-title ml-auto float-right">{{cc.getEditCoordinationModalTitle()}}</h5>
+                    <!--                        <button type="button" class="btn btn-secondary" data-dismiss="modal"-->
+                    <!--                                ng-disabled="cc.isSavingCoordination">סגור-->
+                    <!--                        </button>-->
+                </div>
+
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">תאריך</span>
+                        </div>
+                        <input data-date-format="dd/mm/yyyy DD" class="form-control xlargeFont"
+                               id="datePickerInEdit{{cc.coordinationInEdit.id}}">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">מ-</span>
+                        </div>
+                        <select class="custom-select xlargeFont" ng-model="cc.coordinationInEdit.from_hour">
+                            <option selected>{{cc.defaultHourValue}}</option>
+                            <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">עד</span>
+                        </div>
+                        <select class="custom-select xlargeFont" ng-model="cc.coordinationInEdit.to_hour">
+                            <option selected>{{cc.defaultHourValue}}</option>
+                            <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
+                            </option>
+                        </select>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">סגור</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="editCoordinationModal" tabindex="-1" role="dialog"
-             aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                                ng-disabled="cc.isSavingCoordination">
-                            <span aria-hidden="true">&times;</span>
+                        <button type="button" class="btn btn-outline-primary ml-auto"
+                                ng-click="cc.saveCoordinationFromEditModal()">
+                            {{cc.getEditCoordinationModalUpdateButton()}}
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                  ng-show="cc.isSavingCoordination"></span>
                         </button>
-                        <h5 class="modal-title ml-auto float-right">{{cc.getEditCoordinationModalTitle()}}</h5>
-                        <!--                        <button type="button" class="btn btn-secondary" data-dismiss="modal"-->
-                        <!--                                ng-disabled="cc.isSavingCoordination">סגור-->
-                        <!--                        </button>-->
-                    </div>
-                    <div class="modal-body">
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">תאריך</span>
-                            </div>
-                            <input data-date-format="dd/mm/yyyy DD" class="form-control xlargeFont"
-                                   id="datePickerInEdit{{cc.coordinationInEdit.id}}">
-                        </div>
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">מ-</span>
-                            </div>
-                            <select class="custom-select xlargeFont" ng-model="cc.coordinationInEdit.from_hour">
-                                <option selected>{{cc.defaultHourValue}}</option>
-                                <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">עד</span>
-                            </div>
-                            <select class="custom-select xlargeFont" ng-model="cc.coordinationInEdit.to_hour">
-                                <option selected>{{cc.defaultHourValue}}</option>
-                                <option ng-repeat="hour in cc.hours" value="{{hour}}">{{hour}}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-primary ml-auto"
-                                    ng-click="cc.saveCoordinationFromEditModal()">
-                                {{cc.getEditCoordinationModalUpdateButton()}}
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
-                                      ng-show="cc.isSavingCoordination"></span>
-                            </button>
-                            <button type="button" class="btn btn-outline-danger"
-                                    ng-click="cc.deleteCoordinationInEdit()" ng-disabled="cc.isSavingCoordination"
-                                    ng-show="!cc.isCreatingNewCoordination">
-                                מחק
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
-                                      ng-show="cc.isDeletingCoordination"></span>
-                            </button>
-                        </div>
+                        <button type="button" class="btn btn-outline-danger"
+                                ng-click="cc.deleteCoordinationInEdit()" ng-disabled="cc.isSavingCoordination"
+                                ng-show="!cc.isCreatingNewCoordination">
+                            מחק
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                  ng-show="cc.isDeletingCoordination"></span>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-     </div>
+    </div>
+</div>
 
 
 {% endraw %}
