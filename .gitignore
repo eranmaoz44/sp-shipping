@@ -7,4 +7,4 @@ WhatsApp/qr_code/*
 WhatsApp/UserData/*
 nohup.out
 maintenance/cleanup_log.txt
-
+run_script.sh
