@@ -22,7 +22,7 @@ class Config(object):
         ,
         "WHATSAPP_RECIPIENT": {
             "TEST": "test",
-            "REMOTE": "test"
+            "REMOTE": "הובלות ניקולאי"
         }
     }
 
