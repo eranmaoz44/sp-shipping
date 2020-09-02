@@ -42,8 +42,16 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     }, 0);
 
 
+     self.supply_time_to_int = function(supply_date, supply_to_hour, supply_from_hour){
+        var res = 0;
+        var parts = supply_date.split("/");
+        var d1 = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+        return d1;
+     }
 
-
+     self.compareCards = function(a, b) {
+                return self.supply_time_to_int(a.supply_date, a.supply_from_hour, a.supply_to_hour) - self.supply_time_to_int(b.supply_date, b.supply_from_hour, b.supply_to_hour);
+     }
 
 
 
@@ -291,6 +299,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                     count = count + 1
                 }
 
+                self.shippingCards.sort(self.compareCards)
+
                 self.loadedFirstTime = true
 
                 self.updateCardsTempOrderImages(cardsToUpdateTempImageUrl)
@@ -303,6 +313,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
             }
          );
     }
+
+
 
     self.updateShippingCard = function(card, resolve, reject){
 
