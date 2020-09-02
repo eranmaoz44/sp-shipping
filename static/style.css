@@ -148,3 +148,7 @@ input:disabled:hover, select:disabled:hover, textarea:disabled:hover {
   background:lightslategrey!important;
 }
 
+.timerIcon{
+width: 16px;
+  height: 16px;
+}
