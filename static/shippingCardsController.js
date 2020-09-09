@@ -42,15 +42,27 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     }, 0);
 
 
-     self.supply_time_to_int = function(supply_date, supply_to_hour, supply_from_hour){
+     self.supply_date_to_int = function(supply_date){
         var res = 0;
         var parts = supply_date.split("/");
         var d1 = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
         return d1;
      }
 
+     self.supply_hour_to_int = function(supply_hour){
+        var res = -1;
+        var parts = supply_hour.split(":");
+        if (parts.length > 1){
+            res = parts[0]
+        }
+        return res
+     }
+
+
      self.compareCards = function(a, b) {
-                return self.supply_time_to_int(a.supply_date, a.supply_from_hour, a.supply_to_hour) - self.supply_time_to_int(b.supply_date, b.supply_from_hour, b.supply_to_hour);
+                return self.supply_date_to_int(a.supply_date) - self.supply_date_to_int(b.supply_date)
+                        + (self.supply_hour_to_int(a.supply_from_hour)-self.supply_hour_to_int(b.supply_from_hour))*1000
+                        + (self.supply_hour_to_int(a.supply_to_hour)-self.supply_hour_to_int(b.supply_to_hour))*10;
      }
 
 
