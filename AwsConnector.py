@@ -8,27 +8,6 @@ from botocore.exceptions import ClientError
 
 class AwsConnector(object):
 
-    @staticmethod
-    def sign_s3(filename, filetype):
-        s3_bucket = os.environ.get('S3_BUCKET')
-
-        s3 = boto3.client('s3')
-
-        presigned_post = s3.generate_presigned_post(
-            Bucket=s3_bucket,
-            Key=filename,
-            Fields={"acl": "public-read", "Content-Type": filetype},
-            Conditions=[
-                {"acl": "public-read"},
-                {"Content-Type": filetype}
-            ],
-            ExpiresIn=999999
-        )
-
-        return json.dumps({
-            'data': presigned_post,
-            'url': AwsConnector.get_file_url(filename)
-        })
 
     @staticmethod
     def delete_file(file_name):
@@ -40,24 +19,9 @@ class AwsConnector(object):
 
         return response['ResponseMetadata']
 
-
-    @staticmethod
-    def upload_file(filename, filedata):
-        s3_bucket = os.environ.get('S3_BUCKET')
-
-        s3_client = boto3.resource("s3").Bucket(s3_bucket)
-
-        response = s3_client.Object(filename).put(Body=filedata)
-
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return True
-        else:
-            return False
-
-
     @staticmethod
     def create_presigned_post_file_upload(file_name):
-        s3_bucket = os.environ.get('S3_BUCKET')
+        s3_bucket = os.environ.get('S3_BUCKET_INPUT')
         return json.dumps(AwsConnector.create_presigned_post(s3_bucket, file_name))
 
 
