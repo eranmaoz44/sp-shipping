@@ -312,6 +312,9 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 }
 
                 self.shippingCards.sort(self.compareCards)
+                if (self.state == "finished"){
+                self.shippingCards.reverse()
+                }
 
                 self.loadedFirstTime = true
 
