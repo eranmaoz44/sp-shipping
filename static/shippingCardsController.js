@@ -24,6 +24,10 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     self.dateFormat = 'dd/mm/yyyy'
 
+        self.page = 1;
+    self.page_size = 9;
+    self.total_pages = 1;
+
     self.isEditable = function(){
         return self.state == 'ongoing'
     }
@@ -246,87 +250,124 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         });
     }
 
-    self.getShippingCards = function(){
+//    self.getShippingCards = function(){
+//
+//        if(self.shouldFetchCards == false){
+//            return;
+//        }
+//        console.log('state is ')
+//        console.log(self.state)
+//        var config = {
+//            headers : {
+//                    'Content-Type': 'application/json;charset=utf-8;'
+//            },
+//            params : {
+//                state: self.state
+//            }
+//        }
+//
+//        $http.get('/api/shipping', config).then(
+//            function (response) {
+//                if(self.shouldFetchCards == false){
+//                    return;
+//                }
+//                var oldCards = self.shippingCards
+//                var newAndOldCards = response.data
+//                var cardsToUpdateTempImageUrl = []
+//                newAndOldCards.forEach(function(newOrOldCard){
+//                    var indexInOldCards = commonUtilsService.findIndex(oldCards, newOrOldCard)
+//                    if(indexInOldCards > -1){
+//                       var oldCard = oldCards[indexInOldCards]
+//                       oldCard.id = newOrOldCard.id
+//                       oldCard.order_number = newOrOldCard.order_number
+//                       if(oldCard.order_image_aws_path != newOrOldCard.order_image_aws_path){
+//                            cardsToUpdateTempImageUrl.push(oldCard)
+//                       }
+//                       oldCard.order_image_aws_path = newOrOldCard.order_image_aws_path
+//                       oldCard.date = newOrOldCard.date
+//                       oldCard.state = newOrOldCard.state
+//                       oldCard.phone_number = newOrOldCard.phone_number
+//                       oldCard.price = newOrOldCard.price
+//                       oldCard.who_pays = newOrOldCard.who_pays
+//                       oldCard.supply_date = newOrOldCard.supply_date
+//                       oldCard.supply_from_hour = newOrOldCard.supply_from_hour
+//                       oldCard.supply_to_hour = newOrOldCard.supply_to_hour
+//                       oldCard.extra_info = newOrOldCard.extra_info
+//                    }
+//                    else {
+//                        oldCards.push(newOrOldCard)
+//                        cardsToUpdateTempImageUrl.push(newOrOldCard)
+//                    }
+//                });
+//
+//                var i = 0;
+//                var count = 0;
+//                var oldCardsLength = oldCards.length;
+//
+//                while(count < oldCardsLength){
+//                    var card = oldCards[i]
+//                    i = i + 1
+//                    var indexInNewAndOld = commonUtilsService.findIndex(newAndOldCards, card)
+//                    if (indexInNewAndOld == -1){
+//                        commonUtilsService.deleteFromArray(oldCards, card)
+//                        i = i - 1
+//                    }
+//                    count = count + 1
+//                }
+//
+//                self.shippingCards.sort(self.compareCards)
+//
+//                self.loadedFirstTime = true
+//
+//                self.updateCardsTempOrderImages(cardsToUpdateTempImageUrl)
+//
+//            }, function (error) {
+//                $scope.ResponseDetails = "Data: " + error.data +
+//                    "<hr />status: " + error.status +
+//                    "<hr />headers: " + error.headers +
+//                    "<hr />config: " + error.config;
+//            }
+//         );
+//    }
 
-        if(self.shouldFetchCards == false){
-            return;
-        }
-        console.log('state is ')
-        console.log(self.state)
+
+    self.getShippingCards = function() {
+        if (self.shouldFetchCards == false) return;
+
         var config = {
-            headers : {
-                    'Content-Type': 'application/json;charset=utf-8;'
-            },
-            params : {
-                state: self.state
+            headers: { 'Content-Type': 'application/json;charset=utf-8;' },
+            params: {
+                state: self.state,
+                page: self.page,
+                page_size: self.page_size
             }
-        }
+        };
 
         $http.get('/api/shipping', config).then(
-            function (response) {
-                if(self.shouldFetchCards == false){
-                    return;
-                }
-                var oldCards = self.shippingCards
-                var newAndOldCards = response.data
-                var cardsToUpdateTempImageUrl = []
-                newAndOldCards.forEach(function(newOrOldCard){
-                    var indexInOldCards = commonUtilsService.findIndex(oldCards, newOrOldCard)
-                    if(indexInOldCards > -1){
-                       var oldCard = oldCards[indexInOldCards]
-                       oldCard.id = newOrOldCard.id
-                       oldCard.order_number = newOrOldCard.order_number
-                       if(oldCard.order_image_aws_path != newOrOldCard.order_image_aws_path){
-                            cardsToUpdateTempImageUrl.push(oldCard)
-                       }
-                       oldCard.order_image_aws_path = newOrOldCard.order_image_aws_path
-                       oldCard.date = newOrOldCard.date
-                       oldCard.state = newOrOldCard.state
-                       oldCard.phone_number = newOrOldCard.phone_number
-                       oldCard.price = newOrOldCard.price
-                       oldCard.who_pays = newOrOldCard.who_pays
-                       oldCard.supply_date = newOrOldCard.supply_date
-                       oldCard.supply_from_hour = newOrOldCard.supply_from_hour
-                       oldCard.supply_to_hour = newOrOldCard.supply_to_hour
-                       oldCard.extra_info = newOrOldCard.extra_info
-                    }
-                    else {
-                        oldCards.push(newOrOldCard)
-                        cardsToUpdateTempImageUrl.push(newOrOldCard)
-                    }
-                });
+            function(response) {
+                if(self.shouldFetchCards == false) return;
 
-                var i = 0;
-                var count = 0;
-                var oldCardsLength = oldCards.length;
+                var data = response.data;
+                self.shippingCards = data.items;
+                self.total_pages = data.total_pages;
+                self.page = data.page;
 
-                while(count < oldCardsLength){
-                    var card = oldCards[i]
-                    i = i + 1
-                    var indexInNewAndOld = commonUtilsService.findIndex(newAndOldCards, card)
-                    if (indexInNewAndOld == -1){
-                        commonUtilsService.deleteFromArray(oldCards, card)
-                        i = i - 1
-                    }
-                    count = count + 1
-                }
-
-                self.shippingCards.sort(self.compareCards)
-
-                self.loadedFirstTime = true
-
-                self.updateCardsTempOrderImages(cardsToUpdateTempImageUrl)
-
-            }, function (error) {
-                $scope.ResponseDetails = "Data: " + error.data +
-                    "<hr />status: " + error.status +
-                    "<hr />headers: " + error.headers +
-                    "<hr />config: " + error.config;
+                self.shippingCards.sort(self.compareCards);
+                self.loadedFirstTime = true;
+                self.updateCardsTempOrderImages(self.shippingCards);
+            },
+            function(error) {
+                console.log("Error fetching shippings:", error);
             }
-         );
-    }
+        );
+    };
 
-
+     self.goToPage = function(n) {
+        if (n >= 1 && n <= self.total_pages) {
+            self.page = n;
+            self.getShippingCards();
+        }
+    };
 
     self.updateShippingCard = function(card, resolve, reject){
 

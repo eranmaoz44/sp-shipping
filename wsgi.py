@@ -107,13 +107,31 @@ def render_coordination_template():
 def get_shipping():
     shippingID = request.args.get('shippingID')
     state = request.args.get('state')
+    page = request.args.get('page', default=1, type=int)
+    page_size = request.args.get('page_size', default=9, type=int)
+
     if shippingID is None:
         all_shippings = Shipping.get_shippings_by_state(state)
-        res = json.dumps([x.to_dict() for x in all_shippings])
+
+        total = len(all_shippings)
+        total_pages = (total + page_size - 1) // page_size
+
+        start = (page - 1) * page_size
+        end = start + page_size
+        paginated = all_shippings[start:end]
+
+        res = json.dumps({
+            "items": [x.to_dict() for x in paginated],
+            "total": total,
+            "page": page,
+            "page_size": page_size,
+            "total_pages": total_pages
+        })
     else:
         single_element = Shipping.get_element_with_id(shippingID)
         res = single_element.to_json_str()
-    return Response(status=200, response=res)
+
+    return Response(status=200, response=res, mimetype="application/json")
 
 
 @application.route('/api/availabilities', methods=['GET'])

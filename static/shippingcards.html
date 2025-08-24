@@ -198,6 +198,40 @@
             </div>
         </div>
     </div>
+
+      <div class="d-flex justify-content-center my-3">
+    <ul class="pagination">
+        <!-- First -->
+        <li class="page-item" ng-class="{disabled: scc.page == 1}">
+            <a class="page-link" href="" ng-click="scc.goToPage(1)">ראשון</a>
+        </li>
+
+        <!-- Previous -->
+        <li class="page-item" ng-class="{disabled: scc.page == 1}">
+            <a class="page-link" href="" ng-click="scc.goToPage(scc.page - 1)">קודם</a>
+        </li>
+
+        <!-- Numbered pages -->
+        <li class="page-item"
+            ng-repeat="n in [].constructor(scc.total_pages) track by $index"
+            ng-class="{active: ($index+1) == scc.page}">
+            <a class="page-link" href="" ng-click="scc.goToPage($index+1)">
+                {{$index+1}}
+            </a>
+        </li>
+
+        <!-- Next -->
+        <li class="page-item" ng-class="{disabled: scc.page == scc.total_pages}">
+            <a class="page-link" href="" ng-click="scc.goToPage(scc.page + 1)">הבא</a>
+        </li>
+
+        <!-- Last -->
+        <li class="page-item" ng-class="{disabled: scc.page == scc.total_pages}">
+            <a class="page-link" href="" ng-click="scc.goToPage(scc.total_pages)">אחרון</a>
+        </li>
+    </ul>
+</div>
+
     <div ng-show="scc.isEditable() && scc.loadedFirstTime && scc.hasAdminPermissions()"
          class="fixed-bottom text-center">
 
@@ -314,6 +348,8 @@
                             </div>
                         </div>
                     </div>
+
+
 
                     <div class="input-group mb-3 my-3">
                         <div class="input-group-prepend">
