@@ -1,5 +1,7 @@
 import json
 import os
+from datetime import datetime
+
 import flask
 from flask import Flask, Response, request, flash, redirect, url_for, render_template
 from flask_cors import CORS
@@ -116,6 +118,10 @@ def get_shipping():
     if shippingID is None:
         all_shippings = Shipping.get_shippings_by_state(state)
 
+        all_shippings = sorted(
+            all_shippings,
+            key=lambda x: datetime.strptime(x.to_dict()["supply_date"], "%d/%m/%Y")  # if ISO 8601 strings
+        )
         total = len(all_shippings)
         total_pages = (total + page_size - 1) // page_size
 

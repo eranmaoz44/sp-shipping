@@ -535,9 +535,9 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     $timeout(self.getShippingCards, 0);
 
 
-    setInterval(function(){
-        self.getShippingCards();
-    }, 30000)
+//    setInterval(function(){
+//        self.getShippingCards();
+//    }, 30000)
 }
 
 angular
