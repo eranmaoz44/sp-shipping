@@ -16,9 +16,12 @@ from flask_login import LoginManager, current_user, login_user, logout_user, log
 
 from User import User
 
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 _secret_key = 'SECRET_KEY'
 
 application = Flask(__name__)
+application.wsgi_app = ProxyFix(application.wsgi_app, x_proto=1, x_host=1)
 cors = CORS(application, resources={r"/api/*": {"origins": "*"}})
 
 application.secret_key = os.environ.get(_secret_key)
