@@ -2,7 +2,19 @@
     <div class="container">
 
         <div class="row">
-            <div class="col-md-4" ng-repeat="card in scc.shippingCards">
+
+                <!-- Skeleton placeholders -->
+    <div class="col-md-4" ng-repeat="n in [].constructor(9) track by $index" ng-show="scc.isLoading">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-img-top bg-secondary" style="height:200px; opacity:0.2;"></div>
+            <div class="card-body">
+                <h5 class="card-title bg-secondary" style="height:20px; width: 80%; opacity:0.2;"></h5>
+                <p class="bg-secondary" style="height:15px; width: 60%; opacity:0.2;"></p>
+            </div>
+        </div>
+    </div>
+
+            <div class="col-md-4" ng-repeat="card in scc.shippingCards" ng-show="!scc.isLoading">
                 <div class="card mb-4 shadow-sm">
                     <!--                                                <div image-loader-with-orientation ng-model="card.tempOrderImageUrl"-->
                     <!--                                                     class="card-img-top max-height-400 click-cursor" data-toggle="modal"-->
@@ -202,18 +214,18 @@
      <div class="d-flex justify-content-center my-3">
   <ul class="pagination">
     <!-- First -->
-    <li class="page-item" ng-class="{disabled: scc.page == 1}">
-      <a class="page-link" href="" ng-click="scc.goToPage(1)">ראשון</a>
+    <li class="page-item" ng-class="{disabled: scc.page == 1 || scc.isLoading}">
+      <a class="page-link" href="" ng-click="!scc.isLoading && scc.goToPage(1)">ראשון</a>
     </li>
 
     <!-- Previous -->
-    <li class="page-item" ng-class="{disabled: scc.page == 1}">
-      <a class="page-link" href="" ng-click="scc.goToPage(scc.page - 1)">קודם</a>
+    <li class="page-item" ng-class="{disabled: scc.page == 1 || scc.isLoading}">
+      <a class="page-link" href="" ng-click="!scc.isLoading && scc.goToPage(scc.page - 1)">קודם</a>
     </li>
 
     <!-- Numbered pages with ellipsis -->
     <li class="page-item" ng-if="scc.page > 5">
-      <a class="page-link" href="" ng-click="scc.goToPage(1)">1</a>
+      <a class="page-link" href="" ng-click="!scc.isLoading && scc.goToPage(1)">1</a>
     </li>
     <li class="page-item disabled" ng-if="scc.page > 5">
       <span class="page-link">...</span>
@@ -222,8 +234,8 @@
     <li class="page-item"
         ng-repeat="n in [].constructor(scc.total_pages) track by $index"
         ng-if="$index+1 >= scc.page-4 && $index+1 <= scc.page+4"
-        ng-class="{active: ($index+1) == scc.page}">
-      <a class="page-link" href="" ng-click="scc.goToPage($index+1)">
+        ng-class="{active: ($index+1) == scc.page, disabled: scc.isLoading}">
+      <a class="page-link" href="" ng-click="!scc.isLoading && scc.goToPage($index+1)">
         {{$index+1}}
       </a>
     </li>
@@ -231,23 +243,24 @@
     <li class="page-item disabled" ng-if="scc.page < scc.total_pages - 4">
       <span class="page-link">...</span>
     </li>
-    <li class="page-item" ng-if="scc.page < scc.total_pages - 4">
-      <a class="page-link" href="" ng-click="scc.goToPage(scc.total_pages)">
+    <li class="page-item" ng-if="scc.page < scc.total_pages - 4" ng-class="{disabled: scc.isLoading}">
+      <a class="page-link" href="" ng-click="!scc.isLoading && scc.goToPage(scc.total_pages)">
         {{scc.total_pages}}
       </a>
     </li>
 
     <!-- Next -->
-    <li class="page-item" ng-class="{disabled: scc.page == scc.total_pages}">
-      <a class="page-link" href="" ng-click="scc.goToPage(scc.page + 1)">הבא</a>
+    <li class="page-item" ng-class="{disabled: scc.page == scc.total_pages || scc.isLoading}">
+      <a class="page-link" href="" ng-click="!scc.isLoading && scc.goToPage(scc.page + 1)">הבא</a>
     </li>
 
     <!-- Last -->
-    <li class="page-item" ng-class="{disabled: scc.page == scc.total_pages}">
-      <a class="page-link" href="" ng-click="scc.goToPage(scc.total_pages)">אחרון</a>
+    <li class="page-item" ng-class="{disabled: scc.page == scc.total_pages || scc.isLoading}">
+      <a class="page-link" href="" ng-click="!scc.isLoading && scc.goToPage(scc.total_pages)">אחרון</a>
     </li>
   </ul>
 </div>
+
 
 
     <div ng-show="scc.isEditable() && scc.loadedFirstTime && scc.hasAdminPermissions()"

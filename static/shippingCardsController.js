@@ -48,6 +48,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         self.page = 1;
     self.page_size = 9;
     self.total_pages = 1;
+     self.isLoading = true;
 
     self.isEditable = function(){
         return self.state == 'ongoing'
@@ -364,6 +365,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
             }
         };
 
+        self.isLoading = true
+
         $http.get('/api/shipping', config).then(
             function(response) {
                 if(self.shouldFetchCards == false) return;
@@ -376,6 +379,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 self.shippingCards.sort(self.compareCards);
                 self.loadedFirstTime = true;
                 self.updateCardsTempOrderImages(self.shippingCards);
+
+                self.isLoading = false
             },
             function(error) {
                 console.log("Error fetching shippings:", error);
