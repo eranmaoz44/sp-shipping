@@ -383,6 +383,33 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         );
     };
 
+    self.getPageRange = function () {
+    var pages = [];
+    var maxVisible = 9;
+    var total = $scope.scc.total_pages;
+    var current = $scope.scc.page;
+
+    if (total <= maxVisible) {
+        for (var i = 1; i <= total; i++) {
+            pages.push(i);
+        }
+    } else {
+        var left = Math.max(2, current - 2);
+        var right = Math.min(total - 1, current + 2);
+
+        pages.push(1);
+        if (left > 2) pages.push("...");
+
+        for (var i = left; i <= right; i++) {
+            pages.push(i);
+        }
+
+        if (right < total - 1) pages.push("...");
+        pages.push(total);
+    }
+    return pages;
+};
+
      self.goToPage = function(n) {
         if (n >= 1 && n <= self.total_pages) {
             self.page = n;

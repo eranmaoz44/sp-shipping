@@ -199,38 +199,56 @@
         </div>
     </div>
 
-      <div class="d-flex justify-content-center my-3">
-    <ul class="pagination">
-        <!-- First -->
-        <li class="page-item" ng-class="{disabled: scc.page == 1}">
-            <a class="page-link" href="" ng-click="scc.goToPage(1)">ראשון</a>
-        </li>
+     <div class="d-flex justify-content-center my-3">
+  <ul class="pagination">
+    <!-- First -->
+    <li class="page-item" ng-class="{disabled: scc.page == 1}">
+      <a class="page-link" href="" ng-click="scc.goToPage(1)">ראשון</a>
+    </li>
 
-        <!-- Previous -->
-        <li class="page-item" ng-class="{disabled: scc.page == 1}">
-            <a class="page-link" href="" ng-click="scc.goToPage(scc.page - 1)">קודם</a>
-        </li>
+    <!-- Previous -->
+    <li class="page-item" ng-class="{disabled: scc.page == 1}">
+      <a class="page-link" href="" ng-click="scc.goToPage(scc.page - 1)">קודם</a>
+    </li>
 
-        <!-- Numbered pages -->
-        <li class="page-item"
-            ng-repeat="n in [].constructor(scc.total_pages) track by $index"
-            ng-class="{active: ($index+1) == scc.page}">
-            <a class="page-link" href="" ng-click="scc.goToPage($index+1)">
-                {{$index+1}}
-            </a>
-        </li>
+    <!-- Numbered pages with ellipsis -->
+    <li class="page-item" ng-if="scc.page > 5">
+      <a class="page-link" href="" ng-click="scc.goToPage(1)">1</a>
+    </li>
+    <li class="page-item disabled" ng-if="scc.page > 5">
+      <span class="page-link">...</span>
+    </li>
 
-        <!-- Next -->
-        <li class="page-item" ng-class="{disabled: scc.page == scc.total_pages}">
-            <a class="page-link" href="" ng-click="scc.goToPage(scc.page + 1)">הבא</a>
-        </li>
+    <li class="page-item"
+        ng-repeat="n in [].constructor(scc.total_pages) track by $index"
+        ng-if="$index+1 >= scc.page-4 && $index+1 <= scc.page+4"
+        ng-class="{active: ($index+1) == scc.page}">
+      <a class="page-link" href="" ng-click="scc.goToPage($index+1)">
+        {{$index+1}}
+      </a>
+    </li>
 
-        <!-- Last -->
-        <li class="page-item" ng-class="{disabled: scc.page == scc.total_pages}">
-            <a class="page-link" href="" ng-click="scc.goToPage(scc.total_pages)">אחרון</a>
-        </li>
-    </ul>
+    <li class="page-item disabled" ng-if="scc.page < scc.total_pages - 4">
+      <span class="page-link">...</span>
+    </li>
+    <li class="page-item" ng-if="scc.page < scc.total_pages - 4">
+      <a class="page-link" href="" ng-click="scc.goToPage(scc.total_pages)">
+        {{scc.total_pages}}
+      </a>
+    </li>
+
+    <!-- Next -->
+    <li class="page-item" ng-class="{disabled: scc.page == scc.total_pages}">
+      <a class="page-link" href="" ng-click="scc.goToPage(scc.page + 1)">הבא</a>
+    </li>
+
+    <!-- Last -->
+    <li class="page-item" ng-class="{disabled: scc.page == scc.total_pages}">
+      <a class="page-link" href="" ng-click="scc.goToPage(scc.total_pages)">אחרון</a>
+    </li>
+  </ul>
 </div>
+
 
     <div ng-show="scc.isEditable() && scc.loadedFirstTime && scc.hasAdminPermissions()"
          class="fixed-bottom text-center">

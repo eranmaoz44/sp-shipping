@@ -122,6 +122,10 @@ def get_shipping():
             all_shippings,
             key=lambda x: datetime.strptime(x.to_dict()["supply_date"], "%d/%m/%Y")  # if ISO 8601 strings
         )
+        
+        if state == 'finished':
+            all_shippings = list(reversed(all_shippings))
+        
         total = len(all_shippings)
         total_pages = (total + page_size - 1) // page_size
 
