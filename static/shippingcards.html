@@ -1,6 +1,22 @@
 <div class="album py-5 bg-light">
     <div class="container">
 
+        <!-- Search -->
+<form class="mb-3" ng-submit="$event.preventDefault()">
+  <div class="input-group">
+    <input type="search"
+           class="form-control text-right"
+           placeholder="חיפוש לפי מספר הזמנה"
+           ng-model="scc.q"
+           ng-model-options="{ debounce: 300 }"
+           aria-label="חיפוש" />
+    <div class="input-group-append" ng-if="scc.q">
+      <button class="btn btn-outline-secondary" type="button" ng-click="scc.clearSearch()">נקה</button>
+    </div>
+  </div>
+  <small class="text-muted d-block mt-1" ng-if="scc.isLoading">מחפש…</small>
+</form>
+
         <div class="row">
 
                 <!-- Skeleton placeholders -->
@@ -13,6 +29,12 @@
             </div>
         </div>
     </div>
+
+
+        <!-- No results message -->
+<div class="col-12 text-center my-4" ng-show="!scc.isLoading && scc.shippingCards.length === 0">
+  <span class="text-muted">לא נמצאו תוצאות</span>
+</div>
 
             <div class="col-md-4" ng-repeat="card in scc.shippingCards" ng-show="!scc.isLoading">
                 <div class="card mb-4 shadow-sm">

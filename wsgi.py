@@ -114,6 +114,7 @@ def get_shipping():
     state = request.args.get('state')
     page = request.args.get('page', default=1, type=int)
     page_size = request.args.get('page_size', default=9, type=int)
+    q = request.args.get('q', default='', type=str)  # <- search query (optional)
 
     if shippingID is None:
         all_shippings = Shipping.get_shippings_by_state(state)
@@ -125,7 +126,18 @@ def get_shipping():
         
         if state == 'finished':
             all_shippings = list(reversed(all_shippings))
-        
+
+        # 2) Filter by `order` (in-memory)
+        #    Only filter if q is non-empty after trimming.
+        q_norm = (q or '').strip().lower()
+        if q_norm:
+            def matches_order(s):
+                d = s.to_dict()  # assume this has an "order" key that is a string
+                order_str = (d.get("order_number") or "")
+                return q_norm in order_str.lower()
+
+            all_shippings = [s for s in all_shippings if matches_order(s)]
+
         total = len(all_shippings)
         total_pages = (total + page_size - 1) // page_size
 

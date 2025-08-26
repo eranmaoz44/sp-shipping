@@ -49,6 +49,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     self.page_size = 9;
     self.total_pages = 1;
      self.isLoading = true;
+     self.q = $location.search().q || ''; // keep shareable if you like
+
 
     self.isEditable = function(){
         return self.state == 'ongoing'
@@ -361,7 +363,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
             params: {
                 state: self.state,
                 page: self.page,
-                page_size: self.page_size
+                page_size: self.page_size,
+                q: self.q && self.q.trim() ? self.q.trim() : undefined
             }
         };
 
@@ -564,7 +567,20 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         $window.location.href = self.getCoordinationLink(shippingID);
     }
 
+    self.clearSearch = function(){
+    self.q = '';
+};
+
     $timeout(self.getShippingCards, 0);
+
+    $scope.$watch(function(){ return self.q; }, function(newVal, oldVal) {
+    if (newVal === oldVal) return;
+    self.page = 1;
+    // optionally keep URL in sync (for share/back):
+    $location.search('q', self.q && self.q.trim() ? self.q.trim() : null);
+    self.getShippingCards();
+});
+
 
 
 //    setInterval(function(){
