@@ -174,8 +174,8 @@ def set_shipping():
     if not shipping.check_if_element_exists():
         new_shipping = True
     shipping.insert_or_update()
-    if new_shipping:
-        shipping.send_new_shipping_message()
+    # if new_shipping:
+    #     shipping.send_new_shipping_message()
     return Response(status=200)
 
 
