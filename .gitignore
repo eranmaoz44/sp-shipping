@@ -1,5 +1,6 @@
 .idea/*
 venv/*
+.venv/*
 __pycache__/*
 __pycache__/AwsConnector.cpython-37.pyc
 *.pyc

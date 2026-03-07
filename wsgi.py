@@ -115,6 +115,7 @@ def get_shipping():
     page = request.args.get('page', default=1, type=int)
     page_size = request.args.get('page_size', default=9, type=int)
     q = request.args.get('q', default='', type=str)  # <- search query (optional)
+    carrier = request.args.get('carrier', default='', type=str)
 
     if shippingID is None:
         all_shippings = Shipping.get_shippings_by_state(state)
@@ -130,6 +131,7 @@ def get_shipping():
         # 2) Filter by `order` (in-memory)
         #    Only filter if q is non-empty after trimming.
         q_norm = (q or '').strip().lower()
+        carrier_norm = (carrier or '').strip().lower()
         if q_norm:
             def matches_order(s):
                 d = s.to_dict()  # assume this has an "order" key that is a string
@@ -137,6 +139,14 @@ def get_shipping():
                 return q_norm in order_str.lower()
 
             all_shippings = [s for s in all_shippings if matches_order(s)]
+
+        if carrier_norm:
+            def matches_carrier(s):
+                d = s.to_dict()
+                carrier_value = (d.get("carrier") or "")
+                return carrier_value.lower() == carrier_norm
+
+            all_shippings = [s for s in all_shippings if matches_carrier(s)]
 
         total = len(all_shippings)
         total_pages = (total + page_size - 1) // page_size
@@ -238,7 +248,8 @@ if __name__ == '__main__':
     # WhatsappConnector.send_message("hello whatsapp", WhatsappConnector.TWILIO_SANDBOX_TEST_NUMBER, WhatsappConnector.MY_WHATSAPP)
     #DBConnecter.execute_write_query("DROP TABLE availabilities")
     #DBConnecter.execute_write_query("DROP TABLE shipping")
-    #DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar, date varchar, state varchar, phone_number varchar, price varchar, who_pays varchar, supply_date varchar, supply_from_hour varchar, supply_to_hour varchar, extra_info varchar);")
+    #DBConnecter.execute_write_query("CREATE TABLE shipping (id varchar PRIMARY KEY, order_number varchar, order_image_aws_path varchar, date varchar, state varchar, phone_number varchar, price varchar, who_pays varchar, supply_date varchar, supply_from_hour varchar, supply_to_hour varchar, extra_info varchar, carrier varchar);")
+    # DBConnecter.execute_write_query("ALTER TABLE shipping ADD COLUMN carrier varchar;")
     #DBConnecter.execute_write_query(
     #    "CREATE TABLE availabilities (id varchar, shipping_id varchar REFERENCES shipping(id) ON DELETE CASCADE, "
     #    "date varchar, from_hour varchar, to_hour varchar, PRIMARY KEY (id,shipping_id));")

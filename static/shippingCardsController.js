@@ -50,6 +50,26 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     self.total_pages = 1;
      self.isLoading = true;
      self.q = $location.search().q || ''; // keep shareable if you like
+    var carrierParam = $location.search().carrier;
+    self.carrierFilter = carrierParam ? carrierParam : null;
+
+    self.carrierOptions = [
+        { label: 'לא צוין', value: null },
+        { label: 'ארתור', value: 'arthur' },
+        { label: 'וובה', value: 'vova' },
+        { label: 'עודאי', value: 'uday' },
+        { label: 'איוון', value: 'ivan' }
+    ]
+
+    self.getCarrierLabel = function(value){
+        if (value == null || value === '') return 'לא צוין';
+        for (var i = 0; i < self.carrierOptions.length; i++){
+            if (self.carrierOptions[i].value === value){
+                return self.carrierOptions[i].label;
+            }
+        }
+        return value;
+    }
 
 
     self.isEditable = function(){
@@ -163,7 +183,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 'supply_date' : dateFormat(new Date(), self.dateFormat),
                 'supply_from_hour' : self.defaultSupplyHour,
                 'supply_to_hour' : self.defaultSupplyHour,
-                'extra_info' : ''
+                'extra_info' : '',
+                'carrier' : null
         }
 
         self.cardToSaveFilePath = 'default.png'
@@ -364,7 +385,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 state: self.state,
                 page: self.page,
                 page_size: self.page_size,
-                q: self.q && self.q.trim() ? self.q.trim() : undefined
+                q: self.q && self.q.trim() ? self.q.trim() : undefined,
+                carrier: self.carrierFilter ? self.carrierFilter : undefined
             }
         };
 
@@ -425,7 +447,16 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         }
     };
 
+    self.normalizeCarrier = function(card){
+        if (!card) return;
+        if (card.carrier === '' || card.carrier === undefined) {
+            card.carrier = null;
+        }
+    }
+
     self.updateShippingCard = function(card, resolve, reject){
+
+        self.normalizeCarrier(card)
 
         self.shouldFetchCards = false
         $timeout(function(){
@@ -578,6 +609,13 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     self.page = 1;
     // optionally keep URL in sync (for share/back):
     $location.search('q', self.q && self.q.trim() ? self.q.trim() : null);
+    self.getShippingCards();
+});
+
+$scope.$watch(function(){ return self.carrierFilter; }, function(newVal, oldVal) {
+    if (newVal === oldVal) return;
+    self.page = 1;
+    $location.search('carrier', self.carrierFilter ? self.carrierFilter : null);
     self.getShippingCards();
 });
 
