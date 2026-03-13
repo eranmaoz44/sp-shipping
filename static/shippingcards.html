@@ -83,6 +83,7 @@
                                     <img src="/static/open-iconic/svg/box.svg"
                                          alt="carrier" style="width: 14px; height: 14px; margin-left: 6px;">
                                     {{scc.getCarrierLabel(card.carrier)}}
+                                    <span ng-if="card.carrier_region"> - {{scc.getCarrierRegionLabel(card.carrier_region)}}</span>
                                 </small>
                             </div>
                         </div>
@@ -390,13 +391,27 @@
                             <option>החנות</option>
                         </select>
                     </div>
-                    <div class="input-group mb-3 my-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">מוביל</span>
+                    <div class="form-row mb-3 my-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">מוביל</span>
+                                </div>
+                                <select class="custom-select" ng-model="scc.cardToAdd.carrier"
+                                        ng-options="option.value as option.label for option in scc.carrierOptions">
+                                </select>
+                            </div>
                         </div>
-                        <select class="custom-select" ng-model="scc.cardToAdd.carrier"
-                                ng-options="option.value as option.label for option in scc.carrierOptions">
-                        </select>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">אזור</span>
+                                </div>
+                                <select class="custom-select" ng-model="scc.cardToAdd.carrier_region"
+                                        ng-options="option.value as option.label for option in scc.carrierRegionOptions">
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
 

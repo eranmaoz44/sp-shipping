@@ -61,11 +61,31 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         { label: 'איוון', value: 'ivan' }
     ]
 
+    self.carrierRegionOptions = [
+        { label: 'לא צוין', value: null },
+        { label: 'צפון', value: 'north' },
+        { label: 'דרום', value: 'south' },
+        { label: 'ירושלים', value: 'jerusalem' },
+        { label: 'שטחים / יהודה ושומרון', value: 'judeah_samaria_green_line' },
+        { label: 'אילת', value: 'eilat' },
+        { label: 'מרכז', value: 'center' }
+    ]
+
     self.getCarrierLabel = function(value){
         if (value == null || value === '') return 'לא צוין';
         for (var i = 0; i < self.carrierOptions.length; i++){
             if (self.carrierOptions[i].value === value){
                 return self.carrierOptions[i].label;
+            }
+        }
+        return value;
+    }
+
+    self.getCarrierRegionLabel = function(value){
+        if (value == null || value === '') return 'לא צוין';
+        for (var i = 0; i < self.carrierRegionOptions.length; i++){
+            if (self.carrierRegionOptions[i].value === value){
+                return self.carrierRegionOptions[i].label;
             }
         }
         return value;
@@ -184,7 +204,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 'supply_from_hour' : self.defaultSupplyHour,
                 'supply_to_hour' : self.defaultSupplyHour,
                 'extra_info' : '',
-                'carrier' : null
+                'carrier' : null,
+                'carrier_region' : null
         }
 
         self.cardToSaveFilePath = 'default.png'
@@ -451,6 +472,9 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         if (!card) return;
         if (card.carrier === '' || card.carrier === undefined) {
             card.carrier = null;
+        }
+        if (card.carrier_region === '' || card.carrier_region === undefined) {
+            card.carrier_region = null;
         }
     }
 
