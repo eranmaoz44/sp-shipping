@@ -78,12 +78,14 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <h5 class="card-title text-right mb-0">מספר הזמנה: {{card.order_number}}</h5>
 
-                            <div class="d-inline-flex align-items-center text-muted">
-                                <small class="d-inline-flex align-items-center">
+                            <div class="d-inline-flex align-items-center text-muted" style="white-space: nowrap;">
+                                <small class="d-inline-flex align-items-center"
+                                       style="white-space: nowrap; line-height: 1; gap: 4px;">
                                     <img src="/static/open-iconic/svg/box.svg"
                                          alt="carrier" style="width: 14px; height: 14px; margin-left: 6px;">
-                                    {{scc.getCarrierLabel(card.carrier)}}
-                                    <span ng-if="card.carrier_region"> - {{scc.getCarrierRegionLabel(card.carrier_region)}}</span>
+                                    <span>{{scc.getCarrierLabel(card.carrier)}}</span>
+                                    <span ng-if="card.carrier_region" style="display: inline-block;">-</span>
+                                    <span ng-if="card.carrier_region">{{scc.getCarrierRegionLabel(card.carrier_region)}}</span>
                                 </small>
                             </div>
                         </div>
