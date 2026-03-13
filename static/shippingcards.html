@@ -177,13 +177,27 @@
                                             <option>החנות</option>
                                         </select>
                                     </div>
-                                    <div class="input-group mb-3 my-3">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">מוביל</span>
+                                    <div class="form-row mb-3 my-3">
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">מוביל</span>
+                                                </div>
+                                                <select class="custom-select" ng-model="card.carrier" disabled
+                                                        ng-options="option.value as option.label for option in scc.carrierOptions">
+                                                </select>
+                                            </div>
                                         </div>
-                                        <select class="custom-select" ng-model="card.carrier" disabled
-                                                ng-options="option.value as option.label for option in scc.carrierOptions">
-                                        </select>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">אזור</span>
+                                                </div>
+                                                <select class="custom-select" ng-model="card.carrier_region" disabled
+                                                        ng-options="option.value as option.label for option in scc.carrierRegionOptions">
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="col font-weight-bold d-inline p-2 bg-light text-black text-right float-right my-2 input-group-text">
