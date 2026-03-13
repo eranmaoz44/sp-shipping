@@ -30,6 +30,18 @@
       </select>
     </div>
   </div>
+  <div class="col-md-4">
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">אזור</span>
+      </div>
+      <select class="custom-select"
+              ng-model="scc.carrierRegionFilter"
+              ng-options="option.value as option.label for option in scc.carrierRegionOptions"
+              aria-label="סינון אזור">
+      </select>
+    </div>
+  </div>
 </div>
 
         <div class="row">

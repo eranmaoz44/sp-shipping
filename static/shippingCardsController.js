@@ -51,7 +51,9 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
      self.isLoading = true;
      self.q = $location.search().q || ''; // keep shareable if you like
     var carrierParam = $location.search().carrier;
+    var carrierRegionParam = $location.search().carrier_region;
     self.carrierFilter = carrierParam ? carrierParam : null;
+    self.carrierRegionFilter = carrierRegionParam ? carrierRegionParam : null;
 
     self.carrierOptions = [
         { label: 'לא צוין', value: null },
@@ -407,7 +409,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 page: self.page,
                 page_size: self.page_size,
                 q: self.q && self.q.trim() ? self.q.trim() : undefined,
-                carrier: self.carrierFilter ? self.carrierFilter : undefined
+                carrier: self.carrierFilter ? self.carrierFilter : undefined,
+                carrier_region: self.carrierRegionFilter ? self.carrierRegionFilter : undefined
             }
         };
 
@@ -640,6 +643,13 @@ $scope.$watch(function(){ return self.carrierFilter; }, function(newVal, oldVal)
     if (newVal === oldVal) return;
     self.page = 1;
     $location.search('carrier', self.carrierFilter ? self.carrierFilter : null);
+    self.getShippingCards();
+});
+
+$scope.$watch(function(){ return self.carrierRegionFilter; }, function(newVal, oldVal) {
+    if (newVal === oldVal) return;
+    self.page = 1;
+    $location.search('carrier_region', self.carrierRegionFilter ? self.carrierRegionFilter : null);
     self.getShippingCards();
 });
 

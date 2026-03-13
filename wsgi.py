@@ -116,6 +116,7 @@ def get_shipping():
     page_size = request.args.get('page_size', default=9, type=int)
     q = request.args.get('q', default='', type=str)  # <- search query (optional)
     carrier = request.args.get('carrier', default='', type=str)
+    carrier_region = request.args.get('carrier_region', default='', type=str)
 
     if shippingID is None:
         all_shippings = Shipping.get_shippings_by_state(state)
@@ -132,6 +133,7 @@ def get_shipping():
         #    Only filter if q is non-empty after trimming.
         q_norm = (q or '').strip().lower()
         carrier_norm = (carrier or '').strip().lower()
+        carrier_region_norm = (carrier_region or '').strip().lower()
         if q_norm:
             def matches_order(s):
                 d = s.to_dict()  # assume this has an "order" key that is a string
@@ -147,6 +149,14 @@ def get_shipping():
                 return carrier_value.lower() == carrier_norm
 
             all_shippings = [s for s in all_shippings if matches_carrier(s)]
+
+        if carrier_region_norm:
+            def matches_carrier_region(s):
+                d = s.to_dict()
+                region_value = (d.get("carrier_region") or "")
+                return region_value.lower() == carrier_region_norm
+
+            all_shippings = [s for s in all_shippings if matches_carrier_region(s)]
 
         total = len(all_shippings)
         total_pages = (total + page_size - 1) // page_size
