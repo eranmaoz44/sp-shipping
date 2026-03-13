@@ -52,10 +52,11 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
      self.q = $location.search().q || ''; // keep shareable if you like
     var carrierParam = $location.search().carrier;
     var carrierRegionParam = $location.search().carrier_region;
-    self.carrierFilter = carrierParam ? carrierParam : null;
-    self.carrierRegionFilter = carrierRegionParam ? carrierRegionParam : null;
+    self.carrierFilter = carrierParam ? carrierParam : 'all';
+    self.carrierRegionFilter = carrierRegionParam ? carrierRegionParam : 'all';
 
     self.carrierOptions = [
+        { label: 'הכל', value: 'all' },
         { label: 'לא צוין', value: null },
         { label: 'ארתור', value: 'arthur' },
         { label: 'וובה', value: 'vova' },
@@ -64,6 +65,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     ]
 
     self.carrierRegionOptions = [
+        { label: 'הכל', value: 'all' },
         { label: 'לא צוין', value: null },
         { label: 'צפון', value: 'north' },
         { label: 'דרום', value: 'south' },
@@ -409,8 +411,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 page: self.page,
                 page_size: self.page_size,
                 q: self.q && self.q.trim() ? self.q.trim() : undefined,
-                carrier: self.carrierFilter ? self.carrierFilter : undefined,
-                carrier_region: self.carrierRegionFilter ? self.carrierRegionFilter : undefined
+                carrier: self.carrierFilter,
+                carrier_region: self.carrierRegionFilter
             }
         };
 
@@ -642,14 +644,14 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 $scope.$watch(function(){ return self.carrierFilter; }, function(newVal, oldVal) {
     if (newVal === oldVal) return;
     self.page = 1;
-    $location.search('carrier', self.carrierFilter ? self.carrierFilter : null);
+    $location.search('carrier', self.carrierFilter);
     self.getShippingCards();
 });
 
 $scope.$watch(function(){ return self.carrierRegionFilter; }, function(newVal, oldVal) {
     if (newVal === oldVal) return;
     self.page = 1;
-    $location.search('carrier_region', self.carrierRegionFilter ? self.carrierRegionFilter : null);
+    $location.search('carrier_region', self.carrierRegionFilter);
     self.getShippingCards();
 });
 

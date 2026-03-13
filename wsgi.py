@@ -132,8 +132,8 @@ def get_shipping():
         # 2) Filter by `order` (in-memory)
         #    Only filter if q is non-empty after trimming.
         q_norm = (q or '').strip().lower()
-        carrier_norm = (carrier or '').strip().lower()
-        carrier_region_norm = (carrier_region or '').strip().lower()
+        carrier_norm = carrier.strip().lower() if carrier else None
+        carrier_region_norm = carrier_region.strip().lower() if carrier_region else None
         if q_norm:
             def matches_order(s):
                 d = s.to_dict()  # assume this has an "order" key that is a string
@@ -142,18 +142,25 @@ def get_shipping():
 
             all_shippings = [s for s in all_shippings if matches_order(s)]
 
-        if carrier_norm:
+        if carrier_norm != 'all':
             def matches_carrier(s):
                 d = s.to_dict()
-                carrier_value = (d.get("carrier") or "")
-                return carrier_value.lower() == carrier_norm
+                carrier_value = d.get("carrier")
+                if carrier_norm:
+                    carrier_value_norm = carrier_value.strip().lower() if carrier_value else None
+                    return carrier_value_norm == carrier_norm
+                return carrier_value is None
 
             all_shippings = [s for s in all_shippings if matches_carrier(s)]
 
-        if carrier_region_norm:
+        if carrier_region_norm != 'all':
             def matches_carrier_region(s):
                 d = s.to_dict()
-                region_value = (d.get("carrier_region") or "")
+                region_value = d.get("carrier_region")
+                if carrier_region_norm:
+                    region_value_norm = region_value.strip().lower() if region_value else None
+                    return region_value_norm == carrier_region_norm
+                return region_value is None
                 return region_value.lower() == carrier_region_norm
 
             all_shippings = [s for s in all_shippings if matches_carrier_region(s)]
