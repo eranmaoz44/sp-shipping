@@ -75,6 +75,10 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         { label: 'מרכז', value: 'center' }
     ]
 
+    self.excludeAllOption = function(option){
+        return option && option.value !== 'all';
+    }
+
     self.getCarrierLabel = function(value){
         if (value == null || value === '') return 'לא צוין';
         for (var i = 0; i < self.carrierOptions.length; i++){

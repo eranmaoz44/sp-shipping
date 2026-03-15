@@ -196,7 +196,7 @@
                                                     <span class="input-group-text">מוביל</span>
                                                 </div>
                                                 <select class="custom-select" ng-model="card.carrier" disabled
-                                                        ng-options="option.value as option.label for option in scc.carrierOptions">
+                                                        ng-options="option.value as option.label for option in (scc.carrierOptions | filter:scc.excludeAllOption)">
                                                 </select>
                                             </div>
                                         </div>
@@ -206,7 +206,7 @@
                                                     <span class="input-group-text">אזור</span>
                                                 </div>
                                                 <select class="custom-select" ng-model="card.carrier_region" disabled
-                                                        ng-options="option.value as option.label for option in scc.carrierRegionOptions">
+                                                        ng-options="option.value as option.label for option in (scc.carrierRegionOptions | filter:scc.excludeAllOption)">
                                                 </select>
                                             </div>
                                         </div>
@@ -426,7 +426,7 @@
                                     <span class="input-group-text">מוביל</span>
                                 </div>
                                 <select class="custom-select" ng-model="scc.cardToAdd.carrier"
-                                        ng-options="option.value as option.label for option in scc.carrierOptions">
+                                        ng-options="option.value as option.label for option in (scc.carrierOptions | filter:scc.excludeAllOption)">
                                 </select>
                             </div>
                         </div>
@@ -436,7 +436,7 @@
                                     <span class="input-group-text">אזור</span>
                                 </div>
                                 <select class="custom-select" ng-model="scc.cardToAdd.carrier_region"
-                                        ng-options="option.value as option.label for option in scc.carrierRegionOptions">
+                                        ng-options="option.value as option.label for option in (scc.carrierRegionOptions | filter:scc.excludeAllOption)">
                                 </select>
                             </div>
                         </div>
