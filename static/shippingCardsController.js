@@ -17,6 +17,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     self.shippingCardInEditMode = false
 
     self.user_id = null
+    self.userCarrier = null
 
     self.supplyHours = [
 	      '05:00','05:30',
@@ -108,10 +109,34 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         return self.user_id == 'admin'
     }
 
+    self.getCarrierForUserId = function(userId){
+        var carriers = {
+            arthur: 'arthur',
+            vova: 'vova',
+            uday: 'uday',
+            ivan: 'ivan'
+        }
+        return carriers[userId] || null
+    }
+
+    self.isCarrierUser = function(){
+        return self.userCarrier != null
+    }
+
+    self.canWrite = function(){
+        return self.hasAdminPermissions()
+    }
+
 
     $timeout(function(){
         userService.getUserIdWithPromise().then(function (value){
             self.user_id = value
+            self.userCarrier = self.getCarrierForUserId(self.user_id)
+            if (self.userCarrier) {
+                self.carrierFilter = self.userCarrier
+                $location.search('carrier', self.carrierFilter)
+                self.getShippingCards()
+            }
         }, function(error){
             console.log(error)
         })
@@ -647,6 +672,10 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
 $scope.$watch(function(){ return self.carrierFilter; }, function(newVal, oldVal) {
     if (newVal === oldVal) return;
+    if (self.isCarrierUser() && newVal !== self.userCarrier) {
+        self.carrierFilter = self.userCarrier;
+        return;
+    }
     self.page = 1;
     $location.search('carrier', self.carrierFilter);
     self.getShippingCards();

@@ -18,7 +18,7 @@
 </form>
 
 <div class="form-row mb-3">
-  <div class="col-md-4">
+  <div class="col-md-4" ng-if="scc.hasAdminPermissions()">
     <div class="input-group">
       <div class="input-group-prepend">
         <span class="input-group-text">מוביל</span>
@@ -103,7 +103,7 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
-                                <button ng-show="scc.isEditable()" type="button"
+                                <button ng-show="scc.isEditable() && scc.canWrite()" type="button"
                                         class="btn btn-success float-right mt-1" data-toggle="modal"
                                         data-target="#approveCompletionModal{{card.id}}">בוצע
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
@@ -190,7 +190,7 @@
                                         </select>
                                     </div>
                                     <div class="form-row mb-3 my-3">
-                                        <div class="col-md-6">
+                                        <div class="col-md-6" ng-if="scc.hasAdminPermissions()">
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">מוביל</span>
@@ -273,7 +273,7 @@
                             <div class="modal-footer">
                                 <div class="ml-auto">
                                     <button type="button" class="btn btn-outline-primary"
-                                            ng-click="scc.moveToEditMode(card)" ng-show="scc.isEditable()"
+                                            ng-click="scc.moveToEditMode(card)" ng-show="scc.isEditable() && scc.canWrite()"
                                             ng-disabled="!scc.hasAdminPermissions()">ערוך
                                     </button>
                                     <button class="btn btn-primary m-1"
@@ -282,7 +282,7 @@
                                 </div>
 
                                 <button type="button" class="btn btn-outline-danger ml-auto"
-                                        ng-click="scc.deleteShippingCard(card)" ng-show="!scc.isEditable()">מחק
+                                        ng-click="scc.deleteShippingCard(card)" ng-show="!scc.isEditable() && scc.canWrite()">מחק
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                                           ng-show="card.isDeleting"></span>
                                 </button>
@@ -347,7 +347,7 @@
 
 
 
-    <div ng-show="scc.isEditable() && scc.loadedFirstTime && scc.hasAdminPermissions()"
+    <div ng-show="scc.isEditable() && scc.loadedFirstTime && scc.canWrite()"
          class="fixed-bottom text-center">
 
         <img src="/static/open-iconic/svg/plus.svg"
@@ -498,7 +498,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary ml-auto"
-                            ng-click="scc.saveShippingCard(card)" ng-show="scc.isEditable()">
+                            ng-click="scc.saveShippingCard(card)" ng-show="scc.isEditable() && scc.canWrite()">
                         {{scc.getModalCreateType()}}
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                               ng-show="scc.cardToAdd.isSaving"></span>

@@ -17,6 +17,7 @@ from Shipping import Shipping
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 
 from User import User
+from UserWithHashPassword import UserWithHashPassword
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -31,6 +32,29 @@ application.secret_key = os.environ.get(_secret_key)
 login = LoginManager(application)
 login.login_view = 'login'
 users = {}
+
+CARRIER_USERS = {
+    'arthur': 'arthur',
+    'vova': 'vova',
+    'uday': 'uday',
+    'ivan': 'ivan'
+}
+
+
+def is_admin_user():
+    return current_user is not None and current_user.is_authenticated and current_user.id == 'admin'
+
+
+def get_current_user_carrier():
+    if current_user is None or not current_user.is_authenticated:
+        return None
+    return CARRIER_USERS.get(current_user.id)
+
+
+def require_admin():
+    if not is_admin_user():
+        return Response(status=403, response='Admin permissions required')
+    return None
 
 
 @login.user_loader
@@ -109,6 +133,7 @@ def render_coordination_template():
 
 
 @application.route('/api/shipping', methods=['GET'])
+@login_required
 def get_shipping():
     shippingID = request.args.get('shippingID')
     state = request.args.get('state')
@@ -117,6 +142,9 @@ def get_shipping():
     q = request.args.get('q', default='', type=str)  # <- search query (optional)
     carrier = request.args.get('carrier', default='', type=str)
     carrier_region = request.args.get('carrier_region', default='', type=str)
+    carrier_for_user = get_current_user_carrier()
+    if carrier_for_user:
+        carrier = carrier_for_user
 
     if shippingID is None:
         all_shippings = Shipping.get_shippings_by_state(state)
@@ -181,21 +209,36 @@ def get_shipping():
         })
     else:
         single_element = Shipping.get_element_with_id(shippingID)
+        if single_element is None:
+            return Response(status=404, response='Shipping not found')
+        if carrier_for_user:
+            if single_element.get_value("carrier") != carrier_for_user:
+                return Response(status=403, response='Forbidden')
         res = single_element.to_json_str()
 
     return Response(status=200, response=res, mimetype="application/json")
 
 
 @application.route('/api/availabilities', methods=['GET'])
+@login_required
 def get_availabilities():
     shipping_id = request.args.get('shipping_id')
+    carrier_for_user = get_current_user_carrier()
+    if carrier_for_user:
+        shipping = Shipping.get_element_with_id(shipping_id)
+        if shipping is None or shipping.get_value("carrier") != carrier_for_user:
+            return Response(status=403, response='Forbidden')
     availabilities = Availability.get_all_availabilities_of_shipping(shipping_id)
     res = json.dumps([x.to_dict() for x in availabilities])
     return Response(status=200, response=res)
 
 
 @application.route('/api/shipping', methods=['POST'])
+@login_required
 def set_shipping():
+    denied = require_admin()
+    if denied:
+        return denied
     shipping = Shipping.from_dict(request.get_json())
     new_shipping = False
     if not shipping.check_if_element_exists():
@@ -207,34 +250,54 @@ def set_shipping():
 
 
 @application.route('/api/shipping', methods=['DELETE'])
+@login_required
 def delete_shipping():
+    denied = require_admin()
+    if denied:
+        return denied
     shipping = Shipping.from_json_str(request.args.get('shippingCard'))
     shipping.delete()
     return Response(status=200)
 
 
 @application.route('/api/availability', methods=['DELETE'])
+@login_required
 def delete_availability():
+    denied = require_admin()
+    if denied:
+        return denied
     availability = Availability.from_json_str(request.args.get('availability'))
     availability.delete()
     return Response(status=200)
 
 
 @application.route('/api/availability', methods=['POST'])
+@login_required
 def set_availability():
+    denied = require_admin()
+    if denied:
+        return denied
     availability = Availability.from_dict(request.get_json())
     availability.insert_or_update()
     return Response(status=200)
 
 
 @application.route('/api/maintenance/remove_old_shipments', methods=['DELETE'])
+@login_required
 def remove_old_shipments():
+    denied = require_admin()
+    if denied:
+        return denied
     Shipping.remove_and_clean_old_elements()
     return Response(status=200)
 
 
 @application.route('/api/aws/presign_post', methods=['GET'])
+@login_required
 def get_aws_presign_post():
+    denied = require_admin()
+    if denied:
+        return denied
     file_name = request.args.get('file_name')
 
     res = AwsConnector.create_presigned_post_file_upload(file_name)
@@ -243,6 +306,7 @@ def get_aws_presign_post():
 
 
 @application.route('/api/aws/presign_get', methods=['GET'])
+@login_required
 def get_aws_presign_get():
     file_name = request.args.get('file_name')
 
@@ -252,7 +316,11 @@ def get_aws_presign_get():
 
 
 @application.route('/api/aws/delete', methods=['DELETE'])
+@login_required
 def aws_delete_file():
+    denied = require_admin()
+    if denied:
+        return denied
     file_name = request.args['file_name']
 
     res = AwsConnector.delete_file(file_name)
@@ -273,9 +341,17 @@ if __name__ == '__main__':
     #    "date varchar, from_hour varchar, to_hour varchar, PRIMARY KEY (id,shipping_id));")
     # DBConnecter.execute_write_query("DROP TABLE users")
     # DBConnecter.execute_write_query("CREATE TABLE users (id varchar PRIMARY KEY, password_hash varchar);")
-    # user = User.create_new_user('admin', 'admin')
+    # user = UserWithHashPassword.create_new_user('admin', 'admin')
     # user.insert_or_update()
-    # print(User.get_all_elements())
+    # def derive_carrier_password(user_id):
+    #    *****
+    #
+    # for carrier_user in ['arthur', 'vova', 'uday', 'ivan']:
+    #     carrier_password = derive_carrier_password(carrier_user)
+    #     carrier = UserWithHashPassword.create_new_user(carrier_user, carrier_password)
+    #     carrier.insert_or_update()
+    #     print(f"Created carrier user {carrier_user} with password {carrier_password}")
+    # print(UserWithHashPassword.get_all_elements())
 
     # shipping = Shipping.fromJson({
     #         'id': 'abcdefghijklmnop',
