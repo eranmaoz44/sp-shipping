@@ -69,10 +69,18 @@
                     <!--                                                     class="card-img-top max-height-400 click-cursor" data-toggle="modal"-->
                     <!--                                                     data-target="#dialog{{card.id}}">-->
                     <!--                                                </div>-->
-                    <img class="card-img-top click-cursor border-bottom"
-                         ng-src="{{card.tempOrderImageUrl}}"
-                         alt="Card image cap" data-toggle="modal"
-                         data-target="#dialog{{card.id}}" ng-show="!card.loadingImage">
+                    <div class="shipping-image-wrapper">
+                        <img class="card-img-top click-cursor border-bottom"
+                             ng-src="{{card.tempOrderImageUrl}}"
+                             alt="Card image cap" data-toggle="modal"
+                             data-target="#dialog{{card.id}}" ng-show="!card.loadingImage">
+                        <span class="shipping-appointment-indicator"
+                              ng-if="scc.hasAppointmentIndicator(card)"
+                              ng-attr-title="{{scc.getAppointmentTooltip(card)}}"
+                              data-toggle="tooltip"
+                              data-placement="left"
+                              aria-label="{{scc.getAppointmentTooltip(card)}}"></span>
+                    </div>
                     <div class="d-flex justify-content-center" ng-show="card.loadingImage">
                         <div class="spinner-border m-3 p-3" role="status">
                             <span class="sr-only">Loading...</span>
@@ -114,7 +122,11 @@
 
                             <small class="text-muted">{{card.date}}</small>
                         </div>
-                        <medium class=""> {{card.supply_date}}   {{card.supply_from_hour}} - {{card.supply_to_hour}}
+                        <medium class="" ng-if="!card.hours_set_by_carrier">
+                            {{card.supply_date}} {{card.supply_from_hour}} - {{card.supply_to_hour}}
+                        </medium>
+                        <medium class="" ng-if="card.hours_set_by_carrier">
+                            {{card.supply_date}} המוביל קובע את השעות
                         </medium>
                         <img src="/static/open-iconic/svg/timer.svg" class="timerIcon">
                     </div>
@@ -146,8 +158,16 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title text-right" id="exampleModalLongTitle">
-                                    מס' הזמנה: {{card.order_number}}</h5>
+                                <div class="d-inline-flex align-items-center flex-row-reverse" style="gap:8px;">
+                                    <h5 class="modal-title text-right mb-0" id="exampleModalLongTitle">
+                                        מס' הזמנה: {{card.order_number}}</h5>
+                                    <span class="shipping-appointment-indicator shipping-appointment-indicator-inline"
+                                          ng-if="scc.hasAppointmentIndicator(card)"
+                                          ng-attr-title="{{scc.getAppointmentTooltip(card)}}"
+                                          data-toggle="tooltip"
+                                          data-placement="left"
+                                          aria-label="{{scc.getAppointmentTooltip(card)}}"></span>
+                                </div>
                                 <div class="float-left">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
@@ -215,46 +235,50 @@
                                     <div class="col font-weight-bold d-inline p-2 bg-light text-black text-right float-right my-2 input-group-text">
                                         צפי אספקה
                                     </div>
-                                    <div class="container">
-                                        <div class="row">
-                                            <div class="col-md-5">
-                                                <div class="input-group">
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text xlargeFont">תאריך</span>
-                                                    </div>
-                                                    <input data-date-format="dd/mm/yyyy DD"
-                                                           class="form-control xlargeFont"
-                                                           ng-model="card.supply_date" disabled>
-                                                </div>
+                                    <div style="display:flex; flex-direction:column; gap:12px;">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text xlargeFont">תאריך</span>
                                             </div>
-                                            <div class="col-md">
-                                                <div class="input-group">
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text xlargeFont">מ-</span>
-                                                    </div>
-                                                    <select class="custom-select xlargeFont"
-                                                            ng-model="card.supply_from_hour" disabled>
-                                                        <option selected>{{scc.defaultSupplyHour}}</option>
-                                                        <option ng-repeat="hour in scc.supplyHours" value="{{hour}}">
-                                                            {{hour}}
-                                                        </option>
-                                                    </select>
-                                                </div>
+                                            <input data-date-format="dd/mm/yyyy DD"
+                                                   class="form-control xlargeFont"
+                                                   ng-model="card.supply_date" disabled>
+                                        </div>
+                                        <div class="text-right text-muted" ng-if="card.hours_set_by_carrier">
+                                            <div class="custom-control custom-switch d-inline-block">
+                                                <input type="checkbox" class="custom-control-input"
+                                                       id="carrierHoursSetCheckboxView{{card.id}}"
+                                                       ng-model="card.hours_set_by_carrier" disabled>
+                                                <label class="custom-control-label"
+                                                       for="carrierHoursSetCheckboxView{{card.id}}">
+                                                    המוביל קובע את השעות
+                                                </label>
                                             </div>
-                                            <div class="col-md">
-                                                <div class="input-group">
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text xlargeFont">עד</span>
-                                                    </div>
-                                                    <select class="custom-select xlargeFont"
-                                                            ng-model="card.supply_to_hour" disabled>
-                                                        <option selected>{{scc.defaultSupplyHour}}</option>
-                                                        <option ng-repeat="hour in scc.supplyHours" value="{{hour}}">
-                                                            {{hour}}
-                                                        </option>
-                                                    </select>
+                                        </div>
+                                        <div style="display:flex; gap:12px;" ng-if="!card.hours_set_by_carrier">
+                                            <div class="input-group" style="flex:1;">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text xlargeFont">מ-</span>
                                                 </div>
-
+                                                <select class="custom-select xlargeFont"
+                                                        ng-model="card.supply_from_hour" disabled>
+                                                    <option selected>{{scc.defaultSupplyHour}}</option>
+                                                    <option ng-repeat="hour in scc.supplyHours" value="{{hour}}">
+                                                        {{hour}}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="input-group" style="flex:1;">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text xlargeFont">עד</span>
+                                                </div>
+                                                <select class="custom-select xlargeFont"
+                                                        ng-model="card.supply_to_hour" disabled>
+                                                    <option selected>{{scc.defaultSupplyHour}}</option>
+                                                    <option ng-repeat="hour in scc.supplyHours" value="{{hour}}">
+                                                        {{hour}}
+                                                    </option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -446,7 +470,7 @@
                     <div class="col font-weight-bold d-inline p-2 bg-light text-black text-right float-right my-2 input-group-text">
                         צפי אספקה
                     </div>
-                    <div class="container">
+                    <div class="container px-0">
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="input-group">
@@ -458,12 +482,29 @@
                                            ng-model="scc.cardToAdd.supply_date">
                                 </div>
                             </div>
+                        </div>
+                        <div class="row align-items-center mt-3 mb-2">
+                            <div class="col-md-7 d-flex justify-content-start">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input"
+                                           id="carrierHoursSetCheckbox"
+                                           ng-model="scc.cardToAdd.hours_set_by_carrier"
+                                           ng-change="scc.onCarrierHoursSetToggle(scc.cardToAdd)">
+                                    <label class="custom-control-label" for="carrierHoursSetCheckbox">
+                                        המוביל קובע את השעות
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" ng-if="!scc.cardToAdd.hours_set_by_carrier">
                             <div class="col-md">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text xlargeFont">מ-</span>
                                     </div>
-                                    <select class="custom-select xlargeFont" ng-model="scc.cardToAdd.supply_from_hour">
+                                    <select class="custom-select xlargeFont"
+                                            ng-model="scc.cardToAdd.supply_from_hour"
+                                            ng-disabled="scc.cardToAdd.hours_set_by_carrier">
                                         <option selected>{{scc.defaultSupplyHour}}</option>
                                         <option ng-repeat="hour in scc.supplyHours" value="{{hour}}">{{hour}}
                                         </option>
@@ -475,7 +516,9 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text xlargeFont">עד</span>
                                     </div>
-                                    <select class="custom-select xlargeFont" ng-model="scc.cardToAdd.supply_to_hour">
+                                    <select class="custom-select xlargeFont"
+                                            ng-model="scc.cardToAdd.supply_to_hour"
+                                            ng-disabled="scc.cardToAdd.hours_set_by_carrier">
                                         <option selected>{{scc.defaultSupplyHour}}</option>
                                         <option ng-repeat="hour in scc.supplyHours" value="{{hour}}">{{hour}}
                                         </option>

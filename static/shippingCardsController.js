@@ -44,6 +44,42 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
     self.defaultSupplyHour = 'בחר/י שעה'
 
+    self.hasSelectedHour = function(card){
+        return card.supply_from_hour && card.supply_from_hour !== self.defaultSupplyHour ||
+            card.supply_to_hour && card.supply_to_hour !== self.defaultSupplyHour
+    }
+
+    self.hasAppointmentIndicator = function(card){
+        return !!(card.hours_set_by_carrier || self.hasSelectedHour(card))
+    }
+
+    self.getAppointmentTooltip = function(card){
+        if (card.hours_set_by_carrier){
+            return 'מסומן כתואם כי מוביל קובע את השעות'
+        }
+        if (self.hasSelectedHour(card)){
+            return 'מסומן כתואם כי נבחרה שעה'
+        }
+        return ''
+    }
+
+    self.initTooltips = function(){
+        $timeout(function(){
+            $('[data-toggle="tooltip"]').tooltip({
+                delay: { show: 0, hide: 0 }
+            })
+        }, 0)
+    }
+
+    self.normalizeCarrierHoursFlag = function(card){
+        var raw = card.hours_set_by_carrier
+        card.hours_set_by_carrier = raw === true || raw === 'true'
+    }
+
+    self.onCarrierHoursSetToggle = function(card){
+        // Preserve selected hours; UI hides them when carrier sets hours.
+    }
+
     self.dateFormat = 'dd/mm/yyyy'
 
         self.page = 1;
@@ -238,7 +274,8 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 'supply_to_hour' : self.defaultSupplyHour,
                 'extra_info' : '',
                 'carrier' : null,
-                'carrier_region' : null
+                'carrier_region' : null,
+                'hours_set_by_carrier' : false
         }
 
         self.cardToSaveFilePath = 'default.png'
@@ -270,6 +307,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         self.shouldFetchCards = false
         self.shippingCardInEditMode = true
         self.cardToAdd = JSON.clone(card)
+        self.normalizeCarrierHoursFlag(self.cardToAdd)
         self.imageChanged = false
         self.cardToSaveFilePath = card.order_image_aws_path
         self.onEditImage = card.tempOrderImageUrl
@@ -453,12 +491,14 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
 
                 var data = response.data;
                 self.shippingCards = data.items;
+                self.shippingCards.forEach(self.normalizeCarrierHoursFlag);
                 self.total_pages = data.total_pages;
                 self.page = data.page;
 
                 self.shippingCards.sort(self.compareCards);
                 self.loadedFirstTime = true;
                 self.updateCardsTempOrderImages(self.shippingCards);
+                self.initTooltips();
 
                 self.isLoading = false
             },

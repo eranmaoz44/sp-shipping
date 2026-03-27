@@ -134,6 +134,25 @@ footer p {
     cursor: pointer;
 }
 
+.shipping-image-wrapper{
+    position: relative;
+}
+
+.shipping-appointment-indicator{
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    background: #28a745;
+    border: 1px solid #ffffff;
+    border-radius: 50%;
+}
+
+.shipping-appointment-indicator-inline{
+    position: static;
+}
+
 .edit-image{
     width: 256px;
 }
