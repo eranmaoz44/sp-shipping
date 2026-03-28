@@ -153,6 +153,15 @@ footer p {
     position: static;
 }
 
+.coordination-tooltip-badge{
+    font-weight: 700;
+    color: #495057;
+}
+
+.coordination-tooltip-badge:hover{
+    background-color: #e9ecef;
+}
+
 .edit-image{
     width: 256px;
 }

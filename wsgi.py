@@ -142,6 +142,7 @@ def get_shipping():
     q = request.args.get('q', default='', type=str)  # <- search query (optional)
     carrier = request.args.get('carrier', default='', type=str)
     carrier_region = request.args.get('carrier_region', default='', type=str)
+    coordination_status = request.args.get('coordination_status', default='all', type=str)
     carrier_for_user = get_current_user_carrier()
     if carrier_for_user:
         carrier = carrier_for_user
@@ -192,6 +193,20 @@ def get_shipping():
                 return region_value.lower() == carrier_region_norm
 
             all_shippings = [s for s in all_shippings if matches_carrier_region(s)]
+
+        if coordination_status in ('coordinated', 'not_coordinated'):
+            def is_coordinated(s):
+                d = s.to_dict()
+                if d.get("hours_set_by_carrier"):
+                    return True
+                from_hour = d.get("supply_from_hour")
+                to_hour = d.get("supply_to_hour")
+                return (from_hour not in (None, '', 'בחר/י שעה')) or (to_hour not in (None, '', 'בחר/י שעה'))
+
+            if coordination_status == 'coordinated':
+                all_shippings = [s for s in all_shippings if is_coordinated(s)]
+            else:
+                all_shippings = [s for s in all_shippings if not is_coordinated(s)]
 
         total = len(all_shippings)
         total_pages = (total + page_size - 1) // page_size

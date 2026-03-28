@@ -91,6 +91,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
     var carrierRegionParam = $location.search().carrier_region;
     self.carrierFilter = carrierParam ? carrierParam : 'all';
     self.carrierRegionFilter = carrierRegionParam ? carrierRegionParam : 'all';
+    self.coordinationStatus = $location.search().coordination_status || 'all';
 
     self.carrierOptions = [
         { label: 'הכל', value: 'all' },
@@ -112,8 +113,46 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         { label: 'מרכז', value: 'center' }
     ]
 
+    self.coordinationStatusOptions = [
+        { label: 'הכל', value: 'all' },
+        { label: 'תואם', value: 'coordinated' },
+        { label: 'לא תואם', value: 'not_coordinated' }
+    ]
+
     self.excludeAllOption = function(option){
         return option && option.value !== 'all';
+    }
+
+    self.shouldShowClearFilters = function(){
+        return self.carrierFilter !== 'all' ||
+            self.carrierRegionFilter !== 'all' ||
+            self.coordinationStatus !== 'all'
+    }
+
+    self.clearFilters = function(){
+        self.carrierFilter = 'all'
+        self.carrierRegionFilter = 'all'
+        self.coordinationStatus = 'all'
+        $location.search('carrier', null)
+        $location.search('carrier_region', null)
+        $location.search('coordination_status', null)
+        self.page = 1
+        self.getShippingCards()
+    }
+
+    self.resetSearchAndFilters = function(){
+        self.q = ''
+        self.clearFilters()
+    }
+
+    self.onCoordinationStatusChange = function(){
+        if (self.coordinationStatus && self.coordinationStatus !== 'all'){
+            $location.search('coordination_status', self.coordinationStatus)
+        } else {
+            $location.search('coordination_status', null)
+        }
+        self.page = 1
+        self.getShippingCards()
     }
 
     self.getCarrierLabel = function(value){
@@ -479,7 +518,10 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 page_size: self.page_size,
                 q: self.q && self.q.trim() ? self.q.trim() : undefined,
                 carrier: self.carrierFilter,
-                carrier_region: self.carrierRegionFilter
+                carrier_region: self.carrierRegionFilter,
+                coordination_status: self.coordinationStatus && self.coordinationStatus !== 'all'
+                    ? self.coordinationStatus
+                    : undefined
             }
         };
 

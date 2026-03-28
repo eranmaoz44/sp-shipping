@@ -18,7 +18,7 @@
 </form>
 
 <div class="form-row mb-3">
-  <div class="col-md-4" ng-if="scc.hasAdminPermissions()">
+  <div class="col-md-3" ng-if="scc.hasAdminPermissions()">
     <div class="input-group">
       <div class="input-group-prepend">
         <span class="input-group-text">מוביל</span>
@@ -30,7 +30,7 @@
       </select>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="input-group">
       <div class="input-group-prepend">
         <span class="input-group-text">אזור</span>
@@ -41,6 +41,26 @@
               aria-label="סינון אזור">
       </select>
     </div>
+  </div>
+  <div class="col-md-3">
+    <div class="input-group"
+         data-toggle="tooltip"
+         data-placement="bottom"
+         title="אם נבחרו שעות להובלה או שסומן שהמוביל קובע את השעות אז זה נחשב שההובלה תואמה">
+      <div class="input-group-prepend">
+        <span class="input-group-text">סטטוס תיאום</span>
+      </div>
+      <select class="custom-select"
+              ng-model="scc.coordinationStatus"
+              ng-change="scc.onCoordinationStatusChange()"
+              ng-options="option.value as option.label for option in scc.coordinationStatusOptions"
+              aria-label="סטטוס תיאום">
+      </select>
+    </div>
+  </div>
+  <div class="col-md-3 d-flex align-items-center" ng-if="scc.shouldShowClearFilters()">
+    <button type="button" class="btn btn-outline-secondary"
+            ng-click="scc.clearFilters()">נקה</button>
   </div>
 </div>
 
@@ -60,7 +80,11 @@
 
         <!-- No results message -->
 <div class="col-12 text-center my-4" ng-show="!scc.isLoading && scc.shippingCards.length === 0">
-  <span class="text-muted">לא נמצאו תוצאות</span>
+  <span class="text-muted">לא נמצאו תוצאות. </span>
+  <button type="button" class="btn btn-link p-0 align-baseline"
+          ng-click="scc.resetSearchAndFilters()">
+    לחץ כאן כדי לאפס את החיפוש
+  </button>
 </div>
 
             <div class="col-md-4" ng-repeat="card in scc.shippingCards" ng-show="!scc.isLoading">
