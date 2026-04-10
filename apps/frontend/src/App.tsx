@@ -1,25 +1,15 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { apiBaseUrl, auth0Config } from "./auth-config";
+import { DashboardPanel } from "./components/DashboardPanel";
+import { SettingsPanel } from "./components/SettingsPanel";
+import { StatusScreen } from "./components/StatusScreen";
+import { TopBar } from "./components/TopBar";
+import { useActorProfile } from "./hooks/useActorProfile";
+import { useAdminUsers } from "./hooks/useAdminUsers";
+import { useTheme } from "./hooks/useTheme";
+import type { ActiveView } from "./types/app";
 import "./App.css";
-
-type ActorProfile = {
-  sub?: string;
-  email?: string;
-  roles: string[];
-  permissions: string[];
-};
-
-type AdminUser = {
-  id?: string;
-  email?: string;
-  name?: string;
-  picture?: string;
-  lastLogin?: string;
-  loginCount?: number;
-};
-
-type ThemeMode = "light" | "dark";
 
 function App() {
   const {
@@ -31,34 +21,28 @@ function App() {
     logout,
     getAccessTokenSilently,
   } = useAuth0();
+
+  const { theme, toggleTheme } = useTheme();
+  const [activeView, setActiveView] = useState<ActiveView>("home");
   const [apiMessage, setApiMessage] = useState<string>("");
-  const [actor, setActor] = useState<ActorProfile | null>(null);
-  const [isProfileLoading, setIsProfileLoading] = useState(false);
-  const [users, setUsers] = useState<AdminUser[]>([]);
-  const [usersMessage, setUsersMessage] = useState<string>("");
-  const [isUsersLoading, setIsUsersLoading] = useState(false);
-  const [activeView, setActiveView] = useState<"home" | "settings">("home");
-  const [theme, setTheme] = useState<ThemeMode>(() => {
-    const saved = localStorage.getItem("sp-theme");
-    if (saved === "light" || saved === "dark") {
-      return saved;
-    }
 
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  });
-
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("sp-theme", theme);
-  }, [theme]);
-
-  const getApiToken = async (): Promise<string> => {
+  const getApiToken = useCallback(async (): Promise<string> => {
     return getAccessTokenSilently({
       authorizationParams: {
         audience: auth0Config.audience,
       },
     });
-  };
+  }, [getAccessTokenSilently]);
+
+  const {
+    actor,
+    isProfileLoading,
+    hasResolvedProfile,
+    isAccessDenied,
+    profileMessage,
+  } = useActorProfile({ isAuthenticated, getApiToken });
+
+  const adminUsers = useAdminUsers({ getApiToken });
 
   const callProtectedApi = async () => {
     try {
@@ -76,114 +60,36 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setActor(null);
-      return;
-    }
-
-    const loadProfile = async () => {
-      setIsProfileLoading(true);
-
-      try {
-        const token = await getApiToken();
-        const response = await fetch(`${apiBaseUrl}/api/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = (await response.json()) as ActorProfile & { error?: string };
-        if (!response.ok) {
-          setApiMessage(data.error ?? "Failed to load profile");
-          setActor(null);
-          return;
-        }
-
-        setActor({
-          sub: data.sub,
-          email: data.email,
-          roles: data.roles ?? [],
-          permissions: data.permissions ?? [],
-        });
-      } catch (loadError) {
-        const message =
-          loadError instanceof Error ? loadError.message : "Failed to load actor profile";
-        setApiMessage(message);
-        setActor(null);
-      } finally {
-        setIsProfileLoading(false);
-      }
-    };
-
-    void loadProfile();
-  }, [isAuthenticated, getAccessTokenSilently]);
-
   const isSuperAdmin = actor?.roles.includes("super_admin") ?? false;
-
-  const loadAdminUsers = async () => {
-    setIsUsersLoading(true);
-    setUsersMessage("");
-
-    try {
-      const token = await getApiToken();
-      const response = await fetch(`${apiBaseUrl}/api/admin/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = (await response.json()) as {
-        users?: AdminUser[];
-        total?: number;
-        error?: string;
-      };
-
-      if (!response.ok) {
-        setUsers([]);
-        setUsersMessage(data.error ?? "Failed to load users");
-        return;
-      }
-
-      setUsers(data.users ?? []);
-      setUsersMessage(`Loaded ${data.total ?? data.users?.length ?? 0} users from Auth0.`);
-    } catch (loadError) {
-      const message =
-        loadError instanceof Error ? loadError.message : "Failed to load users from API";
-      setUsers([]);
-      setUsersMessage(message);
-    } finally {
-      setIsUsersLoading(false);
-    }
-  };
+  const userDisplay = user?.email ?? user?.name ?? "authenticated user";
+  const rolesDisplay = isProfileLoading ? "loading..." : actor?.roles.join(", ") || "none";
+  const dashboardMessage = profileMessage || apiMessage;
+  const logoutToHome = () =>
+    logout({
+      logoutParams: { returnTo: window.location.origin },
+    });
 
   if (isLoading) {
     return (
-      <main className="app-shell">
-        <div className="card centered">
-          <h1>sp-shipping</h1>
-          <p className="muted">Loading authentication...</p>
-        </div>
-      </main>
+      <StatusScreen
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        title="sp-shipping"
+        message="Loading authentication..."
+      />
     );
   }
 
   if (error) {
     return (
-      <main className="app-shell">
-        <header className="topbar">
-          <span className="brand">sp-shipping</span>
-          <button className="btn ghost" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-            {theme === "dark" ? "Light mode" : "Dark mode"}
-          </button>
-        </header>
-        <section className="card centered">
-          <h1>Authentication error</h1>
-          <p className="error-text">{error.message}</p>
-          <button className="btn primary" onClick={() => loginWithRedirect()}>
-            Try login again
-          </button>
-        </section>
-      </main>
+      <StatusScreen
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        title="Authentication error"
+        message={error.message}
+        actionLabel="Try login again"
+        onAction={() => void loginWithRedirect()}
+      />
     );
   }
 
@@ -192,130 +98,88 @@ function App() {
 
   if (isHandlingAuthCallback) {
     return (
-      <main className="app-shell">
-        <div className="card centered">
-          <h1>sp-shipping</h1>
-          <p className="muted">Finalizing login...</p>
-        </div>
-      </main>
+      <StatusScreen
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        title="sp-shipping"
+        message="Finalizing login..."
+      />
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <main className="app-shell">
-        <header className="topbar">
-          <span className="brand">sp-shipping</span>
-          <button className="btn ghost" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-            {theme === "dark" ? "Light mode" : "Dark mode"}
-          </button>
-        </header>
-        <section className="card centered auth-card">
-          <h1>Welcome to sp-shipping</h1>
-          <p className="muted">Sign in to continue to your dashboard.</p>
-          <button className="btn primary" onClick={() => loginWithRedirect()}>
-            Log in with Auth0
-          </button>
-        </section>
-      </main>
+      <StatusScreen
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        title="Welcome to sp-shipping"
+        message="Sign in to continue to your dashboard."
+        actionLabel="Log in with Auth0"
+        onAction={() => void loginWithRedirect()}
+      />
+    );
+  }
+
+  if (isProfileLoading || !hasResolvedProfile) {
+    return (
+      <StatusScreen
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        title="sp-shipping"
+        message="Checking account access..."
+      />
+    );
+  }
+
+  if (isAccessDenied || !actor) {
+    return (
+      <StatusScreen
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        title="Access denied"
+        message="You do not have an account in this application yet, so you cannot use it. Contact an administrator to be added."
+        actionLabel="Log out"
+        onAction={logoutToHome}
+        actionVariant="ghost"
+      />
     );
   }
 
   return (
     <main className="app-shell">
-      <header className="topbar">
-        <div className="topbar-left">
-          <span className="brand">sp-shipping</span>
-          <nav className="tabs">
-            <button
-              className={`tab ${activeView === "home" ? "active" : ""}`}
-              onClick={() => setActiveView("home")}
-            >
-              Home
-            </button>
-            {isSuperAdmin ? (
-              <button
-                className={`tab ${activeView === "settings" ? "active" : ""}`}
-                onClick={() => setActiveView("settings")}
-              >
-                Settings
-              </button>
-            ) : null}
-          </nav>
-        </div>
-        <div className="topbar-right">
-          <button className="btn ghost" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-            {theme === "dark" ? "Light mode" : "Dark mode"}
-          </button>
-          <div className="user-chip">{user?.email ?? user?.name ?? "Authenticated user"}</div>
-          <button
-            className="btn ghost"
-            onClick={() =>
-              logout({
-                logoutParams: { returnTo: window.location.origin },
-              })
-            }
-          >
-            Log out
-          </button>
-        </div>
-      </header>
+      <TopBar
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        userLabel={user?.email ?? user?.name ?? "Authenticated user"}
+        onLogout={logoutToHome}
+        activeView={activeView}
+        isSuperAdmin={isSuperAdmin}
+        onViewChange={setActiveView}
+      />
 
       {activeView === "home" ? (
-        <section className="grid">
-          <article className="card">
-            <h1>Dashboard</h1>
-            <p className="muted">Hey, {user?.email ?? user?.name ?? "authenticated user"}.</p>
-            <div className="meta-row">
-              <span className="badge">
-                Roles: {isProfileLoading ? "loading..." : actor?.roles.join(", ") || "none"}
-              </span>
-            </div>
-            <div className="actions">
-              <button className="btn primary" onClick={callProtectedApi}>
-                Call protected API
-              </button>
-            </div>
-            {apiMessage ? <p className="status-line">{apiMessage}</p> : null}
-          </article>
-        </section>
+        <DashboardPanel
+          userDisplay={userDisplay}
+          rolesDisplay={rolesDisplay}
+          apiMessage={dashboardMessage}
+          onCallProtectedApi={() => void callProtectedApi()}
+        />
       ) : null}
 
       {activeView === "settings" && isSuperAdmin ? (
-        <section className="grid">
-          <article className="card">
-            <h2>Users management</h2>
-            <p className="muted">List users from Auth0 Management API.</p>
-            <div className="actions">
-              <button className="btn primary" onClick={loadAdminUsers} disabled={isUsersLoading}>
-                {isUsersLoading ? "Loading users..." : "Load users"}
-              </button>
-            </div>
-            {usersMessage ? <p className="status-line">{usersMessage}</p> : null}
-            {users.length > 0 ? (
-              <div className="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Email</th>
-                      <th>Name</th>
-                      <th>Last login</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.map((adminUser) => (
-                      <tr key={adminUser.id ?? adminUser.email}>
-                        <td>{adminUser.email ?? "no-email"}</td>
-                        <td>{adminUser.name ?? "no-name"}</td>
-                        <td>{adminUser.lastLogin ? new Date(adminUser.lastLogin).toLocaleString() : "-"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : null}
-          </article>
-        </section>
+        <SettingsPanel
+          users={adminUsers.users}
+          usersMessage={adminUsers.usersMessage}
+          isUsersLoading={adminUsers.isUsersLoading}
+          newUserEmail={adminUsers.newUserEmail}
+          newUserRole={adminUsers.newUserRole}
+          addUserMessage={adminUsers.addUserMessage}
+          isAddingUser={adminUsers.isAddingUser}
+          setNewUserEmail={adminUsers.setNewUserEmail}
+          setNewUserRole={adminUsers.setNewUserRole}
+          loadAdminUsers={adminUsers.loadAdminUsers}
+          addUser={adminUsers.addUser}
+        />
       ) : null}
 
       {activeView === "settings" && !isSuperAdmin ? (

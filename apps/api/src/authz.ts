@@ -29,17 +29,6 @@ const ROLE_PERMISSIONS: Record<AppRole, AppPermission[]> = {
 const APP_ROLE_SET = new Set<string>(APP_ROLES);
 const APP_PERMISSION_SET = new Set<string>(APP_PERMISSIONS);
 
-const splitCsv = (value: string | undefined): string[] => {
-  if (!value) {
-    return [];
-  }
-
-  return value
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
-};
-
 const readStringListClaim = (payload: JWTPayload, claimKey: string): string[] => {
   const rawValue = payload[claimKey];
 
@@ -70,7 +59,7 @@ const normalizePermissions = (permissions: string[]): AppPermission[] => {
   );
 };
 
-const rolePermissions = (roles: AppRole[]): AppPermission[] => {
+export const rolePermissions = (roles: AppRole[]): AppPermission[] => {
   const set = new Set<AppPermission>();
 
   for (const role of roles) {
@@ -85,9 +74,6 @@ const rolePermissions = (roles: AppRole[]): AppPermission[] => {
 const unique = <T,>(items: T[]): T[] => [...new Set(items)];
 
 const claimsNamespace = process.env.AUTHZ_CLAIMS_NAMESPACE;
-const bootstrapSuperAdminEmails = new Set(
-  splitCsv(process.env.BOOTSTRAP_SUPER_ADMIN_EMAILS).map((item) => item.toLowerCase()),
-);
 
 export const resolveActor = (payload: JWTPayload): AuthenticatedActor => {
   const sub = payload.sub;
@@ -117,13 +103,7 @@ export const resolveActor = (payload: JWTPayload): AuthenticatedActor => {
     ]),
   );
 
-  const bootstrapRoles: AppRole[] = email
-    ? bootstrapSuperAdminEmails.has(email.toLowerCase())
-      ? ["super_admin"]
-      : []
-    : [];
-
-  const roles = unique([...bootstrapRoles, ...tokenRoles]);
+  const roles = unique([...tokenRoles]);
   const permissions = unique([...tokenPermissions, ...rolePermissions(roles)]);
 
   return {
