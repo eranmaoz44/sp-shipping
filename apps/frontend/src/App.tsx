@@ -40,9 +40,8 @@ function App() {
     hasResolvedProfile,
     isAccessDenied,
     profileMessage,
+    profileState,
   } = useActorProfile({ isAuthenticated, getApiToken });
-
-  const adminUsers = useAdminUsers({ getApiToken });
 
   const callProtectedApi = async () => {
     try {
@@ -61,6 +60,7 @@ function App() {
   };
 
   const isSuperAdmin = actor?.roles.includes("super_admin") ?? false;
+  const adminUsers = useAdminUsers({ getApiToken, enabled: isSuperAdmin });
   const userDisplay = user?.email ?? user?.name ?? "authenticated user";
   const rolesDisplay = isProfileLoading ? "loading..." : actor?.roles.join(", ") || "none";
   const dashboardMessage = profileMessage || apiMessage;
@@ -131,6 +131,19 @@ function App() {
     );
   }
 
+  if (profileState === "error") {
+    return (
+      <StatusScreen
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        title="Unable to verify account"
+        message={profileMessage || "Failed to verify your account session. Please try again."}
+        actionLabel="Try login again"
+        onAction={() => void loginWithRedirect()}
+      />
+    );
+  }
+
   if (isAccessDenied || !actor) {
     return (
       <StatusScreen
@@ -168,17 +181,27 @@ function App() {
 
       {activeView === "settings" && isSuperAdmin ? (
         <SettingsPanel
+          actorSub={actor.sub}
+          actorEmail={actor.email}
           users={adminUsers.users}
           usersMessage={adminUsers.usersMessage}
           isUsersLoading={adminUsers.isUsersLoading}
           newUserEmail={adminUsers.newUserEmail}
           newUserRole={adminUsers.newUserRole}
           addUserMessage={adminUsers.addUserMessage}
+          roleUpdateMessage={adminUsers.roleUpdateMessage}
           isAddingUser={adminUsers.isAddingUser}
+          isUpdatingRole={adminUsers.isUpdatingRole}
+          updatingUserId={adminUsers.updatingUserId}
+          roleOptions={adminUsers.roleOptions}
           setNewUserEmail={adminUsers.setNewUserEmail}
           setNewUserRole={adminUsers.setNewUserRole}
-          loadAdminUsers={adminUsers.loadAdminUsers}
+          setDraftRole={adminUsers.setDraftRole}
+          getDraftRole={adminUsers.getDraftRole}
+          hasUserRoleChanged={adminUsers.hasUserRoleChanged}
+          refetchUsers={adminUsers.refetchUsers}
           addUser={adminUsers.addUser}
+          saveUserRole={adminUsers.saveUserRole}
         />
       ) : null}
 

@@ -1,9 +1,11 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Auth0Provider } from '@auth0/auth0-react'
+import { QueryClientProvider } from '@tanstack/react-query'
 import './index.css'
 import App from './App.tsx'
 import { auth0Config } from './auth-config'
+import { queryClient } from './lib/query-client'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -15,7 +17,9 @@ createRoot(document.getElementById('root')!).render(
         scope: 'openid profile email',
       }}
     >
-      <App />
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
     </Auth0Provider>
   </StrictMode>,
 )

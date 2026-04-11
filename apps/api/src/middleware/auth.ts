@@ -13,22 +13,36 @@ import {
   resolveActor,
 } from "../authz.js";
 import { prisma } from "../db.js";
+import { getEmailLookupVariants, normalizeEmail } from "../utils/email.js";
 
 type AuthGuardsOptions = {
   auth0Domain: string;
   auth0Audience: string;
+  auth0ManagementApiAudience?: string;
+  auth0ManagementApiClientId?: string;
+  auth0ManagementApiClientSecret?: string;
 };
-
-const normalizeEmail = (email: string): string => email.trim().toLowerCase();
 
 const isKnownRole = (value: string): value is AppRole => {
   return (APP_ROLES as readonly string[]).includes(value);
 };
 
-export const createAuthGuards = ({ auth0Domain, auth0Audience }: AuthGuardsOptions) => {
+export const createAuthGuards = ({
+  auth0Domain,
+  auth0Audience,
+  auth0ManagementApiAudience,
+  auth0ManagementApiClientId,
+  auth0ManagementApiClientSecret,
+}: AuthGuardsOptions) => {
   const issuer = `https://${auth0Domain}/`;
   const auth0BaseUrl = `https://${auth0Domain}`;
   const jwks = createRemoteJWKSet(new URL(`${issuer}.well-known/jwks.json`));
+  let cachedManagementToken:
+    | {
+        accessToken: string;
+        expiresAt: number;
+      }
+    | undefined;
 
   const resolveEmailFromUserInfo = async (
     accessToken: string,
@@ -38,6 +52,82 @@ export const createAuthGuards = ({ auth0Domain, auth0Audience }: AuthGuardsOptio
         Authorization: `Bearer ${accessToken}`,
       },
     });
+
+    if (!response.ok) {
+      return undefined;
+    }
+
+    const data = (await response.json()) as { email?: string };
+    if (!data.email || data.email.length === 0) {
+      return undefined;
+    }
+
+    return data.email;
+  };
+
+  const getManagementApiToken = async (): Promise<string | undefined> => {
+    if (
+      !auth0ManagementApiAudience ||
+      !auth0ManagementApiClientId ||
+      !auth0ManagementApiClientSecret
+    ) {
+      return undefined;
+    }
+
+    const now = Date.now();
+    if (cachedManagementToken && cachedManagementToken.expiresAt > now + 10_000) {
+      return cachedManagementToken.accessToken;
+    }
+
+    const tokenResponse = await fetch(`${auth0BaseUrl}/oauth/token`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        grant_type: "client_credentials",
+        client_id: auth0ManagementApiClientId,
+        client_secret: auth0ManagementApiClientSecret,
+        audience: auth0ManagementApiAudience,
+      }),
+    });
+
+    if (!tokenResponse.ok) {
+      return undefined;
+    }
+
+    const tokenData = (await tokenResponse.json()) as {
+      access_token?: string;
+      expires_in?: number;
+    };
+    if (!tokenData.access_token || !tokenData.expires_in) {
+      return undefined;
+    }
+
+    cachedManagementToken = {
+      accessToken: tokenData.access_token,
+      expiresAt: now + tokenData.expires_in * 1000,
+    };
+
+    return cachedManagementToken.accessToken;
+  };
+
+  const resolveEmailFromManagementApi = async (
+    auth0Sub: string,
+  ): Promise<string | undefined> => {
+    const managementToken = await getManagementApiToken();
+    if (!managementToken) {
+      return undefined;
+    }
+
+    const response = await fetch(
+      `${auth0BaseUrl}/api/v2/users/${encodeURIComponent(auth0Sub)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${managementToken}`,
+        },
+      },
+    );
 
     if (!response.ok) {
       return undefined;
@@ -78,12 +168,20 @@ export const createAuthGuards = ({ auth0Domain, auth0Audience }: AuthGuardsOptio
       }
     }
 
+    if (!actor.email) {
+      const managementEmail = await resolveEmailFromManagementApi(actor.sub);
+      if (managementEmail) {
+        actor = resolveActor({ ...payload, email: managementEmail });
+      }
+    }
+
     const normalizedEmail = actor.email ? normalizeEmail(actor.email) : undefined;
+    const emailVariants = actor.email ? getEmailLookupVariants(actor.email) : [];
     const dbUser = await prisma.user.findFirst({
       where: {
         OR: [
           { auth0Sub: actor.sub },
-          ...(normalizedEmail ? [{ email: normalizedEmail }] : []),
+          ...emailVariants.map((email) => ({ email })),
         ],
       },
       include: {

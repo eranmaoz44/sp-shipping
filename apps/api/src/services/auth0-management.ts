@@ -98,7 +98,27 @@ export const createAuth0ManagementApiService = ({
     return (await usersResponse.json()) as ManagementApiUsersResponse;
   };
 
+  const getAuth0UserByEmail = async (email: string): Promise<{ user_id?: string; email?: string } | null> => {
+    const accessToken = await getManagementApiToken();
+    const response = await fetch(
+      `${auth0BaseUrl}/api/v2/users-by-email?email=${encodeURIComponent(email)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`Auth0 users-by-email request failed with status ${response.status}`);
+    }
+
+    const users = (await response.json()) as Array<{ user_id?: string; email?: string }>;
+    return users[0] ?? null;
+  };
+
   return {
     listAuth0Users,
+    getAuth0UserByEmail,
   };
 };
