@@ -19,13 +19,6 @@ app.register(cors, {
 const authGuards = createAuthGuards({
   auth0Domain: env.auth0Domain,
   auth0Audience: env.auth0Audience,
-  auth0ManagementApiAudience: env.auth0ManagementApiAudience,
-  ...(env.auth0ManagementApiClientId
-    ? { auth0ManagementApiClientId: env.auth0ManagementApiClientId }
-    : {}),
-  ...(env.auth0ManagementApiClientSecret
-    ? { auth0ManagementApiClientSecret: env.auth0ManagementApiClientSecret }
-    : {}),
 });
 
 const auth0ManagementApiService = createAuth0ManagementApiService({

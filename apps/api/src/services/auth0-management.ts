@@ -5,21 +5,6 @@ type Auth0ManagementApiServiceOptions = {
   clientSecret?: string;
 };
 
-export type ManagementApiUsersResponse = {
-  users: {
-    user_id?: string;
-    email?: string;
-    name?: string;
-    nickname?: string;
-    picture?: string;
-    last_login?: string;
-    logins_count?: number;
-  }[];
-  total: number;
-  page: number;
-  per_page: number;
-};
-
 export const createAuth0ManagementApiService = ({
   auth0Domain,
   audience,
@@ -80,24 +65,6 @@ export const createAuth0ManagementApiService = ({
     return cachedManagementToken.accessToken;
   };
 
-  const listAuth0Users = async (): Promise<ManagementApiUsersResponse> => {
-    const accessToken = await getManagementApiToken();
-    const usersResponse = await fetch(
-      `${auth0BaseUrl}/api/v2/users?include_totals=true&page=0&per_page=50`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-
-    if (!usersResponse.ok) {
-      throw new Error(`Auth0 users request failed with status ${usersResponse.status}`);
-    }
-
-    return (await usersResponse.json()) as ManagementApiUsersResponse;
-  };
-
   const getAuth0UserByEmail = async (email: string): Promise<{ user_id?: string; email?: string } | null> => {
     const accessToken = await getManagementApiToken();
     const response = await fetch(
@@ -118,7 +85,6 @@ export const createAuth0ManagementApiService = ({
   };
 
   return {
-    listAuth0Users,
     getAuth0UserByEmail,
   };
 };

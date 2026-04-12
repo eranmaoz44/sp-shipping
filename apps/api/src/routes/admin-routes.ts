@@ -3,7 +3,6 @@ import { APP_ROLES, type AppRole } from "../authz.js";
 import { prisma } from "../db.js";
 import type { createAuthGuards } from "../middleware/auth.js";
 import type {
-  ManagementApiUsersResponse,
   createAuth0ManagementApiService,
 } from "../services/auth0-management.js";
 import { getEmailLookupVariants, normalizeEmail } from "../utils/email.js";
@@ -51,41 +50,7 @@ export const registerAdminRoutes = (
   auth0ManagementApiService: Auth0ManagementApiService,
 ) => {
   const { requirePermission, sendAuthError } = authGuards;
-  const { listAuth0Users, getAuth0UserByEmail } = auth0ManagementApiService;
-
-  app.get(
-    "/api/admin/auth0-users",
-    {
-      preHandler: async (request, reply) => {
-        try {
-          await requirePermission("users:read")(request);
-        } catch (error) {
-          return sendAuthError(reply, error);
-        }
-      },
-    },
-    async (_request, reply) => {
-      try {
-        const data = await listAuth0Users();
-        return {
-          users: data.users.map((user: ManagementApiUsersResponse["users"][number]) => ({
-            id: user.user_id,
-            email: user.email,
-            name: user.name ?? user.nickname,
-            picture: user.picture,
-            lastLogin: user.last_login,
-            loginCount: user.logins_count,
-          })),
-          total: data.total,
-        };
-      } catch (error) {
-        app.log.error(error);
-        return reply
-          .status(502)
-          .send({ error: "Failed to list Auth0 users from Management API" });
-      }
-    },
-  );
+  const { getAuth0UserByEmail } = auth0ManagementApiService;
 
   app.post(
     "/api/admin/users",
