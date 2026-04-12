@@ -1,4 +1,5 @@
 import type { AdminUser, AppRole } from "../types/app";
+import { useI18n } from "../i18n";
 
 type SettingsPanelProps = {
   actorSub?: string;
@@ -48,17 +49,18 @@ export const SettingsPanel = ({
   saveUserRole,
 }: SettingsPanelProps) => {
   const normalizeEmail = (email?: string) => (email ? email.trim().toLowerCase() : "");
+  const { t, tRole } = useI18n();
 
   return (
     <section className="grid">
       <article className="card">
-        <h2>Users management</h2>
-        <p className="muted">Allow users by email and assign their initial role.</p>
+        <h2>{t("settings.title")}</h2>
+        <p className="muted">{t("settings.subtitle")}</p>
         <div className="actions">
           <input
             className="input"
             type="email"
-            placeholder="user@example.com"
+            placeholder={t("settings.emailPlaceholder")}
             value={newUserEmail}
             onChange={(event) => setNewUserEmail(event.target.value)}
           />
@@ -69,18 +71,18 @@ export const SettingsPanel = ({
           >
             {roleOptions.map((role) => (
               <option key={role} value={role}>
-                {role}
+                {tRole(role)}
               </option>
             ))}
           </select>
           <button className="btn primary" onClick={() => void addUser()} disabled={isAddingUser || !newUserEmail.trim()}>
-            {isAddingUser ? "Adding..." : "Add user"}
+            {isAddingUser ? t("settings.addingUser") : t("settings.addUser")}
           </button>
         </div>
         {addUserMessage ? <p className="status-line">{addUserMessage}</p> : null}
         <div className="actions">
           <button className="btn primary" onClick={() => void refetchUsers()} disabled={isUsersLoading}>
-            {isUsersLoading ? "Refreshing..." : "Refresh users"}
+            {isUsersLoading ? t("settings.refreshingUsers") : t("settings.refreshUsers")}
           </button>
         </div>
         {usersMessage ? <p className="status-line">{usersMessage}</p> : null}
@@ -90,16 +92,16 @@ export const SettingsPanel = ({
             <table>
               <thead>
                 <tr>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Status</th>
-                  <th>Action</th>
+                  <th>{t("settings.table.email")}</th>
+                  <th>{t("settings.table.role")}</th>
+                  <th>{t("settings.table.status")}</th>
+                  <th>{t("settings.table.action")}</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map((adminUser) => (
                   <tr key={adminUser.id ?? adminUser.email ?? "unknown-user"}>
-                    <td>{adminUser.email ?? "no-email"}</td>
+                    <td>{adminUser.email ?? t("settings.table.noEmail")}</td>
                     <td>
                       <select
                         className="input"
@@ -120,12 +122,12 @@ export const SettingsPanel = ({
                       >
                         {roleOptions.map((role) => (
                           <option key={role} value={role}>
-                            {role}
+                            {tRole(role)}
                           </option>
                         ))}
                       </select>
                     </td>
-                    <td>{adminUser.isActive ? "active" : "inactive"}</td>
+                    <td>{adminUser.isActive ? t("settings.table.active") : t("settings.table.inactive")}</td>
                     <td>
                       <button
                         className="btn primary"
@@ -139,7 +141,7 @@ export const SettingsPanel = ({
                         }
                         onClick={() => void saveUserRole(adminUser)}
                       >
-                        {updatingUserId === adminUser.id ? "Saving..." : "Save"}
+                        {updatingUserId === adminUser.id ? t("settings.table.saving") : t("settings.table.save")}
                       </button>
                     </td>
                   </tr>

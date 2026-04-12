@@ -1,4 +1,5 @@
 import type { ActiveView, ThemeMode } from "../types/app";
+import { useI18n } from "../i18n";
 
 type TopBarProps = {
   theme: ThemeMode;
@@ -19,24 +20,26 @@ export const TopBar = ({
   isSuperAdmin = false,
   onViewChange,
 }: TopBarProps) => {
+  const { t, toggleLanguage } = useI18n();
+
   return (
     <header className="topbar">
       <div className="topbar-left">
-        <span className="brand">sp-shipping</span>
+        <span className="brand">{t("common.brand")}</span>
         {onViewChange && activeView ? (
           <nav className="tabs">
             <button
               className={`tab ${activeView === "home" ? "active" : ""}`}
               onClick={() => onViewChange("home")}
             >
-              Home
+              {t("common.home")}
             </button>
             {isSuperAdmin ? (
               <button
                 className={`tab ${activeView === "settings" ? "active" : ""}`}
                 onClick={() => onViewChange("settings")}
               >
-                Settings
+                {t("common.settings")}
               </button>
             ) : null}
           </nav>
@@ -44,13 +47,16 @@ export const TopBar = ({
       </div>
 
       <div className="topbar-right">
+        <button className="btn ghost" onClick={toggleLanguage}>
+          {t("common.languageToggle")}
+        </button>
         <button className="btn ghost" onClick={onToggleTheme}>
-          {theme === "dark" ? "Light mode" : "Dark mode"}
+          {theme === "dark" ? t("common.lightMode") : t("common.darkMode")}
         </button>
         {userLabel ? <div className="user-chip">{userLabel}</div> : null}
         {onLogout ? (
           <button className="btn ghost" onClick={onLogout}>
-            Log out
+            {t("common.logOut")}
           </button>
         ) : null}
       </div>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiBaseUrl } from "../auth-config";
+import { useI18n } from "../i18n";
 import { ROLE_OPTIONS, type AdminUser, type AppRole } from "../types/app";
 
 type UseAdminUsersParams = {
@@ -9,6 +10,7 @@ type UseAdminUsersParams = {
 };
 
 export const useAdminUsers = ({ getApiToken, enabled = true }: UseAdminUsersParams) => {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const [newUserEmail, setNewUserEmail] = useState("");
   const [newUserRole, setNewUserRole] = useState<AppRole>("member");
@@ -31,7 +33,7 @@ export const useAdminUsers = ({ getApiToken, enabled = true }: UseAdminUsersPara
         error?: string;
       };
       if (!response.ok) {
-        throw new Error(data.error ?? "Failed to load users");
+        throw new Error(data.error ?? t("users.failedLoad"));
       }
 
       return {
@@ -61,7 +63,7 @@ export const useAdminUsers = ({ getApiToken, enabled = true }: UseAdminUsersPara
       };
 
       if (!response.ok) {
-        throw new Error(data.error ?? "Failed to add user");
+        throw new Error(data.error ?? t("users.failedAdd"));
       }
 
       return data.user;
@@ -89,7 +91,7 @@ export const useAdminUsers = ({ getApiToken, enabled = true }: UseAdminUsersPara
         user?: AdminUser;
       };
       if (!response.ok) {
-        throw new Error(data.error ?? "Failed to update user role");
+        throw new Error(data.error ?? t("users.failedUpdateRole"));
       }
 
       return data.user;
@@ -146,30 +148,30 @@ export const useAdminUsers = ({ getApiToken, enabled = true }: UseAdminUsersPara
 
   const usersMessage = useMemo(() => {
     if (usersQuery.isLoading) {
-      return "Loading users...";
+      return t("users.loading");
     }
     if (usersQuery.isError) {
       return usersQuery.error instanceof Error
         ? usersQuery.error.message
-        : "Failed to load users";
+        : t("users.failedLoad");
     }
     if (!usersQuery.data) {
       return "";
     }
-    return `Loaded ${usersQuery.data.total} allowed users.`;
-  }, [usersQuery.data, usersQuery.error, usersQuery.isError, usersQuery.isLoading]);
+    return t("users.loadedCount", { count: usersQuery.data.total });
+  }, [t, usersQuery.data, usersQuery.error, usersQuery.isError, usersQuery.isLoading]);
 
   const addUserMessage = useMemo(() => {
     if (addUserMutation.isPending) {
-      return "Adding user...";
+      return t("settings.addingUser");
     }
     if (addUserMutation.isError) {
       return addUserMutation.error instanceof Error
         ? addUserMutation.error.message
-        : "Failed to add user";
+        : t("users.failedAdd");
     }
     if (addUserMutation.isSuccess && addUserMutation.data?.email) {
-      return `Added ${addUserMutation.data.email}.`;
+      return t("users.addedUser", { email: addUserMutation.data.email });
     }
     return "";
   }, [
@@ -181,16 +183,14 @@ export const useAdminUsers = ({ getApiToken, enabled = true }: UseAdminUsersPara
   ]);
 
   const roleUpdateMessage = useMemo(() => {
-    if (updateRoleMutation.isPending) {
-      return "Updating role...";
-    }
+    if (updateRoleMutation.isPending) return t("users.updatingRole");
     if (updateRoleMutation.isError) {
       return updateRoleMutation.error instanceof Error
         ? updateRoleMutation.error.message
-        : "Failed to update role";
+        : t("users.failedUpdateRole");
     }
     if (updateRoleMutation.isSuccess) {
-      return "Role updated.";
+      return t("users.roleUpdated");
     }
     return "";
   }, [
@@ -198,6 +198,7 @@ export const useAdminUsers = ({ getApiToken, enabled = true }: UseAdminUsersPara
     updateRoleMutation.isError,
     updateRoleMutation.isPending,
     updateRoleMutation.isSuccess,
+    t,
   ]);
 
   const addUser = async () => {

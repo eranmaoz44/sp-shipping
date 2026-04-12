@@ -5,6 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import './index.css'
 import App from './App.tsx'
 import { auth0Config } from './auth-config'
+import { I18nProvider } from './i18n'
 import { queryClient } from './lib/query-client'
 
 createRoot(document.getElementById('root')!).render(
@@ -18,7 +19,9 @@ createRoot(document.getElementById('root')!).render(
       }}
     >
       <QueryClientProvider client={queryClient}>
-        <App />
+        <I18nProvider>
+          <App />
+        </I18nProvider>
       </QueryClientProvider>
     </Auth0Provider>
   </StrictMode>,

@@ -7,6 +7,7 @@ import { StatusScreen } from "./components/StatusScreen";
 import { TopBar } from "./components/TopBar";
 import { useActorProfile } from "./hooks/useActorProfile";
 import { useAdminUsers } from "./hooks/useAdminUsers";
+import { useI18n } from "./i18n";
 import { useTheme } from "./hooks/useTheme";
 import type { ActiveView } from "./types/app";
 import "./App.css";
@@ -23,6 +24,7 @@ function App() {
   } = useAuth0();
 
   const { theme, toggleTheme } = useTheme();
+  const { t, tRole } = useI18n();
   const [activeView, setActiveView] = useState<ActiveView>("home");
   const [apiMessage, setApiMessage] = useState<string>("");
 
@@ -52,17 +54,19 @@ function App() {
         },
       });
       const data = (await response.json()) as { message?: string; error?: string };
-      setApiMessage(data.message ?? data.error ?? "No response message");
+      setApiMessage(data.message ?? data.error ?? t("dashboard.noResponseMessage"));
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown auth error";
+      const message = error instanceof Error ? error.message : t("dashboard.unknownAuthError");
       setApiMessage(message);
     }
   };
 
   const isSuperAdmin = actor?.roles.includes("super_admin") ?? false;
   const adminUsers = useAdminUsers({ getApiToken, enabled: isSuperAdmin });
-  const userDisplay = user?.email ?? user?.name ?? "authenticated user";
-  const rolesDisplay = isProfileLoading ? "loading..." : actor?.roles.join(", ") || "none";
+  const userDisplay = user?.email ?? user?.name ?? t("common.authenticatedUser");
+  const rolesDisplay = isProfileLoading
+    ? t("dashboard.loadingRoles")
+    : actor?.roles.map((role) => tRole(role)).join(", ") || t("dashboard.noRoles");
   const dashboardMessage = profileMessage || apiMessage;
   const logoutToHome = () =>
     logout({
@@ -74,8 +78,8 @@ function App() {
       <StatusScreen
         theme={theme}
         onToggleTheme={toggleTheme}
-        title="sp-shipping"
-        message="Loading authentication..."
+        title={t("status.loadingAuthTitle")}
+        message={t("status.loadingAuthMessage")}
       />
     );
   }
@@ -85,9 +89,9 @@ function App() {
       <StatusScreen
         theme={theme}
         onToggleTheme={toggleTheme}
-        title="Authentication error"
+        title={t("status.authErrorTitle")}
         message={error.message}
-        actionLabel="Try login again"
+        actionLabel={t("status.tryLoginAgain")}
         onAction={() => void loginWithRedirect()}
       />
     );
@@ -101,8 +105,8 @@ function App() {
       <StatusScreen
         theme={theme}
         onToggleTheme={toggleTheme}
-        title="sp-shipping"
-        message="Finalizing login..."
+        title={t("status.finalizingLoginTitle")}
+        message={t("status.finalizingLoginMessage")}
       />
     );
   }
@@ -112,9 +116,9 @@ function App() {
       <StatusScreen
         theme={theme}
         onToggleTheme={toggleTheme}
-        title="Welcome to sp-shipping"
-        message="Sign in to continue to your dashboard."
-        actionLabel="Log in with Auth0"
+        title={t("status.welcomeTitle")}
+        message={t("status.welcomeMessage")}
+        actionLabel={t("status.loginWithAuth0")}
         onAction={() => void loginWithRedirect()}
       />
     );
@@ -125,8 +129,8 @@ function App() {
       <StatusScreen
         theme={theme}
         onToggleTheme={toggleTheme}
-        title="sp-shipping"
-        message="Checking account access..."
+        title={t("status.checkingAccessTitle")}
+        message={t("status.checkingAccessMessage")}
       />
     );
   }
@@ -136,9 +140,9 @@ function App() {
       <StatusScreen
         theme={theme}
         onToggleTheme={toggleTheme}
-        title="Unable to verify account"
-        message={profileMessage || "Failed to verify your account session. Please try again."}
-        actionLabel="Try login again"
+        title={t("status.unableToVerifyTitle")}
+        message={profileMessage || t("status.unableToVerifyMessage")}
+        actionLabel={t("status.tryLoginAgain")}
         onAction={() => void loginWithRedirect()}
       />
     );
@@ -149,9 +153,9 @@ function App() {
       <StatusScreen
         theme={theme}
         onToggleTheme={toggleTheme}
-        title="Access denied"
-        message="You do not have an account in this application yet, so you cannot use it. Contact an administrator to be added."
-        actionLabel="Log out"
+        title={t("status.accessDeniedTitle")}
+        message={t("status.accessDeniedMessage")}
+        actionLabel={t("common.logOut")}
         onAction={logoutToHome}
         actionVariant="ghost"
       />
@@ -163,7 +167,7 @@ function App() {
       <TopBar
         theme={theme}
         onToggleTheme={toggleTheme}
-        userLabel={user?.email ?? user?.name ?? "Authenticated user"}
+        userLabel={user?.email ?? user?.name ?? t("common.authenticatedUser")}
         onLogout={logoutToHome}
         activeView={activeView}
         isSuperAdmin={isSuperAdmin}
@@ -208,8 +212,8 @@ function App() {
       {activeView === "settings" && !isSuperAdmin ? (
         <section className="grid">
           <article className="card">
-            <h2>Access denied</h2>
-            <p className="muted">Only super admins can open settings.</p>
+            <h2>{t("settings.superAdminOnlyTitle")}</h2>
+            <p className="muted">{t("settings.superAdminOnlyMessage")}</p>
           </article>
         </section>
       ) : null}
