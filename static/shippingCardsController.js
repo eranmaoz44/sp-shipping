@@ -107,6 +107,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         { label: 'לא צוין', value: null },
         { label: 'צפון', value: 'north' },
         { label: 'דרום', value: 'south' },
+        { label: 'אשדוד/אשקלון', value: 'ashdod_ashkleon' },
         { label: 'ירושלים', value: 'jerusalem' },
         { label: 'שטחים / יהודה ושומרון', value: 'judeah_samaria_green_line' },
         { label: 'אילת', value: 'eilat' },
