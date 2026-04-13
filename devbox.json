@@ -1,0 +1,17 @@
+{
+  "packages": [
+    "nodejs@22",
+    "docker",
+    "docker-compose",
+    "postgresql"
+  ],
+  "shell": {
+    "scripts": {
+      "setup": "npm --prefix apps/api install && npm --prefix apps/frontend install",
+      "infra": "docker compose up -d postgres --wait && npm --prefix apps/api run db:migrate && npm --prefix apps/api run db:seed",
+      "dev": "devbox run infra && sh -c \"npm --prefix apps/api run dev & npm --prefix apps/frontend run dev\"",
+      "docker:up": "docker compose up --build",
+      "docker:down": "docker compose down"
+    }
+  }
+}
