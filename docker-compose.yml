@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: sp_shipping
+      POSTGRES_USER: sp_shipping
+      POSTGRES_PASSWORD: sp_shipping
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sp_shipping -d sp_shipping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./apps/api
+    env_file:
+      - ./apps/api/.env
+    environment:
+      DATABASE_URL: postgresql://sp_shipping:sp_shipping@postgres:5432/sp_shipping
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./apps/api:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./apps/frontend
+    env_file:
+      - ./apps/frontend/.env
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:

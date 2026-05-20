@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  api-tests:
+    name: API Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: sp_shipping
+          POSTGRES_PASSWORD: sp_shipping
+          POSTGRES_DB: sp_shipping
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sp_shipping -d sp_shipping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://sp_shipping:sp_shipping@localhost:5432/sp_shipping
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/api/package-lock.json
+
+      - name: Install API dependencies
+        working-directory: apps/api
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: apps/api
+        run: npm run db:generate
+
+      - name: Run database migrations
+        working-directory: apps/api
+        run: npm run db:migrate
+
+      - name: Run API tests
+        working-directory: apps/api
+        run: npm test

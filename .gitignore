@@ -9,3 +9,27 @@ WhatsApp/UserData/*
 nohup.out
 maintenance/cleanup_log.txt
 run_script.sh
+apps/api/.env
+apps/frontend/.env
+
+# Node / frontend build artifacts
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+dist-ssr/
+**/dist-ssr/
+.vite/
+**/.vite/
+.vite-temp/
+**/.vite-temp/
+coverage/
+**/coverage/
+*.tsbuildinfo
+
+# Local env overrides
+.env.local
+**/.env.local
+
+# Pre-commit cache
+.pre-commit-cache/
