@@ -167,13 +167,17 @@ footer p {
 }
 
 input:disabled, select:disabled, textarea:disabled {
-  color: black!important;
-  background:#ffff!important;
+  color: #6c757d !important;
+  background: #eef1f4 !important;
+  border-color: #d6dce2 !important;
+  cursor: not-allowed !important;
+  opacity: 1 !important;
 }
 
 input:disabled:hover, select:disabled:hover, textarea:disabled:hover {
-  color: black!important;
-  background:lightslategrey!important;
+  color: #6c757d !important;
+  background: #eef1f4 !important;
+  border-color: #d6dce2 !important;
 }
 
 .timerIcon{

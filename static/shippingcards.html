@@ -135,7 +135,7 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
-                                <button ng-show="scc.isEditable() && scc.canWrite()" type="button"
+                                <button ng-show="scc.isEditable() && scc.canEditShippingCard(card)" type="button"
                                         class="btn btn-success float-right mt-1" data-toggle="modal"
                                         data-target="#approveCompletionModal{{card.id}}">בוצע
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
@@ -321,8 +321,7 @@
                             <div class="modal-footer">
                                 <div class="ml-auto">
                                     <button type="button" class="btn btn-outline-primary"
-                                            ng-click="scc.moveToEditMode(card)" ng-show="scc.isEditable() && scc.canWrite()"
-                                            ng-disabled="!scc.hasAdminPermissions()">ערוך
+                                            ng-click="scc.moveToEditMode(card)" ng-show="scc.isEditable() && scc.canEditShippingCard(card)">ערוך
                                     </button>
                                     <button class="btn btn-primary m-1"
                                             ng-click="scc.navigateToCoordination(card.id)">לינק לתיאום ההובלה
@@ -330,7 +329,7 @@
                                 </div>
 
                                 <button type="button" class="btn btn-outline-danger ml-auto"
-                                        ng-click="scc.deleteShippingCard(card)" ng-show="!scc.isEditable() && scc.canWrite()">מחק
+                                        ng-click="scc.deleteShippingCard(card)" ng-show="!scc.isEditable() && scc.hasAdminPermissions()">מחק
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                                           ng-show="card.isDeleting"></span>
                                 </button>
@@ -395,7 +394,7 @@
 
 
 
-    <div ng-show="scc.isEditable() && scc.loadedFirstTime && scc.canWrite()"
+    <div ng-show="scc.isEditable() && scc.loadedFirstTime && scc.hasAdminPermissions()"
          class="fixed-bottom text-center">
 
         <img src="/static/open-iconic/svg/plus.svg"
@@ -421,10 +420,11 @@
                             <span class="input-group-text" id="basic-addon1">#הזמנה</span>
                         </div>
                         <input type="text" class="form-control" placeholder="מס' הזמנה" aria-label="Username"
-                               aria-describedby="basic-addon1" ng-model="scc.cardToAdd.order_number">
+                               aria-describedby="basic-addon1" ng-model="scc.cardToAdd.order_number"
+                               ng-disabled="!scc.canEditOrderNumberInModal()">
                     </div>
 
-                    <div class="input-group mb-3">
+                    <div class="input-group mb-3" ng-if="scc.canEditNonTimeFieldsInModal()">
                         <div class="custom-file">
                             <input type="file" class="custom-file-input" id="exampleInputFile"
                                    ngf-select="scc.uploadImageOnModal($file)" ngf-capture="camera"
@@ -449,7 +449,8 @@
                             <span class="input-group-text">#טלפון</span>
                         </div>
                         <input type="text" class="form-control" placeholder="מס' טלפון" aria-label="Username"
-                               aria-describedby="basic-addon1" ng-model="scc.cardToAdd.phone_number">
+                               aria-describedby="basic-addon1" ng-model="scc.cardToAdd.phone_number"
+                               ng-disabled="!scc.canEditNonTimeFieldsInModal()">
                     </div>
 
                     <div class="input-group mb-3 my-3">
@@ -457,11 +458,13 @@
                             <span class="input-group-text">₪</span>
                         </div>
                         <input type="text" class="form-control" placeholder="עלות הובלה" aria-label="Price"
-                               aria-describedby="basic-addon1" ng-model="scc.cardToAdd.price">
+                               aria-describedby="basic-addon1" ng-model="scc.cardToAdd.price"
+                               ng-disabled="!scc.canEditNonTimeFieldsInModal()">
                         <div class="input-group-prepend">
                             <span class="input-group-text">מי משלם</span>
                         </div>
-                        <select class="custom-select" ng-model="scc.cardToAdd.who_pays">
+                        <select class="custom-select" ng-model="scc.cardToAdd.who_pays"
+                                ng-disabled="!scc.canEditNonTimeFieldsInModal()">
                             <option selected>לא צוין</option>
                             <option>הלקוח</option>
                             <option>החנות</option>
@@ -474,6 +477,7 @@
                                     <span class="input-group-text">מוביל</span>
                                 </div>
                                 <select class="custom-select" ng-model="scc.cardToAdd.carrier"
+                                        ng-disabled="!scc.canEditNonTimeFieldsInModal()"
                                         ng-options="option.value as option.label for option in (scc.carrierOptions | filter:scc.excludeAllOption)">
                                 </select>
                             </div>
@@ -484,6 +488,7 @@
                                     <span class="input-group-text">אזור</span>
                                 </div>
                                 <select class="custom-select" ng-model="scc.cardToAdd.carrier_region"
+                                        ng-disabled="!scc.canEditCarrierRegionInModal()"
                                         ng-options="option.value as option.label for option in (scc.carrierRegionOptions | filter:scc.excludeAllOption)">
                                 </select>
                             </div>
@@ -503,7 +508,8 @@
                                     </div>
                                     <input id='datePicker' data-date-format="dd/mm/yyyy DD"
                                            class="form-control xlargeFont"
-                                           ng-model="scc.cardToAdd.supply_date">
+                                           ng-model="scc.cardToAdd.supply_date"
+                                           ng-disabled="!scc.canEditTimeFieldsInModal()">
                                 </div>
                             </div>
                         </div>
@@ -513,6 +519,7 @@
                                     <input type="checkbox" class="custom-control-input"
                                            id="carrierHoursSetCheckbox"
                                            ng-model="scc.cardToAdd.hours_set_by_carrier"
+                                           ng-disabled="!scc.canEditTimeFieldsInModal()"
                                            ng-change="scc.onCarrierHoursSetToggle(scc.cardToAdd)">
                                     <label class="custom-control-label" for="carrierHoursSetCheckbox">
                                         המוביל קובע את השעות
@@ -528,7 +535,7 @@
                                     </div>
                                     <select class="custom-select xlargeFont"
                                             ng-model="scc.cardToAdd.supply_from_hour"
-                                            ng-disabled="scc.cardToAdd.hours_set_by_carrier">
+                                            ng-disabled="scc.cardToAdd.hours_set_by_carrier || !scc.canEditTimeFieldsInModal()">
                                         <option selected>{{scc.defaultSupplyHour}}</option>
                                         <option ng-repeat="hour in scc.supplyHours" value="{{hour}}">{{hour}}
                                         </option>
@@ -542,7 +549,7 @@
                                     </div>
                                     <select class="custom-select xlargeFont"
                                             ng-model="scc.cardToAdd.supply_to_hour"
-                                            ng-disabled="scc.cardToAdd.hours_set_by_carrier">
+                                            ng-disabled="scc.cardToAdd.hours_set_by_carrier || !scc.canEditTimeFieldsInModal()">
                                         <option selected>{{scc.defaultSupplyHour}}</option>
                                         <option ng-repeat="hour in scc.supplyHours" value="{{hour}}">{{hour}}
                                         </option>
@@ -560,12 +567,13 @@
                             <span class="input-group-text">מידע נוסף</span>
                         </div>
                         <textarea class="form-control" aria-label="מידע נוסף"
-                                  ng-model="scc.cardToAdd.extra_info"></textarea>
+                                  ng-model="scc.cardToAdd.extra_info"
+                                  ng-disabled="!scc.canEditExtraInfoInModal()"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary ml-auto"
-                            ng-click="scc.saveShippingCard(card)" ng-show="scc.isEditable() && scc.canWrite()">
+                            ng-click="scc.saveShippingCard(card)" ng-show="scc.isEditable() && scc.canSaveCardToAdd()">
                         {{scc.getModalCreateType()}}
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                               ng-show="scc.cardToAdd.isSaving"></span>

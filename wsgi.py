@@ -45,10 +45,18 @@ def is_admin_user():
     return current_user is not None and current_user.is_authenticated and current_user.id == 'admin'
 
 
+def is_arthur_user():
+    return current_user is not None and current_user.is_authenticated and current_user.id == 'arthur'
+
+
 def get_current_user_carrier():
     if current_user is None or not current_user.is_authenticated:
         return None
     return CARRIER_USERS.get(current_user.id)
+
+
+def can_arthur_edit_shipping_time(shipping):
+    return is_arthur_user() and shipping is not None and shipping.get_value("carrier") == "arthur"
 
 
 def require_admin():
@@ -251,16 +259,50 @@ def get_availabilities():
 @application.route('/api/shipping', methods=['POST'])
 @login_required
 def set_shipping():
-    denied = require_admin()
-    if denied:
-        return denied
-    shipping = Shipping.from_dict(request.get_json())
-    new_shipping = False
-    if not shipping.check_if_element_exists():
-        new_shipping = True
-    shipping.insert_or_update()
-    # if new_shipping:
-    #     shipping.send_new_shipping_message()
+    request_data = request.get_json()
+
+    if is_admin_user():
+        shipping = Shipping.from_dict(request_data)
+        new_shipping = False
+        if not shipping.check_if_element_exists():
+            new_shipping = True
+        shipping.insert_or_update()
+        # if new_shipping:
+        #     shipping.send_new_shipping_message()
+        return Response(status=200)
+
+    if not is_arthur_user():
+        return Response(status=403, response='Admin permissions required')
+
+    shipping_id = request_data.get('id')
+    if not shipping_id:
+        return Response(status=400, response='Shipping id is required')
+
+    existing_shipping = Shipping.get_element_with_id(shipping_id)
+    if existing_shipping is None:
+        return Response(status=404, response='Shipping not found')
+    if not can_arthur_edit_shipping_time(existing_shipping):
+        return Response(status=403, response='Forbidden')
+
+    allowed_fields_for_arthur = {'supply_date', 'supply_from_hour', 'supply_to_hour', 'hours_set_by_carrier', 'extra_info', 'carrier_region', 'state'}
+    restricted_fields = [field for field in Shipping.COLUMN_NAMES if field not in allowed_fields_for_arthur]
+    for field in restricted_fields:
+        if field in request_data and request_data.get(field) != existing_shipping.get_value(field):
+            return Response(status=403, response='Arthur can only update time/comment/region fields and mark as finished')
+
+    requested_state = request_data.get('state', existing_shipping.get_value('state'))
+    current_state = existing_shipping.get_value('state')
+    if requested_state != current_state and requested_state != 'finished':
+        return Response(status=403, response='Arthur can only mark shipping as finished')
+
+    updated_shipping_data = existing_shipping.to_dict()
+    for field in allowed_fields_for_arthur:
+        if field in request_data:
+            updated_shipping_data[field] = request_data.get(field)
+
+    updated_shipping = Shipping.from_dict(updated_shipping_data)
+    updated_shipping.insert_or_update()
+
     return Response(status=200)
 
 

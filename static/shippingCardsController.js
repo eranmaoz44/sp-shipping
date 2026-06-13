@@ -199,6 +199,48 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         return self.userCarrier != null
     }
 
+    self.isArthurUser = function(){
+        return self.user_id === 'arthur'
+    }
+
+    self.canArthurEditShippingTime = function(card){
+        return self.isArthurUser() && card && card.carrier === 'arthur'
+    }
+
+    self.canEditShippingCard = function(card){
+        return self.hasAdminPermissions() || self.canArthurEditShippingTime(card)
+    }
+
+    self.canSaveCardToAdd = function(){
+        if (!self.cardToAdd){
+            return false
+        }
+        if (self.hasAdminPermissions()){
+            return true
+        }
+        return self.shippingCardInEditMode && self.canArthurEditShippingTime(self.cardToAdd)
+    }
+
+    self.canEditNonTimeFieldsInModal = function(){
+        return self.hasAdminPermissions()
+    }
+
+    self.canEditOrderNumberInModal = function(){
+        return self.hasAdminPermissions()
+    }
+
+    self.canEditTimeFieldsInModal = function(){
+        return self.hasAdminPermissions() || (self.shippingCardInEditMode && self.canArthurEditShippingTime(self.cardToAdd))
+    }
+
+    self.canEditExtraInfoInModal = function(){
+        return self.hasAdminPermissions() || (self.shippingCardInEditMode && self.canArthurEditShippingTime(self.cardToAdd))
+    }
+
+    self.canEditCarrierRegionInModal = function(){
+        return self.hasAdminPermissions() || (self.shippingCardInEditMode && self.canArthurEditShippingTime(self.cardToAdd))
+    }
+
     self.canWrite = function(){
         return self.hasAdminPermissions()
     }
