@@ -31,7 +31,6 @@ application.secret_key = os.environ.get(_secret_key)
 
 login = LoginManager(application)
 login.login_view = 'login'
-users = {}
 
 CARRIER_USERS = {
     'arthur': 'arthur',
@@ -61,16 +60,21 @@ def can_arthur_edit_shipping_time(shipping):
 
 def require_admin():
     if not is_admin_user():
-        return Response(status=403, response='Admin permissions required')
+        return json_error('Admin permissions required', 403)
     return None
 
 
 @login.user_loader
 def load_user(id):
-    res = None
-    if id in users:
-        res = users[id]
-    return res
+    return User.from_id(id)
+
+
+def json_error(message, status):
+    return Response(
+        status=status,
+        response=json.dumps({'error': message}),
+        mimetype='application/json'
+    )
 
 
 @application.route('/index')
@@ -93,12 +97,15 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     if request.method == 'POST':
-        request_json = request.get_json()
-        user_id = request_json['id']
-        password = request_json['password']
-        remember_me = request_json['remember_me']
+        request_json = request.get_json(silent=True)
+        if not isinstance(request_json, dict):
+            return Response(status=400, response='Invalid JSON payload')
+        user_id = request_json.get('id')
+        password = request_json.get('password')
+        remember_me = request_json.get('remember_me', False)
+        if not user_id or password is None:
+            return Response(status=400, response='Missing required login fields')
         user = User(user_id, password)
-        users[user_id] = user
         if not user.is_authenticated():
             flash('Invalid username or password')
             return Response(status=401)
@@ -112,7 +119,10 @@ def login():
 
 
 def extract_next_page_from_login_referer():
-    referer_args = url_parse(request.headers['Referer']).decode_query()
+    referer = request.headers.get('Referer')
+    if not referer:
+        return None
+    referer_args = url_parse(referer).decode_query()
     res = None
     if 'next' in referer_args:
         res = referer_args['next']
@@ -259,49 +269,64 @@ def get_availabilities():
 @application.route('/api/shipping', methods=['POST'])
 @login_required
 def set_shipping():
-    request_data = request.get_json()
+    # Temporary test switch: force save/create failure when enabled.
+    # Set SIMULATE_SHIPPING_SAVE_ERROR=1 to trigger.
+    if os.environ.get('SIMULATE_SHIPPING_SAVE_ERROR') == '1':
+        return json_error('Simulated save failure for testing', 500)
+
+    request_data = request.get_json(silent=True)
+    if not isinstance(request_data, dict):
+        return json_error('Invalid JSON payload', 400)
 
     if is_admin_user():
-        shipping = Shipping.from_dict(request_data)
-        new_shipping = False
-        if not shipping.check_if_element_exists():
-            new_shipping = True
-        shipping.insert_or_update()
-        # if new_shipping:
-        #     shipping.send_new_shipping_message()
-        return Response(status=200)
+        try:
+            shipping = Shipping.from_dict(request_data)
+            new_shipping = False
+            if not shipping.check_if_element_exists():
+                new_shipping = True
+            shipping.insert_or_update()
+            # if new_shipping:
+            #     shipping.send_new_shipping_message()
+            return Response(status=200)
+        except Exception:
+            application.logger.exception('Failed to save shipping')
+            return json_error('Failed to save shipping', 500)
 
     if not is_arthur_user():
-        return Response(status=403, response='Admin permissions required')
+        return json_error('Admin permissions required', 403)
 
     shipping_id = request_data.get('id')
     if not shipping_id:
-        return Response(status=400, response='Shipping id is required')
+        return json_error('Shipping id is required', 400)
 
     existing_shipping = Shipping.get_element_with_id(shipping_id)
     if existing_shipping is None:
-        return Response(status=404, response='Shipping not found')
+        return json_error('Shipping not found', 404)
     if not can_arthur_edit_shipping_time(existing_shipping):
-        return Response(status=403, response='Forbidden')
+        return json_error('Forbidden', 403)
 
     allowed_fields_for_arthur = {'supply_date', 'supply_from_hour', 'supply_to_hour', 'hours_set_by_carrier', 'extra_info', 'carrier_region', 'state'}
     restricted_fields = [field for field in Shipping.COLUMN_NAMES if field not in allowed_fields_for_arthur]
     for field in restricted_fields:
         if field in request_data and request_data.get(field) != existing_shipping.get_value(field):
-            return Response(status=403, response='Arthur can only update time/comment/region fields and mark as finished')
+            return json_error('Arthur can only update time/comment/region fields and mark as finished', 403)
 
     requested_state = request_data.get('state', existing_shipping.get_value('state'))
     current_state = existing_shipping.get_value('state')
     if requested_state != current_state and requested_state != 'finished':
-        return Response(status=403, response='Arthur can only mark shipping as finished')
+        return json_error('Arthur can only mark shipping as finished', 403)
 
     updated_shipping_data = existing_shipping.to_dict()
     for field in allowed_fields_for_arthur:
         if field in request_data:
             updated_shipping_data[field] = request_data.get(field)
 
-    updated_shipping = Shipping.from_dict(updated_shipping_data)
-    updated_shipping.insert_or_update()
+    try:
+        updated_shipping = Shipping.from_dict(updated_shipping_data)
+        updated_shipping.insert_or_update()
+    except Exception:
+        application.logger.exception('Failed to save shipping for Arthur')
+        return json_error('Failed to save shipping', 500)
 
     return Response(status=200)
 
@@ -356,10 +381,14 @@ def get_aws_presign_post():
     if denied:
         return denied
     file_name = request.args.get('file_name')
+    if not file_name:
+        return json_error('file_name is required', 400)
 
     res = AwsConnector.create_presigned_post_file_upload(file_name)
+    if not res or res == 'null':
+        return json_error('Failed to create upload URL', 502)
 
-    return Response(status=200, response=res)
+    return Response(status=200, response=res, mimetype='application/json')
 
 
 @application.route('/api/aws/presign_get', methods=['GET'])

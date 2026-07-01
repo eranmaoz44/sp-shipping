@@ -310,6 +310,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
             $(`#approveCompletionModal${card.id}`).modal('hide')
 
         }, function(error){
+            card.isMovingToFinishState = false
             card.state = 'ongoing'
             console.log(`could not move shipping card ${card} to finished because ${error}`)
         })
@@ -359,6 +360,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 'carrier_region' : null,
                 'hours_set_by_carrier' : false
         }
+        self.cardToAdd.saveError = null
 
         self.cardToSaveFilePath = 'default.png'
 
@@ -390,6 +392,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         self.shippingCardInEditMode = true
         self.cardToAdd = JSON.clone(card)
         self.normalizeCarrierHoursFlag(self.cardToAdd)
+        self.cardToAdd.saveError = null
         self.imageChanged = false
         self.cardToSaveFilePath = card.order_image_aws_path
         self.onEditImage = card.tempOrderImageUrl
@@ -432,7 +435,36 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         }
     }
 
+    self.extractErrorMessage = function(error){
+        if (typeof error === 'string'){
+            return error
+        }
+        if (error && error.data){
+            if (typeof error.data === 'string'){
+                return error.data
+            }
+            if (error.data.error){
+                return error.data.error
+            }
+        }
+        return 'השמירה נכשלה. נסו שוב.'
+    }
+
+    self.handleCardSaveFailure = function(error){
+        if (!self.cardToAdd){
+            return
+        }
+        self.cardToAdd.isSaving = false
+        self.cardToAdd.saveError = self.extractErrorMessage(error)
+        self.shouldFetchCards = true
+        console.log("Save shipping failed:", error)
+    }
+
     self.saveShippingCard = function(){
+        if (!self.cardToAdd || self.cardToAdd.isSaving){
+            return
+        }
+        self.cardToAdd.saveError = null
         self.cardToAdd.isSaving = true
         if (self.onEditImage == '/static/default.png' || self.imageChanged == false){
             self.saveShippingCardPostImageUpload()
@@ -440,6 +472,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
             self.uploadFileToAwsWithPresign(self.cardToAdd, self.onEditImage).then(function(response){
                 self.saveShippingCardPostImageUpload()
             }, function(error){
+                self.handleCardSaveFailure(error)
             })
         }
     }
@@ -458,8 +491,10 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
             shippingCardService.updateCardTempOrderImageUrl($scope, self.cardToAdd)
             $('#createModal').modal('hide');
             self.cardToAdd.isSaving = false
+            self.cardToAdd.saveError = null
             self.shouldFetchCards = true
         }, function(error){
+            self.handleCardSaveFailure(error)
         })
     }
 
@@ -588,6 +623,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                 self.isLoading = false
             },
             function(error) {
+                self.isLoading = false
                 console.log("Error fetching shippings:", error);
             }
         );
@@ -668,7 +704,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                         "<hr />status: " + error.status +
                         "<hr />headers: " + error.headers +
                         "<hr />config: " + error.config;
-                    reject(`could not update shipping card because of ${error.data}`)
+                    reject(error)
                  }
            );
     };
@@ -707,6 +743,7 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
                     $('.modal-backdrop').remove();
                  },
                 function (error) {
+                    card.isDeleting = false
                     $scope.ResponseDetails = "Data: " + error.data +
                         "<hr />status: " + error.status +
                         "<hr />headers: " + error.headers +

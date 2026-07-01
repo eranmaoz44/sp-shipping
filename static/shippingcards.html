@@ -573,7 +573,9 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary ml-auto"
-                            ng-click="scc.saveShippingCard(card)" ng-show="scc.isEditable() && scc.canSaveCardToAdd()">
+                            ng-click="scc.saveShippingCard(card)"
+                            ng-disabled="scc.cardToAdd.isSaving"
+                            ng-show="scc.isEditable() && scc.canSaveCardToAdd()">
                         {{scc.getModalCreateType()}}
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                               ng-show="scc.cardToAdd.isSaving"></span>
@@ -581,6 +583,11 @@
                     <button type="button" class="btn btn-secondary" data-dismiss="modal"
                             ng-disabled="scc.cardToAdd.isSaving">סגור
                     </button>
+                </div>
+                <div class="px-3 pb-3" ng-if="scc.cardToAdd.saveError">
+                    <div class="alert alert-danger mb-0 text-right" role="alert">
+                        {{scc.cardToAdd.saveError}}
+                    </div>
                 </div>
             </div>
         </div>

@@ -43,6 +43,10 @@ function awsFileService($http) {
     }
 
     self.postFileWithPresign = function(presign, file,destination_file_name, resolve, reject){
+        if (!presign || !presign.fields || !presign.url){
+            reject(`Failed to create presign post of file ${destination_file_name}`)
+            return
+        }
 
         var postData = new FormData();
         for(key in presign.fields){
