@@ -36,7 +36,9 @@ CARRIER_USERS = {
     'arthur': 'arthur',
     'vova': 'vova',
     'uday': 'uday',
-    'ivan': 'ivan'
+    'ivan': 'ivan',
+    'nikolai': 'nikolai',
+    'karem': 'karem'
 }
 
 
@@ -433,7 +435,7 @@ if __name__ == '__main__':
     # def derive_carrier_password(user_id):
     #    *****
     #
-    # for carrier_user in ['arthur', 'vova', 'uday', 'ivan']:
+    # for carrier_user in ['arthur', 'vova', 'uday', 'ivan', 'nikolai', 'karem']:
     #     carrier_password = derive_carrier_password(carrier_user)
     #     carrier = UserWithHashPassword.create_new_user(carrier_user, carrier_password)
     #     carrier.insert_or_update()

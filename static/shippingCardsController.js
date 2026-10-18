@@ -99,7 +99,9 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
         { label: 'ארתור', value: 'arthur' },
         { label: 'וובה', value: 'vova' },
         { label: 'עודאי', value: 'uday' },
-        { label: 'איוון', value: 'ivan' }
+        { label: 'איוון', value: 'ivan' },
+        { label: 'ניקולאי', value: 'nikolai' },
+        { label: 'כארם', value: 'karem' }
     ]
 
     self.carrierRegionOptions = [
@@ -190,7 +192,9 @@ function shippingCardsController($http, $scope, $location,$window, awsFileServic
             arthur: 'arthur',
             vova: 'vova',
             uday: 'uday',
-            ivan: 'ivan'
+            ivan: 'ivan',
+            nikolai: 'nikolai',
+            karem: 'karem'
         }
         return carriers[userId] || null
     }
